@@ -27,7 +27,7 @@ export function AdminSidebar(props: React.ComponentProps<typeof Sidebar>) {
   // const units = useSelector((state: RootState) => state.units.units);
   const { state, toggleSidebar } = useSidebar();
   const navigate = useNavigate();
-  const { isNodalOfficer, isSuperAdmin, isAdmin, isUnitCGM } = useUserRoles();
+  const { isSuperAdmin, isCgm, isDandAR, isVigilanceAdmin, isCorporateUnitHr, isUnitHr } = useUserRoles();
   const data = {
     navMain: [
       {
@@ -37,12 +37,129 @@ export function AdminSidebar(props: React.ComponentProps<typeof Sidebar>) {
       },
       ...(isSuperAdmin
         ? [
-            {
-              title: 'Manage Admin',
-              url: '/admin-manage-role',
-              icon: UserRoundCog,
-            },
-          ]
+          {
+            title: 'Manage Admin',
+            url: '/admin-manage-role',
+            icon: UserRoundCog,
+          },
+
+
+
+        ]
+        : []),
+      ...(isCgm
+        ? [
+          {
+            title: 'Manage CGM',
+            url: '/cgm-request-received',
+            icon: UserRoundCog,
+          },
+          {
+            title: 'Manage CGM',
+            url: '/cgm-request-received',
+            icon: UserRoundCog,
+          },
+
+        ]
+        : []),
+      ...(isDandAR
+        ? [
+          {
+            title: 'Pending Requests',
+            url: '/d-and-ar-pending-requests',
+            icon: UserRoundCog,
+          },
+          {
+            title: 'Processed Requests',
+            url: '/d-and-ar-processed-requests',
+            icon: UserRoundCog,
+          },
+
+
+        ]
+        : []),
+      ...(isVigilanceAdmin
+        ? [
+          {
+            title: 'Employee mapping',
+            url: '/vigilance-admin-role-management',
+            icon: UserRoundCog,
+          },
+          {
+            title: 'Manage Grey List',
+            url: '/vigilance-admin-manage-grey-list',
+            icon: UserRoundCog,
+          },
+          {
+            title: 'Request Received',
+            url: '/vigilance-admin-request-received',
+            icon: UserRoundCog,
+          },
+          {
+            title: 'Processed Request',
+            url: '/vigilance-admin-processed-request',
+            icon: UserRoundCog,
+          },
+
+        ]
+        : []),
+      ...(isCorporateUnitHr
+        ? [
+          {
+            title: 'Request Received',
+            url: '/corporate-unit-hr-request-received',
+            icon: UserRoundCog,
+          },
+          {
+            title: 'Request Under Process',
+            url: '/corporate-unit-hr-request-under-process',
+            icon: UserRoundCog,
+          },
+          {
+            title: 'Noc Requests From Vigilance',
+            url: '/corporate-unit-hr-noc-requests-from-vigilance',
+            icon: UserRoundCog,
+          },
+          {
+            title: 'Noc Requests For Employee',
+            url: '/corporate-unit-hr-noc-requests-for-employee',
+            icon: UserRoundCog,
+          },
+          {
+            title: 'Rejected Requests',
+            url: '/corporate-unit-hr-rejected-requests',
+            icon: UserRoundCog,
+          },
+          {
+            title: 'Completed Requests',
+            url: '/corporate-unit-hr-completed-requests',
+            icon: UserRoundCog,
+          },
+          {
+            title: 'Parked Requests',
+            url: '/corporate-unit-hr-parked-requests',
+            icon: UserRoundCog,
+          },
+        ]
+        : []),
+      ...(isUnitHr
+        ? [
+          {
+            title: 'NOC Requests For Employee',
+            url: '/unit-hr-pending-noc-requests',
+            icon: UserRoundCog,
+          },
+          {
+            title: 'Pending NOC Requests',
+            url: '/unit-hr-pending-noc-requests',
+            icon: UserRoundCog,
+          },
+          {
+            title: 'Processed NOC Requests',
+            url: '/unit-hr-processed-noc-requests',
+            icon: UserRoundCog,
+          },
+        ]
         : []),
     ],
   };

@@ -41,7 +41,13 @@ const useUserRoles = () => {
     isUser,
     roles,
     isLoading,
-    isUnitHr: true
+    isUnitHr: true,
+    isCgm: true,
+    isDandAR: true,
+    isVigilanceAdmin: true,
+    isCorporateUnitHr: true,
+
+
   };
 };
 
