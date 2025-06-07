@@ -33,22 +33,22 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.code === 'ERR_NETWORK') {
-      toast.error('Your session has expired. Please log in again.');
-      removeSessionItem('token');
-      setTimeout(() => {
-        window.location.href = environment.logoutUrl;
-      }, 500);
-    }
+    // if (error.code === 'ERR_NETWORK') {
+    //   toast.error('Your session has expired. Please log in again.');
+    //   removeSessionItem('token');
+    //   setTimeout(() => {
+    //     window.location.href = environment.logoutUrl;
+    //   }, 500);
+    // }
 
     // Make sure error.response exists before accessing its status
-    if (error.response && error.response.status === 401) {
-      toast.error('Authorization failed. Your session has expired. Redirecting to login...');
-      removeSessionItem('token');
-      setTimeout(() => {
-        window.location.href = environment.logoutUrl;
-      }, 500);
-    }
+    // if (error.response && error.response.status === 401) {
+    //   toast.error('Authorization failed. Your session has expired. Redirecting to login...');
+    //   removeSessionItem('token');
+    //   setTimeout(() => {
+    //     window.location.href = environment.logoutUrl;
+    //   }, 500);
+    // }
 
     return Promise.reject(error);
   }

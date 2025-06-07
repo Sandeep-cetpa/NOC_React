@@ -2,15 +2,15 @@ import React from 'react';
 import { AppSidebar } from '../app-sidebar';
 import { SidebarProvider } from '../ui/sidebar';
 import SiteHeader from '../site-header';
+import { AdminSidebar } from '../sidebar/AdminSidebar';
 
-const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  
+const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
     <SidebarProvider className="flex flex-col w-full h-screen">
       <SiteHeader />
       <div className="w-full bg-gray-100 flex-1 overflow-hidden">
         <div className="flex flex-row h-full">
-          <AppSidebar />
+          <AdminSidebar />
           <div className="w-full flex flex-col h-full">
             <div className="bg-white flex-1 overflow-auto">{children}</div>
           </div>
@@ -20,4 +20,4 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   );
 };
 
-export default AppLayout;
+export default AdminLayout;

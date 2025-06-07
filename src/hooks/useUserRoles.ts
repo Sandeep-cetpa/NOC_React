@@ -16,29 +16,9 @@ interface RoleResponse {
 
 const useUserRoles = () => {
   const [roles, setRoles] = useState<string[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const user = useSelector((state: RootState) => state.user);
 
-  useEffect(() => {
-    const fetchUserRoles = async () => {
-      try {
-        setIsLoading(true);
-        if (user?.EmpCode) {
-          const response = await axiosInstance.get(`/Admin/GetUserRoles?empCode=${user.EmpCode}`);
-          if (response.data.data) {
-            setRoles(response.data.data.map((role) => role.toLowerCase()));
-          }
-        }
-      } catch (error) {
-        console.error('Error fetching user roles:', error);
-        setRoles([]);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchUserRoles();
-  }, [user?.EmpCode]);
 
   const isNodalOfficer = roles.includes('nodalofficer');
   const isSuperAdmin = roles.includes('superadmin');
@@ -48,10 +28,11 @@ const useUserRoles = () => {
   const isUser = roles.includes('user');
   const isAddressal = roles.includes('redressal');
   const isCommittee = roles.includes('committee');
+  const isUnitHr = roles.includes('unithr');
 
   return {
     isNodalOfficer,
-    isSuperAdmin,
+    isSuperAdmin: true,
     isAdmin,
     isUnitCGM,
     isHOD,
@@ -60,6 +41,7 @@ const useUserRoles = () => {
     isUser,
     roles,
     isLoading,
+    isUnitHr: true
   };
 };
 

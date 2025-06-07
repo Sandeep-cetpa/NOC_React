@@ -171,3 +171,15 @@ export const getStatusText = (statusId: number): string => {
       return 'Undefined';
   }
 };
+
+  export const getGridClass = (width: string): string => {
+    const gridClasses = {
+      full: 'col-span-12',
+      half: 'col-span-12 sm:col-span-6',
+      third: 'col-span-12 sm:col-span-4',
+      quarter: 'col-span-12 sm:col-span-6 md:col-span-3',
+      'two-thirds': 'col-span-12 sm:col-span-8',
+      'three-quarters': 'col-span-12 sm:col-span-9',
+    };
+    return gridClasses[width] || gridClasses.full;
+  };
