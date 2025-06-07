@@ -226,23 +226,16 @@
         "fields": [
             {
                 "id": 1749277960700,
-                "type": "checkbox",
-                "label": "New Passport",
+                "type": "radio",
+                "label": "",
                 "placeholder": "",
-                "required": true,
+                "required": false,
                 "width": "third",
                 "order": 0,
-                "options": []
-            },
-            {
-                "id": 1749278032632,
-                "type": "checkbox",
-                "label": "Renewal",
-                "placeholder": "",
-                "required": true,
-                "width": "third",
-                "order": 1,
-                "options": []
+                "options": [
+                    "New Passport *",
+                    "Renewal *"
+                ]
             },
             {
                 "id": 1749278081684,
@@ -251,7 +244,7 @@
                 "placeholder": "Enter the Old Password",
                 "required": true,
                 "width": "third",
-                "order": 2,
+                "order": 1,
                 "options": []
             },
             {
@@ -261,7 +254,7 @@
                 "placeholder": "",
                 "required": true,
                 "width": "third",
-                "order": 3,
+                "order": 2,
                 "options": []
             },
             {
@@ -271,7 +264,7 @@
                 "placeholder": "",
                 "required": true,
                 "width": "third",
-                "order": 4,
+                "order": 3,
                 "options": []
             },
             {
@@ -281,7 +274,7 @@
                 "placeholder": "",
                 "required": true,
                 "width": "third",
-                "order": 5,
+                "order": 4,
                 "options": []
             },
             {
@@ -291,7 +284,7 @@
                 "placeholder": "",
                 "required": false,
                 "width": "third",
-                "order": 6,
+                "order": 5,
                 "options": []
             },
             {
@@ -301,12 +294,12 @@
                 "placeholder": "",
                 "required": false,
                 "width": "third",
-                "order": 7,
+                "order": 6,
                 "options": []
             }
         ],
         "createdAt": "2025-06-07T06:32:26.935Z",
-        "updatedAt": "2025-06-07T06:43:52.445Z",
+        "updatedAt": "2025-06-07T07:39:09.042Z",
         "status": "draft"
     },
     {
