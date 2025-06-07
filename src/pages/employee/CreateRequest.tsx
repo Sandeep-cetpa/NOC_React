@@ -3,7 +3,7 @@ import Heading from '@/components/ui/heading';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/app/store';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+// import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -11,7 +11,8 @@ import { FileText, Send, Loader2, AlertCircle, CheckCircle2, FormInput, ArrowLef
 import { useToast } from '@/hooks/use-toast';
 import { FormField } from '@/components/FormBuilder/FormField';
 import { getGridClass } from '@/lib/helperFunction';
-
+import Select from 'react-select';
+import forms from '../../../forms.json';
 interface FormField {
   id: string;
   type: string;
@@ -37,18 +38,13 @@ interface UserState {
 
 const CreateRequest = () => {
   const user = useSelector((state: RootState) => state.user) as UserState;
-  const [forms, setForms] = useState<Form[]>([]);
+  // const [forms, setForms] = useState<Form[]>([]);
   const [selectedForm, setSelectedForm] = useState<Form | null>(null);
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<{ type: string; message: string } | null>(null);
   const { toast } = useToast();
 
-  // Load forms from localStorage
-  useEffect(() => {
-    const savedForms = JSON.parse(localStorage.getItem('formBuilderForms') || '[]');
-    setForms(savedForms);
-  }, []);
 
   const handleFormSelect = (formId: string) => {
     const form = forms.find((f) => f.id === formId);
@@ -151,7 +147,7 @@ const CreateRequest = () => {
               </div>
             ) : (
               <div className="space-y-4">
-                <Select onValueChange={handleFormSelect}>
+                {/* <Select onValueChange={handleFormSelect}>
                   <SelectTrigger>
                     <SelectValue placeholder="Choose a form to fill" />
                   </SelectTrigger>
@@ -162,7 +158,15 @@ const CreateRequest = () => {
                       </SelectItem>
                     ))}
                   </SelectContent>
-                </Select>
+                </Select> */}
+                   <Select
+                  options={forms.map((form) => ({ label: form.title, value: form.id }))}
+                  onChange={(e) => handleFormSelect(e?.value)}
+                  value={{ label: selectedForm?.title, value: selectedForm?.id }}
+                  className="w-full bg-white"
+                  placeholder="Select Purpose"
+                  
+                />
               </div>
             )}
           </CardContent>
