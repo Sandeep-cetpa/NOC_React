@@ -1,20 +1,23 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { persistStore, persistReducer } from 'redux-persist';
 import sessionStorage from 'redux-persist/lib/storage/session';
-import localStorage from 'redux-persist/lib/storage';
 import { combineReducers } from 'redux';
 import employeeReducer from '../features/employee/employeeSlice';
 import userReducer from '../features/user/userSlice';
+import authReducer from '../features/auth/authSlice';
+import applicationsReducer from '../features/applications/applicationsSlice';
 
 const sessionPersistConfig = {
   key: 'root',
   storage: sessionStorage, // Use session storage for most reducers
-  whitelist: ['employee', 'user', 'units'], // Persist these slices
+  whitelist: ['employee', 'user', 'units', "auth", "applications"], // Persist these slices
 };
 
 const rootReducer = combineReducers({
   employee: employeeReducer,
   user: userReducer,
+  auth: authReducer,
+  applications: applicationsReducer,
 });
 
 const persistedReducer = persistReducer(sessionPersistConfig, rootReducer);

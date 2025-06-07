@@ -1,19 +1,16 @@
 import React from 'react';
 import { Link } from 'react-router';
 import { logo } from '@/assets/image/images';
-import { useDispatch, useSelector } from 'react-redux';
-import { removeSessionItem } from '@/lib/helperFunction';
-import { resetUser } from '@/features/user/userSlice';
-import { environment } from '@/config';
+import { useSidebar } from './ui/sidebar';
+import { useSelector } from 'react-redux';
 import { RootState } from '@/app/store';
-import { Button } from './ui/button';
-import { AlignJustify, Power } from 'lucide-react';
-import { SidebarTrigger, useSidebar } from './ui/sidebar';
+import { AlignJustify } from 'lucide-react';
+import LogoutButton from '../auth/LogoutButton';
 
-const SiteHeader: React.FC<{ showtoggle?: boolean }> = ({ showtoggle = false }) => {
+const SiteHeader: React.FC = () => {
   const user = useSelector((state: RootState) => state.user);
   const { toggleSidebar } = useSidebar();
-
+  console.log(user);
   return (
     <header className="bg-white shadow-md sticky top-0 w-full z-50 border-b-4 border-red-600 h-[80px] px-4">
       <div className="flex items-center justify-between h-full p-2">
@@ -30,12 +27,12 @@ const SiteHeader: React.FC<{ showtoggle?: boolean }> = ({ showtoggle = false }) 
           </Link>
         </div>
         <div className="flex items-center space-x-4">
-          {showtoggle && (
-            <div className="hidden md:block text-gray-800 text-md md:text-lg font-semibold">{user.unique_name}</div>
+          {user && user?.unique_name && (
+            <div className="flex items-center space-x-4">
+              <div className="hidden md:block text-gray-800 text-md md:text-lg font-semibold">{user.unique_name}</div>
+              <LogoutButton />
+            </div>
           )}
-          <Button variant="outline" size="icon" onClick={() => (window.location.href = environment.powerOffUrl)}>
-            <Power className="w-5 h-5" />
-          </Button>
         </div>
       </div>
     </header>

@@ -3,7 +3,7 @@ import Heading from '@/components/ui/heading';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/app/store';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -11,6 +11,7 @@ import { FileText, Send, Loader2, AlertCircle, CheckCircle2, FormInput, ArrowLef
 import { useToast } from '@/hooks/use-toast';
 import { FormField } from '@/components/FormBuilder/FormField';
 import { getGridClass } from '@/lib/helperFunction';
+import Select from 'react-select';
 interface FormField {
   id: string;
   type: string;
@@ -46,7 +47,9 @@ const NocRequestForEmployee = () => {
   }, []);
 
   const handleFormSelect = (formId: string) => {
+    console.log(formId, 'formId');
     const form = forms.find((f) => f.id === formId);
+    console.log(form, 'form');
     setSelectedForm(form || null);
     setFormData({});
     setSubmitStatus(null);
@@ -80,9 +83,7 @@ const NocRequestForEmployee = () => {
     setSubmitStatus(null);
 
     try {
-      // Simulate API call
-      // await new Promise(resolve => setTimeout(resolve, 1500));
-      // Create submission object
+
       const submission = {
         id: Date.now().toString(),
         formId: selectedForm?.id,
@@ -145,35 +146,26 @@ const NocRequestForEmployee = () => {
                 <Label htmlFor="form-select" className="block mb-2 text-sm font-bold">
                   Select Purpose
                 </Label>
-                <Select onValueChange={handleFormSelect}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Choose a form to fill" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {forms.map((form) => (
-                      <SelectItem key={form.id} value={form.id}>
-                        {form.title}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Select
+                  options={forms.map((form) => ({ label: form.title, value: form.id }))}
+                  onChange={(e) => handleFormSelect(e?.value)}
+                  value={{ label: selectedForm?.title, value: selectedForm?.id }}
+                  className="w-full bg-white"
+                  placeholder="Select Purpose"
+                  
+                />
               </div>
               <div>
                 <Label htmlFor="form-select" className="block mb-2 text-sm font-bold">
                   Select Employee
                 </Label>
-                <Select onValueChange={handleFormSelect}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Choose a form to fill" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {forms.map((form) => (
-                      <SelectItem key={form.id} value={form.id}>
-                        {form.title}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Select
+                  options={forms.map((form) => ({ label: form.title, value: form.id }))}
+                  onChange={(e) => handleFormSelect(e?.value)}
+                  value={{ label: selectedForm?.title, value: selectedForm?.id }}
+                  className="w-full"
+                  placeholder="Select Employee"
+                />
               </div>
             </div>
           )}

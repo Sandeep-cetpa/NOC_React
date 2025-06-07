@@ -1,15 +1,25 @@
 const DFCCIL_UAT = {
   apiUrl: 'https://uattaskmanageapi.dfccil.com/api',
   orgHierarchy: 'https://uatorganization.dfccil.com/api',
-  logoutUrl: 'http://uat.dfccil.com/DfcHome',
-  powerOffUrl: 'http://localhost',
+  logoutUrl: 'http://uatlogin.dfccil.com/applications',
+  authUrl: 'https://app2.dfccil.com',
+  clientId: 'd59a787020d841469a71107917549ef3',
+  postLogout: 'https://uatlogin.dfccil.com/signout',
+  redirectPath: 'create-request',
+  applicationId: 8,
 };
 
-const PROD_DFCCIL = {
-  apiUrl: 'https://vmsapi.dfccil.com/api',
+const DFCCIL_PROD = {
+  apiUrl: 'https://taskmanagementservices.dfccil.com/api',
   orgHierarchy: 'https://orgsvc.dfccil.com/api',
   logoutUrl: 'https://it.dfccil.com/Home/Home',
-  powerOffUrl: 'http://localhost',
+  authUrl: 'https://app2.dfccil.com',
+  clientId: 'd59a787020d841469a71107917549ef3',
+  postLogout: 'https://uatlogin.dfccil.com/signout',
+  redirectPath: 'create-request',
+  applicationId: 8,
 };
 
-export const environment = DFCCIL_UAT;
+export const ManualUrl = './TaskManagementSystem.pdf';
+
+export const environment = import.meta.env.VITE_ENV === 'production' ? DFCCIL_PROD : DFCCIL_UAT;
