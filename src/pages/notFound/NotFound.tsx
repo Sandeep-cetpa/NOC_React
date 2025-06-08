@@ -11,7 +11,7 @@ const NotFound = () => {
           It may have been moved, deleted, or the URL might be incorrect.
         </p>
         <a
-          href="/"
+          href="/create-request"
           className="mt-6 inline-block px-6 py-3 text-white bg-blue-500 hover:bg-blue-600 font-medium rounded-lg shadow transition duration-200"
         >
           Go to Dashboard

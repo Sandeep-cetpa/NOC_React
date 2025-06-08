@@ -29,10 +29,11 @@ const useUserRoles = () => {
   const isAddressal = roles.includes('redressal');
   const isCommittee = roles.includes('committee');
   const isUnitHr = roles.includes('unithr');
+  const isGm = roles.includes('gm');
 
   return {
     isNodalOfficer,
-    isSuperAdmin: true,
+    isSuperAdmin: false,
     isAdmin,
     isUnitCGM,
     isHOD,
@@ -41,12 +42,12 @@ const useUserRoles = () => {
     isUser,
     roles,
     isLoading,
-    isUnitHr: true,
-    isCgm: true,
-    isDandAR: true,
-    isVigilanceAdmin: true,
-    isCorporateUnitHr: true,
-
+    isUnitHr: false,
+    isCgm: false,
+    isDandAR: false,
+    isVigilanceAdmin: false,
+    isCorporateUnitHr: false,
+    isGm: true,
 
   };
 };

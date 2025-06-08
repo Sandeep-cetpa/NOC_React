@@ -29,6 +29,10 @@ import VigilanceRequestReceived from '@/pages/VigilanceAdmin/VigilanceRequestRec
 import ProcessedRequest from '@/pages/VigilanceAdmin/ProcessedRequest';
 import DandArPendingRequests from '@/pages/DandAR/DandArPendingRequests';
 import DandArProcessedRequests from '@/pages/DandAR/DandArProcessedRequests';
+import GmPrivateRoute from './GmPrivateRoute';
+import GmProcessedRequests from '@/pages/gm/GmProcessedRequests';
+import GmRejectedRequests from '@/pages/gm/GmRejectedRequests';
+import GmREquesteReceived from '@/pages/gm/GmREquesteReceived';
 
 const AppRoutes = () => {
   return (
@@ -44,7 +48,6 @@ const AppRoutes = () => {
         <Route path="/form" element={<Forms />} />
         <Route path="/admin-manage-role" element={<ManageRoles />} />
       </Route>
-
       <Route element={<CgmPrivateRoute />}>
         <Route path="/cgm-request-received" element={<RequestReceived />} />
         <Route path="/cgm-processed-request" element={<ProcessedRequestByCgm />} />
@@ -72,6 +75,11 @@ const AppRoutes = () => {
       <Route element={<DAndARPrivateRoute />}>
         <Route path="/d-and-ar-pending-requests" element={<DandArPendingRequests />} />
         <Route path="/d-and-ar-processed-requests" element={<DandArProcessedRequests />} />
+      </Route>
+      <Route element={<GmPrivateRoute />}>
+        <Route path="/gm-request-received" element={<GmREquesteReceived />} />
+        <Route path="/gm-processed-requests" element={<GmProcessedRequests />} />
+        <Route path="/gm-rejected-requests" element={<GmRejectedRequests />} />
       </Route>
       <Route path="*" element={<NotFound />} />
     </Routes>

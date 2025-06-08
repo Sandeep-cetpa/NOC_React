@@ -21,20 +21,13 @@ import { resetUser } from '@/features/user/userSlice';
 import { environment } from '@/config';
 import useUserRoles from '@/hooks/useUserRoles';
 export function AdminSidebar(props: React.ComponentProps<typeof Sidebar>) {
-  const user = useSelector((state: RootState) => state.user);
   const dispatch = useDispatch<AppDispatch>();
-  // const { unitName, unitId } = useSelector((state: RootState) => state.workspace.selectedWorkspace);
-  // const units = useSelector((state: RootState) => state.units.units);
   const { state, toggleSidebar } = useSidebar();
   const navigate = useNavigate();
-  const { isSuperAdmin, isCgm, isDandAR, isVigilanceAdmin, isCorporateUnitHr, isUnitHr } = useUserRoles();
+  const { isSuperAdmin, isCgm, isDandAR,isGm, isVigilanceAdmin, isCorporateUnitHr, isUnitHr } = useUserRoles();
   const data = {
     navMain: [
-      {
-        title: 'Create Purpose',
-        url: '/form',
-        icon: BadgeAlert,
-      },
+
       ...(isSuperAdmin
         ? [
           {
@@ -42,24 +35,25 @@ export function AdminSidebar(props: React.ComponentProps<typeof Sidebar>) {
             url: '/admin-manage-role',
             icon: UserRoundCog,
           },
-
-
-
+          {
+            title: 'Create Purpose',
+            url: '/form',
+            icon: BadgeAlert,
+          },
         ]
         : []),
       ...(isCgm
         ? [
           {
-            title: 'Manage CGM',
+            title: 'Request Received',
             url: '/cgm-request-received',
             icon: UserRoundCog,
           },
           {
-            title: 'Manage CGM',
-            url: '/cgm-request-received',
+            title: 'Processed Request',
+            url: '/cgm-processed-request',
             icon: UserRoundCog,
           },
-
         ]
         : []),
       ...(isDandAR
@@ -74,8 +68,6 @@ export function AdminSidebar(props: React.ComponentProps<typeof Sidebar>) {
             url: '/d-and-ar-processed-requests',
             icon: UserRoundCog,
           },
-
-
         ]
         : []),
       ...(isVigilanceAdmin
@@ -100,14 +92,13 @@ export function AdminSidebar(props: React.ComponentProps<typeof Sidebar>) {
             url: '/vigilance-admin-processed-request',
             icon: UserRoundCog,
           },
-
         ]
         : []),
       ...(isCorporateUnitHr
         ? [
           {
             title: 'Request Received',
-            url: '/corporate-unit-hr-request-received',
+            url: '/corporate-unit-hr-received-requests',
             icon: UserRoundCog,
           },
           {
@@ -122,7 +113,7 @@ export function AdminSidebar(props: React.ComponentProps<typeof Sidebar>) {
           },
           {
             title: 'Noc Requests For Employee',
-            url: '/corporate-unit-hr-noc-requests-for-employee',
+            url: '/corporate-unit-hr-request-for-employee',
             icon: UserRoundCog,
           },
           {
@@ -146,7 +137,7 @@ export function AdminSidebar(props: React.ComponentProps<typeof Sidebar>) {
         ? [
           {
             title: 'NOC Requests For Employee',
-            url: '/unit-hr-pending-noc-requests',
+            url: '/unit-hr-request-for-employee',
             icon: UserRoundCog,
           },
           {
@@ -157,6 +148,25 @@ export function AdminSidebar(props: React.ComponentProps<typeof Sidebar>) {
           {
             title: 'Processed NOC Requests',
             url: '/unit-hr-processed-noc-requests',
+            icon: UserRoundCog,
+          },
+        ]
+        : []),
+      ...(isGm
+        ? [
+          {
+            title: 'Request Received',
+            url: '/gm-request-received',
+            icon: UserRoundCog,
+          },
+          {
+            title: 'Processed Requests',
+            url: '/gm-processed-requests',
+            icon: UserRoundCog,
+          },
+          {
+            title: 'Rejected Requests',
+            url: '/gm-rejected-requests',
             icon: UserRoundCog,
           },
         ]
