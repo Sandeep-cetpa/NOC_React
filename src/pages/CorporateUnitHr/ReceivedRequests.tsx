@@ -172,11 +172,19 @@ const ReceivedRequests = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-6">
+      <div className="flex items-center space-x-3 mb-2">
+                    <Button variant="default" className="flex items-center space-x-2 ">
+                      <span>Request From Corporate Office</span>
+                    </Button>
+                    <Button variant="outline" className="flex items-center space-x-2">
+                      <span>Request From Unit</span>
+                    </Button>
+                  </div>
       <div className="max-w-7xl mx-auto">
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
-              <span>Request Received Form Vigilance</span>
+              <span>Pending Requests </span>
             </CardTitle>
           </CardHeader>
           <div className="mb-6">
@@ -188,9 +196,6 @@ const ReceivedRequests = () => {
                   </Button>
                   <Button variant="outline" className="flex  items-center space-x-2">
                     <span>Department</span>
-                  </Button>
-                  <Button variant="outline" className="flex  items-center space-x-2">
-                    <span>Location</span>
                   </Button>
                   <Button variant="outline" className="flex  items-center space-x-2">
                     <span>Purpose</span>
@@ -249,8 +254,7 @@ const ReceivedRequests = () => {
                     </TableHead>
                     <TableHead className=" text-white">Name</TableHead>
                     <TableHead className=" text-white">Designation</TableHead>
-                    <TableHead className=" text-white">Department</TableHead>
-                    <TableHead className="text-white">Location</TableHead>
+                    <TableHead className=" text-white">Department/Location</TableHead>
                     <TableHead className="text-white">Purpose</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -274,10 +278,7 @@ const ReceivedRequests = () => {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <div className="text-sm text-gray-500 mt-1">{noc.department}</div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="text-sm text-gray-500 mt-1">{noc.location}</div>
+                        <div className="text-sm text-gray-500 mt-1">{noc.department},{noc.location}</div>
                       </TableCell>
                       <TableCell>
                         <div className="text-sm text-blue-500 mt-1">{noc.emp_purpose}</div>
