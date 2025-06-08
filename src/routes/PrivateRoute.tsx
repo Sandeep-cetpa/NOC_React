@@ -17,31 +17,31 @@ const PrivateRoute: React.FC = () => {
   const isInitializing = auth.isLoading;
   const redirectHandled = useRef(false);
 
-  useEffect(() => {
-    if (!isAuthenticated && !isInitializing && !redirectHandled.current) {
-      redirectHandled.current = true;
-      auth.signinRedirect({
-        state: { returnUrl: location.pathname + location.search },
-      });
-    }
-  }, [isAuthenticated, isInitializing, location.pathname, location.search, auth]);
+  // useEffect(() => {
+  //   if (!isAuthenticated && !isInitializing && !redirectHandled.current) {
+  //     redirectHandled.current = true;
+  //     auth.signinRedirect({
+  //       state: { returnUrl: location.pathname + location.search },
+  //     });
+  //   }
+  // }, [isAuthenticated, isInitializing, location.pathname, location.search, auth]);
 
-  useEffect(() => {
-    if (isAuthenticated && auth.user && !redirectHandled.current) {
-      redirectHandled.current = true;
+  // useEffect(() => {
+  //   if (isAuthenticated && auth.user && !redirectHandled.current) {
+  //     redirectHandled.current = true;
 
-      dispatch(setAuthData(auth.user));
-      dispatch(fetchUserProfile());
+  //     dispatch(setAuthData(auth.user));
+  //     dispatch(fetchUserProfile());
 
-      const returnUrl = auth.user?.state?.returnUrl;
-      navigate(returnUrl, { replace: true });
-    }
-  }, [isAuthenticated, auth.user, dispatch, navigate]);
+  //     const returnUrl = auth.user?.state?.returnUrl;
+  //     navigate(returnUrl, { replace: true });
+  //   }
+  // }, [isAuthenticated, auth.user, dispatch, navigate]);
 
-  // Show loading if OIDC or user profile is still loading
-  if (isInitializing || !isAuthenticated || userLoading) {
-    return <Loader />;
-  }
+  // // Show loading if OIDC or user profile is still loading
+  // if (isInitializing || !isAuthenticated || userLoading) {
+  //   return <Loader />;
+  // }
 
   return (
     <AppLayout>

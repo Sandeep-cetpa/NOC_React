@@ -107,7 +107,7 @@ export function AdminSidebar(props: React.ComponentProps<typeof Sidebar>) {
         ? [
           {
             title: 'Request Received',
-            url: '/corporate-unit-hr-request-received',
+            url: '/corporate-unit-hr-received-requests',
             icon: UserRoundCog,
           },
           {
@@ -122,7 +122,7 @@ export function AdminSidebar(props: React.ComponentProps<typeof Sidebar>) {
           },
           {
             title: 'Noc Requests For Employee',
-            url: '/corporate-unit-hr-noc-requests-for-employee',
+            url: '/corporate-unit-hr-request-for-employee',
             icon: UserRoundCog,
           },
           {
