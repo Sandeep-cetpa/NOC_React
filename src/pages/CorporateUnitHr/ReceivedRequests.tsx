@@ -18,8 +18,6 @@ const ReceivedRequests = () => {
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
-
-  
   const nocData = [
     {
       id: 1,
@@ -130,7 +128,6 @@ const ReceivedRequests = () => {
       department: 'Telecom Authority',
     },
   ];
-
   const filteredData = nocData.filter((item) => {
     const matchesSearch =
       item.employeeId.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -157,7 +154,6 @@ const ReceivedRequests = () => {
       return aVal < bVal ? 1 : -1;
     }
   });
-
   // Pagination
   const totalPages = Math.ceil(sortedData.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
