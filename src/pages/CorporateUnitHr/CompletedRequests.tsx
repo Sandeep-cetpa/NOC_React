@@ -192,10 +192,10 @@ const CompletedRequests = () => {
               <span>Rejected Requests </span>
             </CardTitle>
           </CardHeader>
-          <div className="mb-6">
-            <div className="p-6 ">
+          <div className="mb-2">
+            <div className="px-6 py-2">
               <div className="flex flex-col   md:justify-between space-y-4 md:space-y-0 gap-4">
-                <div className="flex flex-col md:flex-row space-x-4 flex-1 bg-blue-800  p-2 rounded-xl">
+                <div className="flex flex-col md:flex-row space-x-4 flex-1 bg-gray-200  p-2 rounded-xl">
                   <Select>
                     <SelectTrigger>
                       <SelectValue placeholder="Select unit" />
@@ -255,21 +255,15 @@ const CompletedRequests = () => {
                       <SelectItem value="Time">Time</SelectItem>
                     </SelectContent>
                   </Select>
-                  <Select>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select Department" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Department">Department</SelectItem>
-                      <SelectItem value="Location">Location</SelectItem>
-                      <SelectItem value="Purpose">Purpose</SelectItem>
-                      <SelectItem value="Employee Code">Employee Code</SelectItem>
-                      <SelectItem value="Employee Name">Employee Name</SelectItem>
-                      <SelectItem value="Designation">Designation</SelectItem>
-                      <SelectItem value="Date">Date</SelectItem>
-                      <SelectItem value="Time">Time</SelectItem>
-                    </SelectContent>
-                  </Select>
+                 <Select>
+                                     <SelectTrigger>
+                                       <SelectValue placeholder="Select Designation" />
+                                     </SelectTrigger>
+                                     <SelectContent>
+                                       <SelectItem value="GM">GM</SelectItem>
+                                       <SelectItem value="HR">HR</SelectItem>
+                                     </SelectContent>
+                                   </Select>
                   <Button variant="outline" className="flex items-center space-x-2">
                     <RefreshCw className="h-4 w-4" />
                   </Button>

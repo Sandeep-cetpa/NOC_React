@@ -183,10 +183,10 @@ const ReceivedRequests = () => {
                 <span>Request From Unit </span>
               </CardTitle>
             </CardHeader>
-            <div className="mb-6">
-              <div className="p-6 ">
+            <div className="mb-2">
+              <div className="px-6 py-2 ">
                 <div className="flex flex-col   md:justify-between space-y-4 md:space-y-0 gap-4">
-                  <div className="flex flex-col md:flex-row space-x-4 flex-1 bg-blue-800 max-w-2xl  p-2 rounded-xl">
+                  <div className="flex flex-col md:flex-row space-x-4 flex-1 bg-gray-200 max-w-2xl  p-2 rounded-xl">
                     <Select>
                       <SelectTrigger>
                         <SelectValue placeholder="Select Department" />
