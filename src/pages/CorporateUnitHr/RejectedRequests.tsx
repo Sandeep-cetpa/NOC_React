@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 
 const RejectedRequests = () => {
@@ -218,27 +219,85 @@ const RejectedRequests = () => {
           <div className="mb-6">
             <div className="p-6 ">
               <div className="flex flex-col   md:justify-between space-y-4 md:space-y-0 gap-4">
-                <div className="flex flex-col md:flex-row space-x-4 flex-1 bg-blue-800  p-2 rounded-xl">
-                  <Button variant="outline" className="flex  items-center space-x-2">
-                    <span>Unit</span>
-                  </Button>
-                  <Button variant="outline" className="flex  items-center space-x-2">
-                    <span>Designation</span>
-                  </Button>
-                  <Button variant="outline" className="flex  items-center space-x-2">
-                    <span>Postion Grade</span>
-                  </Button>
-                  <Button variant="outline" className="flex  items-center space-x-2">
-                    <span>Department</span>
-                  </Button>
-                  <Button variant="outline" className="flex  items-center space-x-2">
-                    <span>Purpose</span>
-                  </Button>
+              <div className="flex flex-col md:flex-row space-x-4 flex-1 bg-blue-800  p-2 rounded-xl">
+                  <Select>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select unit" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Corporate">Corporate</SelectItem>
+                      <SelectItem value="noida">Noida</SelectItem>
+                      <SelectItem value="gurugram">Gurugram</SelectItem>
+                      <SelectItem value="delhi">Delhi</SelectItem>
+                      <SelectItem value="mumbai">Mumbai</SelectItem>
+                      <SelectItem value="chennai">Chennai</SelectItem>
+                      <SelectItem value="kolkata">Kolkata</SelectItem>
+                      <SelectItem value="bengaluru">Bengaluru</SelectItem>
+                      <SelectItem value="hyderabad">Hyderabad</SelectItem>
+                      <SelectItem value="pune">Pune</SelectItem>
+                      <SelectItem value="jaipur">Jaipur</SelectItem>
+
+                    </SelectContent>
+                  </Select>
+                  <Select>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Location" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="frontdesk">Front Desk</SelectItem>
+                      <SelectItem value="office">Office</SelectItem>
+                      <SelectItem value="other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Select>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Position Grade" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="NS">NS</SelectItem>
+                      <SelectItem value="E1">E1</SelectItem>
+                      <SelectItem value="E2">E2</SelectItem>
+                      <SelectItem value="E3">E3</SelectItem>
+                      <SelectItem value="E4">E4</SelectItem>
+                      <SelectItem value="E5">E5</SelectItem>
+                      <SelectItem value="E6">E6</SelectItem>
+                      <SelectItem value="E7">E7</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Select>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Department" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Department">Department</SelectItem>
+                      <SelectItem value="Location">Location</SelectItem>
+                      <SelectItem value="Purpose">Purpose</SelectItem>
+                      <SelectItem value="Employee Code">Employee Code</SelectItem>
+                      <SelectItem value="Employee Name">Employee Name</SelectItem>
+                      <SelectItem value="Designation">Designation</SelectItem>
+                      <SelectItem value="Date">Date</SelectItem>
+                      <SelectItem value="Time">Time</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Select>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Department" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Department">Department</SelectItem>
+                      <SelectItem value="Location">Location</SelectItem>
+                      <SelectItem value="Purpose">Purpose</SelectItem>
+                      <SelectItem value="Employee Code">Employee Code</SelectItem>
+                      <SelectItem value="Employee Name">Employee Name</SelectItem>
+                      <SelectItem value="Designation">Designation</SelectItem>
+                      <SelectItem value="Date">Date</SelectItem>
+                      <SelectItem value="Time">Time</SelectItem>
+                    </SelectContent>
+                  </Select>
                   <Button variant="outline" className="flex items-center space-x-2">
                     <RefreshCw className="h-4 w-4" />
                   </Button>
                 </div>
-
                 <div className="flex  justify-between space-x-4">
                   <div className="flex items-center space-x-2 text-sm text-gray-600">
                     <span>

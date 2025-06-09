@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 
 const CompletedRequests = () => {
@@ -19,13 +20,13 @@ const CompletedRequests = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  
+
   const nocData = [
     {
       id: 1,
       referenceId: '001044',
-      positionGrade:'NS',
-      currentStatus:'Completed',
+      positionGrade: 'NS',
+      currentStatus: 'Completed',
       employeeId: '100649',
       designation: 'Junior',
       location: 'Mumbai(N)',
@@ -36,8 +37,8 @@ const CompletedRequests = () => {
     {
       id: 2,
       referenceId: '001055',
-      positionGrade:'E1',
-      currentStatus:'Completed',
+      positionGrade: 'E1',
+      currentStatus: 'Completed',
       employeeId: '100650',
       designation: 'Sr Exec',
       location: 'Office',
@@ -48,8 +49,8 @@ const CompletedRequests = () => {
     {
       id: 3,
       referenceId: '001056',
-      positionGrade:'NS',
-      currentStatus:'Completed',
+      positionGrade: 'NS',
+      currentStatus: 'Completed',
       employeeId: '100651',
       designation: 'GM',
       location: 'Office',
@@ -60,8 +61,8 @@ const CompletedRequests = () => {
     {
       id: 4,
       referenceId: '001063',
-      positionGrade:'NS',
-      currentStatus:'Completed',
+      positionGrade: 'NS',
+      currentStatus: 'Completed',
       employeeId: '100652',
       designation: 'GM',
       location: 'Office',
@@ -72,8 +73,8 @@ const CompletedRequests = () => {
     {
       id: 5,
       referenceId: '001072',
-      positionGrade:'NS',
-      currentStatus:'Completed',
+      positionGrade: 'NS',
+      currentStatus: 'Completed',
       employeeId: '100653',
       designation: 'GM',
       location: 'Office',
@@ -84,8 +85,8 @@ const CompletedRequests = () => {
     {
       id: 6,
       referenceId: '001085',
-      positionGrade:'NS',
-      currentStatus:'Completed',
+      positionGrade: 'NS',
+      currentStatus: 'Completed',
       employeeId: '100654',
       designation: 'GM',
       location: 'Office',
@@ -96,8 +97,8 @@ const CompletedRequests = () => {
     {
       id: 7,
       referenceId: '001132',
-      positionGrade:'NS',
-      currentStatus:'Completed',
+      positionGrade: 'NS',
+      currentStatus: 'Completed',
       employeeId: '100655',
       designation: 'GM',
       location: 'Office',
@@ -108,8 +109,8 @@ const CompletedRequests = () => {
     {
       id: 8,
       referenceId: '001136',
-      positionGrade:'NS',
-      currentStatus:'Completed',
+      positionGrade: 'NS',
+      currentStatus: 'Completed',
       employeeId: '100656',
       designation: 'GM',
       location: 'Office',
@@ -120,8 +121,8 @@ const CompletedRequests = () => {
     {
       id: 9,
       referenceId: '001148',
-      positionGrade:'NS',
-      currentStatus:'Completed',
+      positionGrade: 'NS',
+      currentStatus: 'Completed',
       employeeId: '100657',
       designation: 'GM',
       location: 'Office',
@@ -132,8 +133,8 @@ const CompletedRequests = () => {
     {
       id: 10,
       referenceId: '001151',
-      positionGrade:'NS',
-      currentStatus:'Completed',
+      positionGrade: 'NS',
+      currentStatus: 'Completed',
       employeeId: '100658',
       designation: 'GM',
       location: 'Office',
@@ -195,21 +196,80 @@ const CompletedRequests = () => {
             <div className="p-6 ">
               <div className="flex flex-col   md:justify-between space-y-4 md:space-y-0 gap-4">
                 <div className="flex flex-col md:flex-row space-x-4 flex-1 bg-blue-800  p-2 rounded-xl">
-                  <Button variant="outline" className="flex  items-center space-x-2">
-                    <span>Unit</span>
-                  </Button>
-                  <Button variant="outline" className="flex  items-center space-x-2">
-                    <span>Designation</span>
-                  </Button>
-                  <Button variant="outline" className="flex  items-center space-x-2">
-                    <span>Postion Grade</span>
-                  </Button>
-                  <Button variant="outline" className="flex  items-center space-x-2">
-                    <span>Department</span>
-                  </Button>
-                  <Button variant="outline" className="flex  items-center space-x-2">
-                    <span>Purpose</span>
-                  </Button>
+                  <Select>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select unit" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Corporate">Corporate</SelectItem>
+                      <SelectItem value="noida">Noida</SelectItem>
+                      <SelectItem value="gurugram">Gurugram</SelectItem>
+                      <SelectItem value="delhi">Delhi</SelectItem>
+                      <SelectItem value="mumbai">Mumbai</SelectItem>
+                      <SelectItem value="chennai">Chennai</SelectItem>
+                      <SelectItem value="kolkata">Kolkata</SelectItem>
+                      <SelectItem value="bengaluru">Bengaluru</SelectItem>
+                      <SelectItem value="hyderabad">Hyderabad</SelectItem>
+                      <SelectItem value="pune">Pune</SelectItem>
+                      <SelectItem value="jaipur">Jaipur</SelectItem>
+
+                    </SelectContent>
+                  </Select>
+                  <Select>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Location" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="frontdesk">Front Desk</SelectItem>
+                      <SelectItem value="office">Office</SelectItem>
+                      <SelectItem value="other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Select>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Position Grade" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="NS">NS</SelectItem>
+                      <SelectItem value="E1">E1</SelectItem>
+                      <SelectItem value="E2">E2</SelectItem>
+                      <SelectItem value="E3">E3</SelectItem>
+                      <SelectItem value="E4">E4</SelectItem>
+                      <SelectItem value="E5">E5</SelectItem>
+                      <SelectItem value="E6">E6</SelectItem>
+                      <SelectItem value="E7">E7</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Select>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Department" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Department">Department</SelectItem>
+                      <SelectItem value="Location">Location</SelectItem>
+                      <SelectItem value="Purpose">Purpose</SelectItem>
+                      <SelectItem value="Employee Code">Employee Code</SelectItem>
+                      <SelectItem value="Employee Name">Employee Name</SelectItem>
+                      <SelectItem value="Designation">Designation</SelectItem>
+                      <SelectItem value="Date">Date</SelectItem>
+                      <SelectItem value="Time">Time</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Select>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Department" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Department">Department</SelectItem>
+                      <SelectItem value="Location">Location</SelectItem>
+                      <SelectItem value="Purpose">Purpose</SelectItem>
+                      <SelectItem value="Employee Code">Employee Code</SelectItem>
+                      <SelectItem value="Employee Name">Employee Name</SelectItem>
+                      <SelectItem value="Designation">Designation</SelectItem>
+                      <SelectItem value="Date">Date</SelectItem>
+                      <SelectItem value="Time">Time</SelectItem>
+                    </SelectContent>
+                  </Select>
                   <Button variant="outline" className="flex items-center space-x-2">
                     <RefreshCw className="h-4 w-4" />
                   </Button>
@@ -251,7 +311,7 @@ const CompletedRequests = () => {
                         <ArrowUpDown className="h-3 w-3" />
                       </Button>
                     </TableHead> */}
-                     <TableHead>
+                    <TableHead>
                       <Button
                         variant="ghost"
                         size="sm"
@@ -278,7 +338,7 @@ const CompletedRequests = () => {
                     <TableHead className=" text-white">Position Grade</TableHead>
                     <TableHead className=" text-white">Department</TableHead>
                     <TableHead className="text-white">Location</TableHead>
-                     <TableHead className="text-white">Current Status</TableHead>
+                    <TableHead className="text-white">Current Status</TableHead>
                     <TableHead className="text-white">Purpose</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -286,7 +346,7 @@ const CompletedRequests = () => {
                   {paginatedData.map((noc, index) => (
                     <TableRow key={noc.id} className="hover:bg-gray-50 transition-colors">
                       {/* <TableCell className="font-medium">{startIndex + index + 1}</TableCell> */}
-                       <TableCell>
+                      <TableCell>
                         <div className="font-medium ">{noc.referenceId}</div>
                       </TableCell>
                       <TableCell>

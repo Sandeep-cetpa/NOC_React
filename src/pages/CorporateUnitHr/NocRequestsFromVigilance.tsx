@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 
 const NocRequestsFromVigilance = () => {
@@ -19,7 +20,7 @@ const NocRequestsFromVigilance = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  
+
   const nocData = [
     {
       id: 1,
@@ -182,19 +183,41 @@ const NocRequestsFromVigilance = () => {
           <div className="mb-6">
             <div className="p-6 ">
               <div className="flex flex-col   md:justify-between space-y-4 md:space-y-0 gap-4">
-                <div className="flex flex-col md:flex-row space-x-4 flex-1 bg-blue-800  p-2 rounded-xl">
-                  <Button variant="outline" className="flex  items-center space-x-2">
-                    <span>Designation</span>
-                  </Button>
-                  <Button variant="outline" className="flex  items-center space-x-2">
-                    <span>Department</span>
-                  </Button>
-                  <Button variant="outline" className="flex  items-center space-x-2">
-                    <span>Location</span>
-                  </Button>
-                  <Button variant="outline" className="flex  items-center space-x-2">
-                    <span>Purpose</span>
-                  </Button>
+                <div className="flex flex-col md:flex-row space-x-4 flex-1 bg-blue-800 max-w-2xl  p-2 rounded-xl">
+                  <Select>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Department" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Department">Department</SelectItem>
+                      <SelectItem value="Location">Location</SelectItem>
+                      <SelectItem value="Purpose">Purpose</SelectItem>
+                      <SelectItem value="Employee Code">Employee Code</SelectItem>
+                      <SelectItem value="Employee Name">Employee Name</SelectItem>
+                      <SelectItem value="Designation">Designation</SelectItem>
+                      <SelectItem value="Date">Date</SelectItem>
+                      <SelectItem value="Time">Time</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Select>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Location" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Location">Location</SelectItem>
+                      <SelectItem value="Purpose">Purpose</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Select>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Purpose" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Purpose">Passport</SelectItem>
+                      <SelectItem value="Purpose">Visa</SelectItem>
+                      <SelectItem value="Purpose">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
                   <Button variant="outline" className="flex items-center space-x-2">
                     <RefreshCw className="h-4 w-4" />
                   </Button>
