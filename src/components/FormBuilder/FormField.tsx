@@ -53,7 +53,6 @@ export const FormField: React.FC<FormFieldProps> = ({ field, value, onChange }) 
           </SelectContent>
         </Select>
       );
-
     case 'checkbox':
       return (
         <div className="flex items-center space-x-2">
@@ -64,7 +63,6 @@ export const FormField: React.FC<FormFieldProps> = ({ field, value, onChange }) 
           </Label>
         </div>
       );
-
     case 'switch':
       return (
         <div className="flex items-center space-x-2">
@@ -75,7 +73,6 @@ export const FormField: React.FC<FormFieldProps> = ({ field, value, onChange }) 
           </Label>
         </div>
       );
-
     case 'radio':
       return (
         <RadioGroup value={value || ''} onValueChange={(value) => onChange(value)}>
@@ -91,7 +88,12 @@ export const FormField: React.FC<FormFieldProps> = ({ field, value, onChange }) 
           </div>
         </RadioGroup>
       );
-
+    case 'file':
+      return (
+      
+      <Input {...baseProps} type={"file"} className='' onChange={(e) => onChange(e.target.value)} />
+     
+      );
     default:
       return <Input {...baseProps} type={field.type} onChange={(e) => onChange(e.target.value)} />;
   }
