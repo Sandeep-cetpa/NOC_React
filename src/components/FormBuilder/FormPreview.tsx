@@ -59,12 +59,12 @@ export const FormPreview: React.FC<FormPreviewProps> = ({ form }) => {
         ) : (
           <div className="space-y-6">
             {renderPreviewLayout(form.fields)}
-            <div className="pt-6 border-t">
+            {/* <div className="pt-6 border-t">
               <Button type="button" className="w-full bg-blue-600 hover:bg-blue-700" size="lg">
                 Submit Form
               </Button>
-            </div>
-          </div>
+            </div> */}
+          </div> 
         )}
       </CardContent>
     </Card>

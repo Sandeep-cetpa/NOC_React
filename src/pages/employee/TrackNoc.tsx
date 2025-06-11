@@ -427,6 +427,17 @@ const TrackNoc = () => {
                       <span>SN</span>
                     </TableHead>
                     <TableHead>
+                       <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleSort('referenceId')}
+                        className="flex items-center space-x-1 p-0 h-auto font-semibold text-white"
+                      >
+                        <span>Creation Date</span>
+                        <ArrowUpDown className="h-3 w-3" />
+                      </Button>
+                    </TableHead>
+                    <TableHead>
                       <Button
                         variant="ghost"
                         size="sm"

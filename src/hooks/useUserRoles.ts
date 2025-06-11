@@ -19,7 +19,6 @@ const useUserRoles = () => {
   const [isLoading, setIsLoading] = useState(false);
   const user = useSelector((state: RootState) => state.user);
 
-
   const isNodalOfficer = roles.includes('nodalofficer');
   const isSuperAdmin = roles.includes('superadmin');
   const isAdmin = roles.includes('admin');
@@ -48,7 +47,6 @@ const useUserRoles = () => {
     isVigilanceAdmin: false,
     isCorporateUnitHr: false,
     isGm: false,
-
   };
 };
 
