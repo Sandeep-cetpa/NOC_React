@@ -421,7 +421,7 @@
                 "id": 1749279851131,
                 "type": "number",
                 "label": "Pan",
-                "placeholder": "",
+                "placeholder": "Enter the Pan",
                 "required": true,
                 "width": "third",
                 "order": 11,
@@ -489,7 +489,7 @@
             }
         ],
         "createdAt": "2025-06-07T06:44:18.250Z",
-        "updatedAt": "2025-06-07T07:07:33.228Z",
+        "updatedAt": "2025-06-10T06:22:44.782Z",
         "status": "draft"
     },
     {
@@ -503,7 +503,7 @@
                 "label": "Subject",
                 "placeholder": "Enter the Subject",
                 "required": true,
-                "width": "half",
+                "width": "third",
                 "order": 0,
                 "options": []
             },
@@ -513,7 +513,7 @@
                 "label": "Description",
                 "placeholder": "Enter the Description",
                 "required": true,
-                "width": "half",
+                "width": "third",
                 "order": 1,
                 "options": []
             },
@@ -523,7 +523,7 @@
                 "label": "Supporting Documents",
                 "placeholder": "",
                 "required": false,
-                "width": "half",
+                "width": "third",
                 "order": 2,
                 "options": []
             },
@@ -533,7 +533,7 @@
                 "label": "Upload IPR",
                 "placeholder": "",
                 "required": false,
-                "width": "half",
+                "width": "third",
                 "order": 3,
                 "options": []
             },
@@ -543,7 +543,7 @@
                 "label": "IPR Date",
                 "placeholder": "",
                 "required": false,
-                "width": "half",
+                "width": "third",
                 "order": 4,
                 "options": []
             },
@@ -553,13 +553,13 @@
                 "label": "Remarks (Details Pertaining To Clearance From The Place Of Last Posting To BE Endorsed",
                 "placeholder": "",
                 "required": true,
-                "width": "half",
+                "width": "third",
                 "order": 5,
                 "options": []
             }
         ],
         "createdAt": "2025-06-07T07:10:36.724Z",
-        "updatedAt": "2025-06-07T07:14:27.935Z",
+        "updatedAt": "2025-06-10T06:19:42.965Z",
         "status": "draft"
     },
     {
@@ -623,7 +623,7 @@
                 "label": "Extension Sought From",
                 "placeholder": "",
                 "required": true,
-                "width": "half",
+                "width": "third",
                 "order": 0,
                 "options": []
             },
@@ -633,7 +633,7 @@
                 "label": "Extension Sought To",
                 "placeholder": "",
                 "required": true,
-                "width": "half",
+                "width": "third",
                 "order": 1,
                 "options": []
             },
@@ -643,7 +643,7 @@
                 "label": "Upload IPR",
                 "placeholder": "",
                 "required": false,
-                "width": "half",
+                "width": "third",
                 "order": 2,
                 "options": []
             },
@@ -653,7 +653,7 @@
                 "label": "IPR Date",
                 "placeholder": "",
                 "required": false,
-                "width": "half",
+                "width": "third",
                 "order": 3,
                 "options": []
             },
@@ -663,13 +663,13 @@
                 "label": "Remarks (Details Pertaining To Clearance From The Place Of Last Posting To BE Endorsed",
                 "placeholder": "",
                 "required": true,
-                "width": "half",
+                "width": "third",
                 "order": 4,
                 "options": []
             }
         ],
         "createdAt": "2025-06-07T07:17:07.236Z",
-        "updatedAt": "2025-06-07T07:19:50.139Z",
+        "updatedAt": "2025-06-10T06:14:14.425Z",
         "status": "draft"
     }
 ]

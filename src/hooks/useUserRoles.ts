@@ -44,8 +44,8 @@ const useUserRoles = () => {
     isUnitHr: false,
     isCgm: false,
     isDandAR: false,
-    isVigilanceAdmin: false,
-    isCorporateUnitHr: false,
+    isVigilanceAdmin: true,
+    isCorporateUnitHr: true,
     isGm: false,
   };
 };
