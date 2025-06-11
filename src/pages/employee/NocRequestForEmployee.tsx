@@ -12,6 +12,8 @@ import { useToast } from '@/hooks/use-toast';
 import { FormField } from '@/components/FormBuilder/FormField';
 import { getGridClass } from '@/lib/helperFunction';
 import Select from 'react-select';
+import forms from '../../../forms.json';
+import { Employee } from '@/types/Employee';
 interface FormField {
   id: string;
   type: string;
@@ -34,23 +36,29 @@ interface UserState {
 
 const NocRequestForEmployee = () => {
   const user = useSelector((state: RootState) => state.user) as UserState;
-  const [forms, setForms] = useState<Form[]>([]);
   const [selectedForm, setSelectedForm] = useState<Form | null>(null);
+  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
+  const employees = useSelector((state: RootState) => state.employee.employees);
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<{ type: string; message: string } | null>(null);
   const { toast } = useToast();
   // Load forms from localStorage
-  useEffect(() => {
-    const savedForms = JSON.parse(localStorage.getItem('formBuilderForms') || '[]');
-    setForms(savedForms);
-  }, []);
+
 
   const handleFormSelect = (formId: string) => {
     console.log(formId, 'formId');
     const form = forms.find((f) => f.id === formId);
     console.log(form, 'form');
     setSelectedForm(form || null);
+    setFormData({});
+    setSubmitStatus(null);
+  };
+  const handleEmployeeSelect = (empId: string) => {
+    console.log(empId, 'empId');
+    const employee = employees.find((f) => f.empCode === empId);
+    console.log(employee, 'employee');
+    setSelectedEmployee(employee || null);
     setFormData({});
     setSubmitStatus(null);
   };
@@ -150,21 +158,22 @@ const NocRequestForEmployee = () => {
                   options={forms.map((form) => ({ label: form.title, value: form.id }))}
                   onChange={(e) => handleFormSelect(e?.value)}
                   value={{ label: selectedForm?.title, value: selectedForm?.id }}
-                  className="w-full bg-white"
-                  placeholder="Select Purpose"
-                  
+                  className="w-full"
+                  placeholder="Select purpose"
                 />
+
               </div>
               <div>
                 <Label htmlFor="form-select" className="block mb-2 text-sm font-bold">
                   Select Employee
                 </Label>
                 <Select
-                  options={forms.map((form) => ({ label: form.title, value: form.id }))}
-                  onChange={(e) => handleFormSelect(e?.value)}
-                  value={{ label: selectedForm?.title, value: selectedForm?.id }}
-                  className="w-full"
-                  placeholder="Select Employee"
+                  options={employees.map((emp) => ({ label: emp.empName, value: emp.empCode }))}
+                  onChange={(e) => handleEmployeeSelect(e?.value)}
+                  value={{ label: selectedEmployee?.empName, value: selectedEmployee?.empCode }}
+                  className="w-full bg-white"
+                  placeholder="Select employee"
+
                 />
               </div>
             </div>

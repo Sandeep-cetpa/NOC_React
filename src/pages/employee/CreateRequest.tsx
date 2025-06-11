@@ -45,7 +45,6 @@ const CreateRequest = () => {
   const [submitStatus, setSubmitStatus] = useState<{ type: string; message: string } | null>(null);
   const { toast } = useToast();
 
-
   const handleFormSelect = (formId: string) => {
     const form = forms.find((f) => f.id === formId);
     setSelectedForm(form || null);
@@ -140,32 +139,19 @@ const CreateRequest = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {forms.length === 0 ? (
+            {forms?.length === 0 ? (
               <div className="text-center py-8">
                 <FileText className="h-12 w-12 text-gray-300 mx-auto mb-4" />
                 <p className="text-gray-500">No forms available</p>
               </div>
             ) : (
-              <div className="space-y-4">
-                {/* <Select onValueChange={handleFormSelect}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Choose a form to fill" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {forms.map((form) => (
-                      <SelectItem key={form.id} value={form.id}>
-                        {form.title}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select> */}
+              <div className="space-y-4 w-1/4">
                 <Select
                   options={forms.map((form) => ({ label: form.title, value: form.id }))}
                   onChange={(e) => handleFormSelect(e?.value)}
                   value={{ label: selectedForm?.title, value: selectedForm?.id }}
                   className="w-full bg-white"
                   placeholder="Select Purpose"
-
                 />
               </div>
             )}

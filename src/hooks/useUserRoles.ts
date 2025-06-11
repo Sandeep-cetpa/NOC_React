@@ -33,7 +33,7 @@ const useUserRoles = () => {
 
   return {
     isNodalOfficer,
-    isSuperAdmin: false,
+    isSuperAdmin: true,
     isAdmin,
     isUnitCGM,
     isHOD,
@@ -44,9 +44,9 @@ const useUserRoles = () => {
     isLoading,
     isUnitHr: false,
     isCgm: false,
-    isDandAR: true,
+    isDandAR: false,
     isVigilanceAdmin: false,
-    isCorporateUnitHr: true,
+    isCorporateUnitHr: false,
     isGm: false,
 
   };

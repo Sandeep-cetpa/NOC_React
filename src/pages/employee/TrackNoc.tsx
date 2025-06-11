@@ -36,6 +36,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
+import { format } from 'date-fns';
 
 const TrackNoc = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -422,16 +423,8 @@ const TrackNoc = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="w-16">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleSort('id')}
-                        className="flex items-center space-x-1 p-0 h-auto font-semibold  text-white"
-                      >
-                        <span>SR.No</span>
-                        <ArrowUpDown className="h-3 w-3" />
-                      </Button>
+                    <TableHead className="w-16 text-white">
+                      <span>SN</span>
                     </TableHead>
                     <TableHead>
                       <Button
@@ -444,18 +437,13 @@ const TrackNoc = () => {
                         <ArrowUpDown className="h-3 w-3" />
                       </Button>
                     </TableHead>
-                    <TableHead>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleSort('purpose')}
-                        className="flex items-center space-x-1 p-0 h-auto font-semibold  text-white"
-                      >
-                        <span>Purpose</span>
-                        <ArrowUpDown className="h-3 w-3" />
-                      </Button>
+                    <TableHead className="text-white">
+                      <span>Submitted</span>
                     </TableHead>
-                    <TableHead className=" text-white">Description</TableHead>
+                    <TableHead>
+                      <span className="text-white">Employee</span>
+                    </TableHead>
+                    <TableHead className=" text-white">Purpose</TableHead>
                     <TableHead>
                       <Button
                         variant="ghost"
@@ -476,22 +464,24 @@ const TrackNoc = () => {
                       <TableCell className="font-medium">{startIndex + index + 1}</TableCell>
                       <TableCell>
                         <div className="font-medium text-blue-600">{noc.referenceId}</div>
-                        <div className="text-sm text-gray-500">{new Date(noc.submittedDate).toLocaleDateString()}</div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="text-sm text-600">{format(new Date(noc.submittedDate), 'dd MMM yyyy')}</div>
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center space-x-2">
                           {getPurposeIcon(noc.purpose)}
                           <div>
-                            <div className="font-medium">{noc.purpose}</div>
                             <div className="text-sm text-gray-500">{noc.applicant}</div>
+                            <div className="text-sm text-gray-500 mt-1">{noc.department}</div>
                           </div>
                         </div>
                       </TableCell>
                       <TableCell className="max-w-xs">
+                        <div className="font-medium">{noc.purpose}</div>
                         <div className="truncate" title={noc.description}>
                           {noc.description}
                         </div>
-                        <div className="text-sm text-gray-500 mt-1">{noc.department}</div>
                       </TableCell>
                       <TableCell>
                         {getStatusBadge(noc.status)}

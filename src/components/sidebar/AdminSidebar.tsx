@@ -36,7 +36,7 @@ export function AdminSidebar(props: React.ComponentProps<typeof Sidebar>) {
             icon: UserRoundCog,
           },
           {
-            title: 'Create Purpose',
+            title: 'Create Form',
             url: '/form',
             icon: BadgeAlert,
           },
