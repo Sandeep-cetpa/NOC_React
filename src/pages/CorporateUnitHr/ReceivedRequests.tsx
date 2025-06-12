@@ -5,14 +5,33 @@ import {
   ArrowUpDown,
   ChevronLeft,
   ChevronRight,
+  Eye,
+  ArrowRight,
+   Send
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-
+interface Remarks {
+  application: string;
+  uploadAdvertisement: string;
+  applicationType: string;
+  postAppliedFor: string;
+  organization: string;
+  organizationAddress: string;
+  lastDate: string;
+  advertisementNo: string;
+  iprDate: string;
+  iprFile: string;
+  unitHrRemarks: string;
+  vigilanceStatus: string;
+}
 
 const ReceivedRequests = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -167,7 +186,34 @@ const ReceivedRequests = () => {
       direction: prev.key === key && prev.direction === 'asc' ? 'desc' : 'asc',
     }));
   };
-
+  const [selectedRequest, setSelectedRequest] = useState(null);
+  const [isOpen, setIsOpen] = React.useState(false);
+  const [remarks, setRemarks] = React.useState<Remarks>({
+      application: '2539_20241227_NOC UPMRC.pdf',
+      uploadAdvertisement: '2539_20241227_Letter to Railway Board for Recruitment to the post of JGM-DGM (HR) (1).pdf',
+      applicationType: 'Absorption',
+      postAppliedFor: 'JGM/HR',
+      organization: 'UPMRC',
+      organizationAddress: 'Gomtinagar, LKO, UP',
+      lastDate: '2025-01-16',
+      advertisementNo: 'Vacancy Notice No. UPMRC/HRD/16/2024 dated 18.12.2024',
+      iprDate: '02-Jan-2024',
+      iprFile: '2539_20241227_IPR 2024.pdf',
+      unitHrRemarks: '',
+      vigilanceStatus: 'At present, no vigilance case is pending',
+    });
+    const handleVigilanceStatusChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+       const { value } = e.target;
+       setRemarks((prevRemarks) => ({
+         ...prevRemarks,
+         vigilanceStatus: value,
+       }));
+     };
+     const handleSubmit = () => {
+       // Perform form submission or data processing logic here
+       console.log(remarks);
+       setIsOpen(false);
+     };
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-6">
       <Tabs defaultValue="unit">
@@ -279,6 +325,7 @@ const ReceivedRequests = () => {
                       <TableHead className=" text-white">Designation</TableHead>
                       <TableHead className=" text-white">Department/Location</TableHead>
                       <TableHead className="text-white">Purpose</TableHead>
+                      <TableHead className="text-white">Action</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -306,6 +353,12 @@ const ReceivedRequests = () => {
                         <TableCell>
                           <div className="text-sm text-blue-500 mt-1">{noc.emp_purpose}</div>
                         </TableCell>
+                        <TableCell>
+                      <Button onClick={() => {setIsOpen(true)
+                         setSelectedRequest(noc) }}>
+                        <Eye />
+                      </Button>
+                    </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -360,7 +413,58 @@ const ReceivedRequests = () => {
               )}
             </CardContent>
           </Card>
-        </div>  </TabsContent>
+            <Dialog open={isOpen} onOpenChange={setIsOpen}>
+              {selectedRequest && (
+        <DialogContent className="w-[90%] md:max-w-3xl">
+          <DialogHeader>
+            <DialogTitle>Remarks</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-6 py-6 pt-0 h-full max-h-[calc(100vh-20rem)] overflow-y-scroll">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+              <div>
+                <Label>Employee Id</Label>
+                <p className="text-sm text-muted-foreground">{selectedRequest.employeeId}</p>
+              </div>
+              <div>
+                <Label>Name</Label>
+                <p className="text-sm text-muted-foreground">{selectedRequest.emp_name}</p>
+              </div>
+              <div>
+                <Label>Designation</Label>
+                <p className="text-sm text-muted-foreground">{selectedRequest.designation}</p>
+              </div>
+              <div>
+                <Label>Location</Label>
+                <p className="text-sm text-muted-foreground">{selectedRequest.location}</p>
+              </div>
+              <div>
+                <Label>Purpose</Label>
+                <p className="text-sm text-muted-foreground">{selectedRequest.emp_purpose}</p>
+              </div>
+              <div>
+                <Label>Department</Label>
+                <p className="text-sm text-muted-foreground">{selectedRequest.department}</p>
+              </div>
+          </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsOpen(false)}>
+              Get Tctl
+            </Button>
+            <Button className='mt-2 md:mt-0 mb-2' variant="outline" onClick={() => setIsOpen(false)}>
+              <ArrowRight className="mr-2 h-4 w-4" />
+              Revert Vigilance User
+            </Button>
+            <Button  onClick={handleSubmit}>
+              <Send className="mr-2 h-4 w-4" />
+              Send To Corporate HR
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+              )}
+      </Dialog>
+        </div>  
+        </TabsContent>
         <TabsContent value="corporate">  <div className="max-w-7xl mx-auto">
           <Card>
             <CardHeader>
