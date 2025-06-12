@@ -45,7 +45,6 @@ const NocRequestForEmployee = () => {
   const { toast } = useToast();
   // Load forms from localStorage
 
-
   const handleFormSelect = (formId: string) => {
     console.log(formId, 'formId');
     const form = forms.find((f) => f.id === formId);
@@ -91,7 +90,6 @@ const NocRequestForEmployee = () => {
     setSubmitStatus(null);
 
     try {
-
       const submission = {
         id: Date.now().toString(),
         formId: selectedForm?.id,
@@ -132,17 +130,11 @@ const NocRequestForEmployee = () => {
     <div className="p-6 space-y-6">
       <div className="flex flex-row items-center justify-between">
         <div className="space-y-1">
-          <Heading type={4}>Create Request For Employee</Heading>
+          <Heading type={2}>Create Request For Employee</Heading>
         </div>
       </div>
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <FormInput className="h-5 w-5 text-blue-500" />
-            <span>Select a purpose</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+        <CardContent className="mt-4">
           {forms.length === 0 ? (
             <div className="text-center py-8">
               <FileText className="h-12 w-12 text-gray-300 mx-auto mb-4" />
@@ -161,7 +153,6 @@ const NocRequestForEmployee = () => {
                   className="w-full"
                   placeholder="Select purpose"
                 />
-
               </div>
               <div>
                 <Label htmlFor="form-select" className="block mb-2 text-sm font-bold">
@@ -173,7 +164,6 @@ const NocRequestForEmployee = () => {
                   value={{ label: selectedEmployee?.empName, value: selectedEmployee?.empCode }}
                   className="w-full bg-white"
                   placeholder="Select employee"
-
                 />
               </div>
             </div>

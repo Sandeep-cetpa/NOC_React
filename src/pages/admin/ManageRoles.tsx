@@ -125,7 +125,7 @@ const ManageRole = () => {
       .filter((emp) => emp.unitId?.toString() === selectedUnitId)
       .map((emp) => ({
         value: emp.empCode,
-        label: `${emp.empCode} | ${emp.empName || 'Unknown'}`,
+        label: `${emp.empCode} | ${emp.empName || 'Unknown'} | ${emp.designation} | ${emp.department}`,
         empName: emp.empName || '',
         empCode: emp.empCode || '',
         designation: emp.designation || '',
@@ -258,7 +258,7 @@ const ManageRole = () => {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Role Management</h1>
-          <p className="text-muted-foreground">Assign and manage user roles in the system</p>
+          <p className="text-muted-foreground">Assign and manage user roles</p>
         </div>
 
         <Card className="w-full md:w-auto shadow-sm">

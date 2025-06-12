@@ -267,7 +267,7 @@ const GmREquesteReceived = () => {
                     />
                 </div>
             </div>
-            <div className="w-[92.5%] overflow-x-auto rounded-md border">
+            <div className="w-full overflow-x-auto rounded-md border">
                 <div className="min-w-full">
                     <Table>
                         <TableHeader>

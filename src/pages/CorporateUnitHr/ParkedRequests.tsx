@@ -93,7 +93,7 @@ const ParkedRequests = () => {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
-              <span>Rejected Requests </span>
+              <span>Parked Requests </span>
             </CardTitle>
           </CardHeader>
           <div className="mb-2">

@@ -51,6 +51,7 @@ import {
 import { FormField } from '@/components/FormBuilder/FormField';
 import { FormFieldEditor } from '@/components/FormBuilder/FormFieldEditor';
 import { FormPreview } from '@/components/FormBuilder/FormPreview';
+import { format } from 'date-fns';
 
 const Forms = () => {
   const [forms, setForms] = useState([]);
@@ -465,13 +466,13 @@ const Forms = () => {
                       <TableCell className="text-sm text-gray-500">
                         <div className="flex items-center space-x-1">
                           <Calendar className="h-3 w-3" />
-                          <span>{new Date(form.createdAt).toLocaleDateString()}</span>
+                          <span>{format(new Date(form.createdAt), 'd MMM yyyy')}</span>
                         </div>
                       </TableCell>
                       <TableCell className="text-sm text-gray-500">
                         <div className="flex items-center space-x-1">
                           <Clock className="h-3 w-3" />
-                          <span>{new Date(form.updatedAt).toLocaleDateString()}</span>
+                          <span>{format(new Date(form.updatedAt), 'd MMM yyyy')}</span>
                         </div>
                       </TableCell>
                       <TableCell className="text-right">
@@ -586,13 +587,14 @@ const Forms = () => {
                             {currentFormForAction.description && (
                               <p className="text-gray-600 mt-2">{currentFormForAction.description}</p>
                             )}
+
                             <div className="flex items-center space-x-4 mt-3">
                               <Badge className="bg-blue-100 text-blue-800">
                                 {currentFormForAction.fields.length} fields
                               </Badge>
                               {getStatusBadge(currentFormForAction.status)}
                               <span className="text-sm text-gray-500">
-                                Created: {new Date(currentFormForAction.createdAt).toLocaleDateString()}
+                                Created: {format(currentFormForAction.createdAt, 'd MMM yyyy')}
                               </span>
                             </div>
                           </div>
@@ -622,7 +624,11 @@ const Forms = () => {
                           )}
                         </Button>
 
-                        <Button onClick={handleSaveForm} disabled={isLoading} className="bg-blue-600 hover:bg-blue-700">
+                        <Button
+                          onClick={handleSaveForm}
+                          disabled={isLoading || previewMode[currentFormForAction.id]}
+                          className="bg-blue-600 hover:bg-blue-700"
+                        >
                           {isLoading ? (
                             <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                           ) : (

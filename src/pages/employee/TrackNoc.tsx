@@ -264,7 +264,7 @@ const TrackNoc = () => {
     const config = statusConfig[status];
     const IconComponent = config.icon;
     return (
-      <Badge className={`${config.color} flex max-w-[100px] flex justify-center items-center space-x-1 px-2 py-1`}>
+      <Badge className={`${config.color} flex max-w-[100px] flex justify-center text-center items-center space-x-1 px-2 py-1`}>
         <IconComponent className="h-3 w-3" />
         <span>{config.label}</span>
       </Badge>
@@ -345,15 +345,14 @@ const TrackNoc = () => {
         <div className="mb-8">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 flex items-center space-x-3">
+              <h1 className="text-2xl font-bold text-gray-900 flex items-center space-x-3">
                 <FileText className="h-8 w-8 text-blue-600" />
                 <span>Track NOC Applications</span>
               </h1>
-              <p className="text-gray-600 mt-2">
+              <p className="text-gray-600 mt-2 text-sm">
                 Monitor and track the status of No Objection Certificate applications
               </p>
             </div>
-
             <div className="flex items-center space-x-3">
               <Button variant="outline" className="flex items-center space-x-2">
                 <RefreshCw className="h-4 w-4" />
@@ -426,16 +425,8 @@ const TrackNoc = () => {
                     <TableHead className="w-16 text-white">
                       <span>SN</span>
                     </TableHead>
-                    <TableHead>
-                       <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleSort('referenceId')}
-                        className="flex items-center space-x-1 p-0 h-auto font-semibold text-white"
-                      >
-                        <span>Creation Date</span>
-                        <ArrowUpDown className="h-3 w-3" />
-                      </Button>
+                    <TableHead className='text-white'>
+                      <span>Creation Date</span>
                     </TableHead>
                     <TableHead>
                       <Button
@@ -448,12 +439,11 @@ const TrackNoc = () => {
                         <ArrowUpDown className="h-3 w-3" />
                       </Button>
                     </TableHead>
-                    <TableHead className="text-white">
-                      <span>Submitted</span>
-                    </TableHead>
+
                     <TableHead>
                       <span className="text-white">Employee</span>
                     </TableHead>
+
                     <TableHead className=" text-white">Purpose</TableHead>
                     <TableHead>
                       <Button
@@ -474,11 +464,12 @@ const TrackNoc = () => {
                     <TableRow key={noc.id} className="hover:bg-gray-50 transition-colors">
                       <TableCell className="font-medium">{startIndex + index + 1}</TableCell>
                       <TableCell>
-                        <div className="font-medium text-blue-600">{noc.referenceId}</div>
-                      </TableCell>
-                      <TableCell>
                         <div className="text-sm text-600">{format(new Date(noc.submittedDate), 'dd MMM yyyy')}</div>
                       </TableCell>
+                      <TableCell>
+                        <div className="font-medium text-blue-600">{noc.referenceId}</div>
+                      </TableCell>
+
                       <TableCell>
                         <div className="flex items-center space-x-2">
                           {getPurposeIcon(noc.purpose)}
@@ -497,7 +488,7 @@ const TrackNoc = () => {
                       <TableCell>
                         {getStatusBadge(noc.status)}
                         <div className="text-xs text-gray-500 mt-1">
-                          Updated: {new Date(noc.lastUpdated).toLocaleDateString()}
+                          Updated: {format(new Date(noc.lastUpdated), 'dd MMM yyyy')}
                         </div>
                       </TableCell>
                       <TableCell className="text-right">

@@ -1,17 +1,11 @@
 import React, { useState } from 'react';
-import {
-  Search,
-  RefreshCw,
-  ArrowUpDown,
-  ChevronLeft,
-  ChevronRight,
-} from 'lucide-react';
+import { Search, RefreshCw, ArrowUpDown, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-
+import { Label } from '@/components/ui/label';
 
 const CompletedRequests = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -19,7 +13,6 @@ const CompletedRequests = () => {
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
-
 
   const nocData = [
     {
@@ -189,7 +182,7 @@ const CompletedRequests = () => {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
-              <span>Rejected Requests </span>
+              <span>Completed Requests </span>
             </CardTitle>
           </CardHeader>
           <div className="mb-2">
@@ -212,7 +205,6 @@ const CompletedRequests = () => {
                       <SelectItem value="hyderabad">Hyderabad</SelectItem>
                       <SelectItem value="pune">Pune</SelectItem>
                       <SelectItem value="jaipur">Jaipur</SelectItem>
-
                     </SelectContent>
                   </Select>
                   <Select>
@@ -255,15 +247,15 @@ const CompletedRequests = () => {
                       <SelectItem value="Time">Time</SelectItem>
                     </SelectContent>
                   </Select>
-                 <Select>
-                                     <SelectTrigger>
-                                       <SelectValue placeholder="Select Designation" />
-                                     </SelectTrigger>
-                                     <SelectContent>
-                                       <SelectItem value="GM">GM</SelectItem>
-                                       <SelectItem value="HR">HR</SelectItem>
-                                     </SelectContent>
-                                   </Select>
+                  <Select>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Designation" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="GM">GM</SelectItem>
+                      <SelectItem value="HR">HR</SelectItem>
+                    </SelectContent>
+                  </Select>
                   <Button variant="outline" className="flex items-center space-x-2">
                     <RefreshCw className="h-4 w-4" />
                   </Button>
@@ -294,17 +286,6 @@ const CompletedRequests = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    {/* <TableHead className="w-16">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleSort('id')}
-                        className="flex items-center space-x-1 p-0 h-auto font-semibold  text-white"
-                      >
-                        <span>SR.No</span>
-                        <ArrowUpDown className="h-3 w-3" />
-                      </Button>
-                    </TableHead> */}
                     <TableHead>
                       <Button
                         variant="ghost"
@@ -329,10 +310,10 @@ const CompletedRequests = () => {
                     </TableHead>
                     <TableHead className=" text-white">Name</TableHead>
                     <TableHead className=" text-white">Designation</TableHead>
-                    <TableHead className=" text-white">Position Grade</TableHead>
+                    <TableHead className=" text-white">Grade</TableHead>
                     <TableHead className=" text-white">Department</TableHead>
                     <TableHead className="text-white">Location</TableHead>
-                    <TableHead className="text-white">Current Status</TableHead>
+                    <TableHead className="text-white">Status</TableHead>
                     <TableHead className="text-white">Purpose</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -348,9 +329,9 @@ const CompletedRequests = () => {
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center space-x-2">
-                          <div>
-                            <div className="text-sm text-gray-500">{noc.emp_name}</div>
-                          </div>
+                          <Label className="text-sm text-gray-500 w-[150px] truncate" title={noc.emp_name}>
+                            {noc.emp_name}
+                          </Label>
                         </div>
                       </TableCell>
                       <TableCell className="text-sm text-gray-500 mt-1">
@@ -362,7 +343,9 @@ const CompletedRequests = () => {
                         <div className="text-sm text-gray-500 mt-1">{noc.positionGrade}</div>
                       </TableCell>
                       <TableCell>
-                        <div className="text-sm text-gray-500 mt-1">{noc.department}</div>
+                        <div className="text-sm text-gray-500 mt-1">
+                          <Label className="text-sm text-gray-500 w-[150px] truncate" title={noc.department}>{noc.department}</Label>
+                        </div>
                       </TableCell>
                       <TableCell>
                         <div className="text-sm text-gray-500 mt-1">{noc.location}</div>

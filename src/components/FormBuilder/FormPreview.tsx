@@ -36,7 +36,7 @@ export const FormPreview: React.FC<FormPreviewProps> = ({ form }) => {
                 {field.required && <span className="text-red-500 ml-1">*</span>}
               </Label>
             )}
-            <FormField field={field} />
+            <FormField isDisabled={true} field={field} />
           </div>
         ))}
       </div>
@@ -57,14 +57,7 @@ export const FormPreview: React.FC<FormPreviewProps> = ({ form }) => {
             <p className="text-gray-400 text-sm">Switch to edit mode to add fields</p>
           </div>
         ) : (
-          <div className="space-y-6">
-            {renderPreviewLayout(form.fields)}
-            {/* <div className="pt-6 border-t">
-              <Button type="button" className="w-full bg-blue-600 hover:bg-blue-700" size="lg">
-                Submit Form
-              </Button>
-            </div> */}
-          </div> 
+          <div className="space-y-6">{renderPreviewLayout(form.fields)}</div>
         )}
       </CardContent>
     </Card>

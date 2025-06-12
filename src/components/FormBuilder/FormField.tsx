@@ -6,7 +6,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { ChevronDown, Check, Circle } from 'lucide-react';
+import { ChevronDown, Check, Circle, Upload } from 'lucide-react';
 
 interface FormFieldProps {
   field: {
@@ -19,15 +19,17 @@ interface FormFieldProps {
   };
   value: any;
   onChange: (value: any) => void;
+  isDisabled?: boolean;
 }
 
-export const FormField: React.FC<FormFieldProps> = ({ field, value, onChange }) => {
+export const FormField: React.FC<FormFieldProps> = ({ field, value, onChange, isDisabled }) => {
   const baseProps = {
     id: field.id,
     placeholder: field.placeholder,
     required: field.required,
     value: value || '',
     className: 'w-full',
+    disabled: isDisabled,
   };
 
   switch (field.type) {
@@ -36,7 +38,7 @@ export const FormField: React.FC<FormFieldProps> = ({ field, value, onChange }) 
 
     case 'select':
       return (
-        <Select value={value || ''} onValueChange={(value) => onChange(value)}>
+        <Select disabled={isDisabled} value={value || ''} onValueChange={(value) => onChange(value)}>
           <SelectTrigger className="w-full">
             <SelectValue placeholder={field.placeholder || `Select ${field.label}`} />
             <ChevronDown className="h-4 w-4 opacity-50" />
@@ -90,9 +92,10 @@ export const FormField: React.FC<FormFieldProps> = ({ field, value, onChange }) 
       );
     case 'file':
       return (
-      
-      <Input {...baseProps} type={"file"} className='' onChange={(e) => onChange(e.target.value)} />
-     
+        <div className="flex items-center space-x-2">
+          <Input {...baseProps} type={'file'} className="cursor-pointer" onChange={(e) => onChange(e.target.value)} />
+          <Upload />
+        </div>
       );
     default:
       return <Input {...baseProps} type={field.type} onChange={(e) => onChange(e.target.value)} />;

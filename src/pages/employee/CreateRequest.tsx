@@ -39,7 +39,7 @@ interface UserState {
 const CreateRequest = () => {
   const user = useSelector((state: RootState) => state.user) as UserState;
   // const [forms, setForms] = useState<Form[]>([]);
-  const [selectedForm, setSelectedForm] = useState<Form | null>(null);
+  const [selectedForm, setSelectedForm] = useState<Form | null>(forms[0] || null);
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<{ type: string; message: string } | null>(null);
@@ -110,8 +110,6 @@ const CreateRequest = () => {
         description: 'Your form has been submitted successfully.',
         duration: 5000,
       });
-
-      // Reset form
       setFormData({});
     } catch (error) {
       setSubmitStatus({
@@ -127,7 +125,7 @@ const CreateRequest = () => {
     <div className="p-6 space-y-6">
       <div className="flex flex-row items-center justify-between">
         <div className="space-y-1">
-          <Heading type={4}>Create Request</Heading>
+          <Heading type={2}>Create Request</Heading>
         </div>
       </div>
       {
@@ -135,7 +133,7 @@ const CreateRequest = () => {
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <FormInput className="h-5 w-5 text-blue-500" />
-              <span>Select a purpose</span>
+              <span className="text-lg">Select a purpose</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -145,7 +143,7 @@ const CreateRequest = () => {
                 <p className="text-gray-500">No forms available</p>
               </div>
             ) : (
-              <div className="space-y-4 w-1/4">
+              <div className="space-y-4 mt-0 w-1/4">
                 <Select
                   options={forms.map((form) => ({ label: form.title, value: form.id }))}
                   onChange={(e) => handleFormSelect(e?.value)}
@@ -158,7 +156,7 @@ const CreateRequest = () => {
           </CardContent>
         </Card>
       }
-      {selectedForm && (
+      {selectedForm && selectedForm.title !== 'Please select a purpose' && (
         <Card>
           <CardHeader className="border-b">
             <CardTitle>{selectedForm.title}</CardTitle>

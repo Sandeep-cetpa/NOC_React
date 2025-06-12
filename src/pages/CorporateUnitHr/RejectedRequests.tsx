@@ -1,17 +1,10 @@
 import React, { useState } from 'react';
-import {
-  Search,
-  RefreshCw,
-  ArrowUpDown,
-  ChevronLeft,
-  ChevronRight,
-} from 'lucide-react';
+import { Search, RefreshCw, ArrowUpDown, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-
 
 const RejectedRequests = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -20,13 +13,12 @@ const RejectedRequests = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  
   const nocData = [
     {
       id: 1,
       referenceId: '001044',
-      positionGrade:'NS',
-      currentStatus:'Rejected By Corporate HR',
+      positionGrade: 'NS',
+      currentStatus: 'Rejected By Corporate HR',
       employeeId: '100649',
       designation: 'Junior',
       location: 'Mumbai(N)',
@@ -37,8 +29,8 @@ const RejectedRequests = () => {
     {
       id: 2,
       referenceId: '001055',
-      positionGrade:'E1',
-      currentStatus:'Rejected By Corporate HR',
+      positionGrade: 'E1',
+      currentStatus: 'Rejected By Corporate HR',
       employeeId: '100650',
       designation: 'Sr Exec',
       location: 'Office',
@@ -49,8 +41,8 @@ const RejectedRequests = () => {
     {
       id: 3,
       referenceId: '001056',
-      positionGrade:'NS',
-      currentStatus:'Rejected By Corporate HR',
+      positionGrade: 'NS',
+      currentStatus: 'Rejected By Corporate HR',
       employeeId: '100651',
       designation: 'GM',
       location: 'Office',
@@ -61,8 +53,8 @@ const RejectedRequests = () => {
     {
       id: 4,
       referenceId: '001063',
-      positionGrade:'NS',
-      currentStatus:'Rejected By Corporate HR',
+      positionGrade: 'NS',
+      currentStatus: 'Rejected By Corporate HR',
       employeeId: '100652',
       designation: 'GM',
       location: 'Office',
@@ -73,8 +65,8 @@ const RejectedRequests = () => {
     {
       id: 5,
       referenceId: '001072',
-      positionGrade:'NS',
-      currentStatus:'Rejected By Corporate HR',
+      positionGrade: 'NS',
+      currentStatus: 'Rejected By Corporate HR',
       employeeId: '100653',
       designation: 'GM',
       location: 'Office',
@@ -85,8 +77,8 @@ const RejectedRequests = () => {
     {
       id: 6,
       referenceId: '001085',
-      positionGrade:'NS',
-      currentStatus:'Rejected By Corporate HR',
+      positionGrade: 'NS',
+      currentStatus: 'Rejected By Corporate HR',
       employeeId: '100654',
       designation: 'GM',
       location: 'Office',
@@ -97,8 +89,8 @@ const RejectedRequests = () => {
     {
       id: 7,
       referenceId: '001132',
-      positionGrade:'NS',
-      currentStatus:'Rejected By Corporate HR',
+      positionGrade: 'NS',
+      currentStatus: 'Rejected By Corporate HR',
       employeeId: '100655',
       designation: 'GM',
       location: 'Office',
@@ -109,8 +101,8 @@ const RejectedRequests = () => {
     {
       id: 8,
       referenceId: '001136',
-      positionGrade:'NS',
-      currentStatus:'Rejected By Corporate HR',
+      positionGrade: 'NS',
+      currentStatus: 'Rejected By Corporate HR',
       employeeId: '100656',
       designation: 'GM',
       location: 'Office',
@@ -121,8 +113,8 @@ const RejectedRequests = () => {
     {
       id: 9,
       referenceId: '001148',
-      positionGrade:'NS',
-      currentStatus:'Rejected By Corporate HR',
+      positionGrade: 'NS',
+      currentStatus: 'Rejected By Corporate HR',
       employeeId: '100657',
       designation: 'GM',
       location: 'Office',
@@ -133,8 +125,8 @@ const RejectedRequests = () => {
     {
       id: 10,
       referenceId: '001151',
-      positionGrade:'NS',
-      currentStatus:'Rejected By Corporate HR',
+      positionGrade: 'NS',
+      currentStatus: 'Rejected By Corporate HR',
       employeeId: '100658',
       designation: 'GM',
       location: 'Office',
@@ -145,8 +137,8 @@ const RejectedRequests = () => {
     {
       id: 11,
       referenceId: '001152',
-      positionGrade:'NS',
-      currentStatus:'Rejected By Corporate HR',
+      positionGrade: 'NS',
+      currentStatus: 'Rejected By Corporate HR',
       employeeId: '100659',
       designation: 'GM',
       location: 'Office',
@@ -157,8 +149,8 @@ const RejectedRequests = () => {
     {
       id: 12,
       referenceId: '001153',
-      positionGrade:'NS',
-      currentStatus:'Rejected By Corporate HR',
+      positionGrade: 'NS',
+      currentStatus: 'Rejected By Corporate HR',
       employeeId: '100660',
       designation: 'GM',
       location: 'Office',
@@ -219,7 +211,7 @@ const RejectedRequests = () => {
           <div className="mb-2">
             <div className="px-6 py-2 ">
               <div className="flex flex-col   md:justify-between space-y-4 md:space-y-0 gap-4">
-              <div className="flex flex-col md:flex-row space-x-4 flex-1 bg-gray-200  p-2 rounded-xl">
+                <div className="flex flex-col md:flex-row space-x-4 flex-1 bg-gray-200  p-2 rounded-xl">
                   <Select>
                     <SelectTrigger>
                       <SelectValue placeholder="Select unit" />
@@ -236,7 +228,6 @@ const RejectedRequests = () => {
                       <SelectItem value="hyderabad">Hyderabad</SelectItem>
                       <SelectItem value="pune">Pune</SelectItem>
                       <SelectItem value="jaipur">Jaipur</SelectItem>
-
                     </SelectContent>
                   </Select>
                   <Select>
@@ -317,18 +308,7 @@ const RejectedRequests = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    {/* <TableHead className="w-16">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleSort('id')}
-                        className="flex items-center space-x-1 p-0 h-auto font-semibold  text-white"
-                      >
-                        <span>SR.No</span>
-                        <ArrowUpDown className="h-3 w-3" />
-                      </Button>
-                    </TableHead> */}
-                     <TableHead>
+                    <TableHead>
                       <Button
                         variant="ghost"
                         size="sm"
@@ -352,18 +332,21 @@ const RejectedRequests = () => {
                     </TableHead>
                     <TableHead className=" text-white">Name</TableHead>
                     <TableHead className=" text-white">Designation</TableHead>
-                    <TableHead className=" text-white">Position Grade</TableHead>
+                    <TableHead className=" text-white">Grade</TableHead>
                     <TableHead className=" text-white">Department</TableHead>
                     <TableHead className="text-white">Location</TableHead>
-                     <TableHead className="text-white">Current Status</TableHead>
-                    <TableHead className="text-white">Purpose</TableHead>
+                    <TableHead className="text-white">
+                      <span className=" max-w-[350px]">Current Status</span>
+                    </TableHead>
+                    <TableHead className="text-white">
+                      <span className=" max-w-[350px]">Purpose</span>
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {paginatedData.map((noc, index) => (
                     <TableRow key={noc.id} className="hover:bg-gray-50 transition-colors">
-                      {/* <TableCell className="font-medium">{startIndex + index + 1}</TableCell> */}
-                       <TableCell>
+                      <TableCell>
                         <div className="font-medium ">{noc.referenceId}</div>
                       </TableCell>
                       <TableCell>
@@ -391,7 +374,7 @@ const RejectedRequests = () => {
                         <div className="text-sm text-gray-500 mt-1">{noc.location}</div>
                       </TableCell>
                       <TableCell>
-                        <div className="text-sm text-gray-500 mt-1">{noc.currentStatus}</div>
+                        <div className="text-sm text-gray-500 w-[180px] mt-1">{noc.currentStatus}</div>
                       </TableCell>
                       <TableCell>
                         <div className="text-sm text-blue-500 mt-1">{noc.emp_purpose}</div>
