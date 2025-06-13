@@ -17,6 +17,7 @@ import {
   CheckCircle,
   XCircle,
   Clock,
+  Eye,
 } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
@@ -273,15 +274,12 @@ const ProcessedRequestByCgm = () => {
                   <TableHead className="text-white">Name</TableHead>
                   <TableHead className="text-white">Purpose</TableHead>
                   <TableHead className="text-white">Status</TableHead>
+                  <TableHead className="text-white">Action</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {requests.map((request, index) => (
-                  <TableRow
-                    key={index}
-                    className="cursor-pointer hover:bg-gray-100"
-                    onClick={() => handleRowClick(request)}
-                  >
+                  <TableRow key={index} className="cursor-pointer hover:bg-gray-100">
                     <TableCell>{request.employeeCode}</TableCell>
                     <TableCell>{request.designation}</TableCell>
                     <TableCell>{request.name}</TableCell>
@@ -291,7 +289,12 @@ const ProcessedRequestByCgm = () => {
                         {request.purpose}
                       </div>
                     </TableCell>
-                    <TableCell>{getStatusBadge(request.status)}</TableCell>
+                    <TableCell>{request.status}</TableCell>
+                    <TableCell>
+                      <Button onClick={() => handleRowClick(request)}>
+                        <Eye />
+                      </Button>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -320,12 +323,7 @@ const ProcessedRequestByCgm = () => {
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="max-w-4xl max-h-[80vh]">
           <DialogHeader>
-            <DialogTitle className="flex items-center justify-between">
-              Request Details
-              <Button variant="ghost" size="sm" onClick={() => setIsDialogOpen(false)}>
-                <X className="h-4 w-4" />
-              </Button>
-            </DialogTitle>
+            <DialogTitle className="flex items-center justify-between">Request Details</DialogTitle>
           </DialogHeader>
           {selectedRequest && (
             <ScrollArea className="max-h-[60vh]">
@@ -345,7 +343,7 @@ const ProcessedRequestByCgm = () => {
                   </div>
                   <div>
                     <Label className="font-semibold">Status</Label>
-                    <div className="mt-1">{getStatusBadge(selectedRequest.status)}</div>
+                    <div className="mt-1">{selectedRequest.status}</div>
                   </div>
                   <div>
                     <Label className="font-semibold">Country</Label>
@@ -378,32 +376,6 @@ const ProcessedRequestByCgm = () => {
                   <div>
                     <Label className="font-semibold">Source of Fund</Label>
                     <p>{selectedRequest.details.sourceOfFund}</p>
-                  </div>
-                </div>
-
-                <div className="pt-4 border-t">
-                  <Label className="font-semibold">Files</Label>
-                  <div className="mt-2 space-y-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleFileClick(selectedRequest.details.proofOfFund)}
-                      className="flex items-center gap-2"
-                    >
-                      <FileText className="h-4 w-4" />
-                      Proof of Fund
-                      <Download className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleFileClick(selectedRequest.details.iprFile)}
-                      className="flex items-center gap-2"
-                    >
-                      <FileText className="h-4 w-4" />
-                      IPR File
-                      <Download className="h-4 w-4" />
-                    </Button>
                   </div>
                 </div>
               </div>
