@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, RefreshCw, ArrowUpDown, ChevronLeft, ChevronRight , ArrowRight, Send, Eye } from 'lucide-react';
+import { Search, RefreshCw, ArrowUpDown, ChevronLeft, ChevronRight, ArrowRight, Send, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -21,7 +21,8 @@ const RequestReceived = () => {
       id: 1,
       employeeId: '100649',
       designation: 'GM',
-      location: 'Office',
+      location: 'Corporate Office',
+      status: 'Pending',
       emp_purpose: 'passport',
       emp_name: 'Amit Kumar',
       department: 'Urban Development',
@@ -31,7 +32,8 @@ const RequestReceived = () => {
       id: 2,
       employeeId: '100650',
       designation: 'GM',
-      location: 'Office',
+      location: 'Corporate Office',
+      status: 'Pending',
       emp_purpose: 'passport',
       emp_name: 'Amit Kumar',
       department: 'Transport Authority',
@@ -41,7 +43,8 @@ const RequestReceived = () => {
       id: 3,
       employeeId: '100651',
       designation: 'GM',
-      location: 'Office',
+      location: 'Corporate Office',
+      status: 'Pending',
       emp_purpose: 'passport',
       emp_name: 'Amit Kumar',
       department: 'Municipal Corporation',
@@ -51,7 +54,8 @@ const RequestReceived = () => {
       id: 4,
       employeeId: '100652',
       designation: 'GM',
-      location: 'Office',
+      location: 'Corporate Office',
+      status: 'Pending',
       emp_purpose: 'passport',
       emp_name: 'Amit Kumar',
       department: 'Education Department',
@@ -61,7 +65,8 @@ const RequestReceived = () => {
       id: 5,
       employeeId: '100653',
       designation: 'GM',
-      location: 'Office',
+      location: 'Corporate Office',
+      status: 'Pending',
       emp_purpose: 'passport',
       emp_name: 'Amit Kumar',
       department: 'Industrial Development',
@@ -109,7 +114,7 @@ const RequestReceived = () => {
   };
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [isOpen, setIsOpen] = React.useState(false);
-   const handleSubmit = () => {
+  const handleSubmit = () => {
     // Perform form submission or data processing logic here
     // console.log(remarks);
     setIsOpen(false);
@@ -191,17 +196,9 @@ const RequestReceived = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    {/* <TableHead className="w-16">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleSort('id')}
-                        className="flex items-center space-x-1 p-0 h-auto font-semibold  text-white"
-                      >
-                        <span>SR.No</span>
-                        <ArrowUpDown className="h-3 w-3" />
-                      </Button>
-                    </TableHead> */}
+                    <TableHead className="w-16">
+                      <span className="text-white">SN.</span>
+                    </TableHead>
                     <TableHead>
                       <Button
                         variant="ghost"
@@ -209,65 +206,71 @@ const RequestReceived = () => {
                         onClick={() => handleSort('employeeId')}
                         className="flex items-center space-x-1 p-0 h-auto font-semibold text-white"
                       >
-                        <span>Employee Code</span>
+                        <span>Reference Id</span>
                         <ArrowUpDown className="h-3 w-3" />
                       </Button>
                     </TableHead>
-                    <TableHead className=" text-white">Date</TableHead>
+                    <TableHead>
+                      <span className="text-white">Employee Code</span>
+                    </TableHead>
+                    <TableHead className=" text-white">Name/Department</TableHead>
                     <TableHead className=" text-white">Designation</TableHead>
-                    <TableHead className=" text-white">Name</TableHead>
 
+                    <TableHead className=" text-white">Date</TableHead>
                     {/* <TableHead className="text-white">Location</TableHead> */}
                     <TableHead className="text-white">Purpose</TableHead>
-                    <TableHead className=" text-white">Department</TableHead>
-                     <TableHead className="text-white">Action</TableHead>
+                    <TableHead className=" text-white">Status</TableHead>
+                    <TableHead className="text-white">Action</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {paginatedData.map((noc, index) => (
                     <TableRow key={noc.id} className="hover:bg-gray-50 transition-colors">
-                      {/* <TableCell className="font-medium">{startIndex + index + 1}</TableCell> */}
+                      <TableCell className="font-medium">{startIndex + index + 1}</TableCell>
                       <TableCell>
-                        <div className="font-medium ">{noc.employeeId}</div>
+                        <div className="font-medium ">{noc.employeeId + index}</div>
                       </TableCell>
-                      <TableCell className="text-sm text-gray-500 mt-1">
-                        <div className="truncate w-[100px]" title={noc.designation}>
-                          <p>{format(new Date(noc.date), 'dd MMM yyyy')}</p>
-                        </div>
-                      </TableCell>
-
-                      <TableCell className="text-sm text-gray-500 mt-1">
-                        <div className="truncate" title={noc.designation}>
-                          {noc.designation}
-                        </div>
+                      <TableCell>
+                        <div className="font-medium w-[120px]">{noc.employeeId}</div>
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center space-x-2">
-                          <div>
-                            <div className="text-sm text-gray-500">{noc.emp_name}</div>
+                          <div className="w-[130px]">
+                            <p className="text-sm text-gray-500 w-[130px] truncate">{noc.emp_name}</p>
+                            <p className="text-sm text-gray-500 w-[130px] truncate">{noc.department}</p>
                           </div>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-sm text-gray-500 mt-1">
+                        <div className="truncate" title={noc.designation}>
+                          {noc.designation}
                         </div>
                       </TableCell>
 
                       {/* <TableCell>
                         <div className="text-sm text-gray-500 mt-1">{noc.location}</div>
                       </TableCell> */}
+                      <TableCell className="text-sm text-gray-500 mt-1">
+                        <div className="truncate w-[100px]" title={noc.designation}>
+                          <p>{format(new Date(noc.date), 'dd MMM yyyy')}</p>
+                        </div>
+                      </TableCell>
                       <TableCell>
                         <div className="text-sm text-blue-500 mt-1">{noc.emp_purpose}</div>
                       </TableCell>
                       <TableCell>
-                        <div className="text-sm text-gray-500 mt-1">{noc.department}</div>
+                        <div className="text-sm text-gray-500 mt-1">{noc.status}</div>
                       </TableCell>
-                       <TableCell>
-                                                  <Button
-                                                    onClick={() => {
-                                                      setIsOpen(true);
-                                                      setSelectedRequest(noc);
-                                                    }}
-                                                  >
-                                                    <Eye />
-                                                  </Button>
-                                                </TableCell>
+                      <TableCell>
+                        <Button
+                          onClick={() => {
+                            setIsOpen(true);
+                            setSelectedRequest(noc);
+                          }}
+                        >
+                          <Eye />
+                        </Button>
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -323,55 +326,55 @@ const RequestReceived = () => {
           </CardContent>
         </Card>
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
-                      {selectedRequest && (
-                        <DialogContent className="w-[90%] md:max-w-3xl">
-                          <DialogHeader>
-                            <DialogTitle>Remarks</DialogTitle>
-                          </DialogHeader>
-                          <div className="grid gap-6 py-6 pt-0 h-full max-h-[calc(100vh-20rem)] overflow-y-scroll">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                              <div>
-                                <Label>Employee Id</Label>
-                                <p className="text-sm text-muted-foreground">{selectedRequest.employeeId}</p>
-                              </div>
-                              <div>
-                                <Label>Name</Label>
-                                <p className="text-sm text-muted-foreground">{selectedRequest.emp_name}</p>
-                              </div>
-                              <div>
-                                <Label>Designation</Label>
-                                <p className="text-sm text-muted-foreground">{selectedRequest.designation}</p>
-                              </div>
-                              <div>
-                                <Label>Location</Label>
-                                <p className="text-sm text-muted-foreground">{selectedRequest.location}</p>
-                              </div>
-                              <div>
-                                <Label>Purpose</Label>
-                                <p className="text-sm text-muted-foreground">{selectedRequest.emp_purpose}</p>
-                              </div>
-                              <div>
-                                <Label>Department</Label>
-                                <p className="text-sm text-muted-foreground">{selectedRequest.department}</p>
-                              </div>
-                            </div>
-                          </div>
-                          <DialogFooter>
-                            <Button variant="outline" onClick={() => setIsOpen(false)}>
-                              Get Tctl
-                            </Button>
-                            <Button className="mt-2 md:mt-0 mb-2" variant="outline" onClick={() => setIsOpen(false)}>
-                              <ArrowRight className="mr-2 h-4 w-4" />
-                              Revert Vigilance User
-                            </Button>
-                            <Button onClick={handleSubmit}>
-                              <Send className="mr-2 h-4 w-4" />
-                              Send To Corporate HR
-                            </Button>
-                          </DialogFooter>
-                        </DialogContent>
-                      )}
-                    </Dialog>
+          {selectedRequest && (
+            <DialogContent className="w-[90%] md:max-w-3xl">
+              <DialogHeader>
+                <DialogTitle>Remarks</DialogTitle>
+              </DialogHeader>
+              <div className="grid gap-6 py-6 pt-0 h-full max-h-[calc(100vh-20rem)] overflow-y-scroll">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                  <div>
+                    <Label>Employee Id</Label>
+                    <p className="text-sm text-muted-foreground">{selectedRequest.employeeId}</p>
+                  </div>
+                  <div>
+                    <Label>Name</Label>
+                    <p className="text-sm text-muted-foreground">{selectedRequest.emp_name}</p>
+                  </div>
+                  <div>
+                    <Label>Designation</Label>
+                    <p className="text-sm text-muted-foreground">{selectedRequest.designation}</p>
+                  </div>
+                  <div>
+                    <Label>Location</Label>
+                    <p className="text-sm text-muted-foreground">{selectedRequest.location}</p>
+                  </div>
+                  <div>
+                    <Label>Purpose</Label>
+                    <p className="text-sm text-muted-foreground">{selectedRequest.emp_purpose}</p>
+                  </div>
+                  <div>
+                    <Label>Department</Label>
+                    <p className="text-sm text-muted-foreground">{selectedRequest.department}</p>
+                  </div>
+                </div>
+              </div>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setIsOpen(false)}>
+                  Get Tctl
+                </Button>
+                <Button className="mt-2 md:mt-0 mb-2" variant="outline" onClick={() => setIsOpen(false)}>
+                  <ArrowRight className="mr-2 h-4 w-4" />
+                  Revert Vigilance User
+                </Button>
+                <Button onClick={handleSubmit}>
+                  <Send className="mr-2 h-4 w-4" />
+                  Send To Corporate HR
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          )}
+        </Dialog>
       </div>
     </div>
   );

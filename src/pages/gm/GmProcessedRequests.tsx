@@ -286,7 +286,7 @@ const GmProcessedRequests = () => {
                     </TableCell>
                     <TableCell className="text-sm text-gray-500 mt-1">
                       <div className="truncate w-[100px]" title={noc.designation}>
-                        <p>{format(new Date(noc.date), 'dd MMM yyyy')}</p>
+                        {/* <p>{format(new Date(noc?.date), 'dd MMM yyyy')}</p> */}
                       </div>
                     </TableCell>
                     <TableCell>

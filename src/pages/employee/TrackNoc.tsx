@@ -440,9 +440,9 @@ const TrackNoc = () => {
                       </Button>
                     </TableHead>
 
-                    <TableHead>
+                    {/* <TableHead>
                       <span className="text-white">Employee</span>
-                    </TableHead>
+                    </TableHead> */}
 
                     <TableHead className=" text-white">Purpose</TableHead>
                     <TableHead>
@@ -470,7 +470,7 @@ const TrackNoc = () => {
                         <div className="font-medium text-blue-600">{noc.referenceId}</div>
                       </TableCell>
 
-                      <TableCell>
+                      {/* <TableCell>
                         <div className="flex items-center space-x-2">
                           {getPurposeIcon(noc.purpose)}
                           <div>
@@ -478,7 +478,7 @@ const TrackNoc = () => {
                             <div className="text-sm text-gray-500 mt-1">{noc.department}</div>
                           </div>
                         </div>
-                      </TableCell>
+                      </TableCell> */}
                       <TableCell className="max-w-xs">
                         <div className="font-medium">{noc.purpose}</div>
                         <div className="truncate" title={noc.description}>
