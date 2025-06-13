@@ -34,7 +34,8 @@ const VigilanceRequestReceived = () => {
       id: 1,
       employeeId: '100649',
       designation: 'GM',
-      location: 'Office',
+      location: 'Corporate Office',
+      status:"Pending",
       emp_purpose: 'passport',
       emp_name: 'Amit Kumar',
       department: 'Urban Development',
@@ -44,7 +45,8 @@ const VigilanceRequestReceived = () => {
       id: 2,
       employeeId: '100650',
       designation: 'GM',
-      location: 'Office',
+      location: 'Corporate Office',
+      status:"Pending",
       emp_purpose: 'passport',
       emp_name: 'Amit Kumar',
       department: 'Transport Authority',
@@ -54,7 +56,8 @@ const VigilanceRequestReceived = () => {
       id: 3,
       employeeId: '100651',
       designation: 'GM',
-      location: 'Office',
+      location: 'Corporate Office',
+      status:"Pending",
       emp_purpose: 'passport',
       emp_name: 'Amit Kumar',
       department: 'Municipal Corporation',
@@ -64,7 +67,8 @@ const VigilanceRequestReceived = () => {
       id: 4,
       employeeId: '100652',
       designation: 'GM',
-      location: 'Office',
+      location: 'Corporate Office',
+      status:"Pending",
       emp_purpose: 'passport',
       emp_name: 'Amit Kumar',
       department: 'Education Department',
@@ -74,7 +78,8 @@ const VigilanceRequestReceived = () => {
       id: 5,
       employeeId: '100653',
       designation: 'GM',
-      location: 'Office',
+      location: 'Corporate Office',
+      status:"Pending",
       emp_purpose: 'passport',
       emp_name: 'Amit Kumar',
       department: 'Industrial Development',
@@ -84,7 +89,8 @@ const VigilanceRequestReceived = () => {
       id: 6,
       employeeId: '100654',
       designation: 'GM',
-      location: 'Office',
+      location: 'Corporate Office',
+      status:"Pending",
       emp_purpose: 'passport',
       emp_name: 'Amit Kumar',
       department: 'Parks & Recreation',
@@ -94,7 +100,8 @@ const VigilanceRequestReceived = () => {
       id: 7,
       employeeId: '100655',
       designation: 'GM',
-      location: 'Office',
+      location: 'Corporate Office',
+      status:"Pending",
       emp_purpose: 'passport',
       emp_name: 'Amit Kumar',
       department: 'Health Department',
@@ -104,7 +111,8 @@ const VigilanceRequestReceived = () => {
       id: 8,
       employeeId: '100656',
       designation: 'GM',
-      location: 'Office',
+      location: 'Corporate Office',
+      status:"Pending",
       emp_purpose: 'passport',
       emp_name: 'Amit Kumar',
       department: 'Urban Development',
@@ -114,7 +122,8 @@ const VigilanceRequestReceived = () => {
       id: 9,
       employeeId: '100657',
       designation: 'GM',
-      location: 'Office',
+      location: 'Corporate Office',
+      status:"Pending",
       emp_purpose: 'passport',
       emp_name: 'Amit Kumar',
       department: 'Municipal Corporation',
@@ -124,7 +133,8 @@ const VigilanceRequestReceived = () => {
       id: 10,
       employeeId: '100658',
       designation: 'GM',
-      location: 'Office',
+      location: 'Corporate Office',
+      status:"Pending",
       emp_purpose: 'passport',
       emp_name: 'Amit Kumar',
       department: 'Water Authority',
@@ -134,7 +144,8 @@ const VigilanceRequestReceived = () => {
       id: 11,
       employeeId: '100659',
       designation: 'GM',
-      location: 'Office',
+      location: 'Corporate Office',
+      status:"Pending",
       emp_purpose: 'passport',
       emp_name: 'Amit Kumar',
       department: 'Public Works',
@@ -144,7 +155,8 @@ const VigilanceRequestReceived = () => {
       id: 12,
       employeeId: '100660',
       designation: 'GM',
-      location: 'Office',
+      location: 'Corporate Office',
+      status:"Pending",
       emp_purpose: 'passport',
       emp_name: 'Amit Kumar',
       department: 'Telecom Authority',
@@ -260,40 +272,47 @@ const VigilanceRequestReceived = () => {
               <TableHeader>
                 <TableRow>
                   <TableHead>
+                    <span className="text-white">SN.</span>
+                  </TableHead>
+                  <TableHead>
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={() => handleSort('employeeId')}
                       className="flex items-center space-x-1 p-0 h-auto font-semibold text-white"
                     >
-                      <span>Employee Code</span>
+                      <span>Reference Id</span>
                       <ArrowUpDown className="h-3 w-3" />
                     </Button>
                   </TableHead>
-                  <TableHead className=" text-white">Date</TableHead>
+                  <TableHead>
+                    <span className="text-white">Employee Code</span>
+                  </TableHead>
                   <TableHead className=" text-white">Name</TableHead>
                   <TableHead className=" text-white">Designation</TableHead>
-                  <TableHead className=" text-white">Department/Location</TableHead>
+                  <TableHead className=" text-white">Date</TableHead>
+                  <TableHead className=" text-white">Unit</TableHead>
+                  <TableHead className=" text-white">Status</TableHead>
                   <TableHead className="text-white">Purpose</TableHead>
                   <TableHead className="text-white">Action</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {paginatedData.map((noc) => (
+                {paginatedData.map((noc, index) => (
                   <TableRow key={noc.id} className="hover:bg-gray-50 transition-colors">
-                    {/* <TableCell className="font-medium">{startIndex + index + 1}</TableCell> */}
+                    <TableCell className="font-medium">{startIndex + index + 1}</TableCell>
                     <TableCell>
                       <div className="font-medium ">{noc.employeeId}</div>
                     </TableCell>
-                    <TableCell className="text-sm text-gray-500 mt-1">
-                      <div className="truncate w-[100px]" title={noc.designation}>
-                        <p>{format(new Date(noc.date), 'dd MMM yyyy')}</p>
-                      </div>
+                    <TableCell>
+                      <div className="font-medium w-[120px]">{noc.employeeId}</div>
                     </TableCell>
+
                     <TableCell>
                       <div className="flex items-center space-x-2">
-                        <div>
-                          <div className="text-sm text-gray-500">{noc.emp_name}</div>
+                        <div className="w-[120px]">
+                          <p className="text-sm text-gray-500 w-[120px] truncate">{noc.emp_name}</p>
+                          <p className="text-sm text-gray-500 w-[120px] truncate">{noc.department}</p>
                         </div>
                       </div>
                     </TableCell>
@@ -302,10 +321,16 @@ const VigilanceRequestReceived = () => {
                         {noc.designation}
                       </div>
                     </TableCell>
-                    <TableCell>
-                      <div className="text-sm text-gray-500 mt-1">
-                        {noc.department},{noc.location}
+                    <TableCell className="text-sm text-gray-500 mt-1">
+                      <div className="truncate w-[100px]" title={noc.designation}>
+                        <p>{format(new Date(noc.date), 'dd MMM yyyy')}</p>
                       </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="text-sm text-gray-500 mt-1 w-[120px]">{noc.location}</div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="text-sm text-gray-500 mt-1 w-[120px]">{noc?.status}</div>
                     </TableCell>
                     <TableCell>
                       <div className="text-sm text-blue-500 mt-1">{noc.emp_purpose}</div>
