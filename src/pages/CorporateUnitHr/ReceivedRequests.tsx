@@ -205,30 +205,11 @@ const ReceivedRequests = () => {
   };
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [isOpen, setIsOpen] = React.useState(false);
-  const [remarks, setRemarks] = React.useState<Remarks>({
-    application: '2539_20241227_NOC UPMRC.pdf',
-    uploadAdvertisement: '2539_20241227_Letter to Railway Board for Recruitment to the post of JGM-DGM (HR) (1).pdf',
-    applicationType: 'Absorption',
-    postAppliedFor: 'JGM/HR',
-    organization: 'UPMRC',
-    organizationAddress: 'Gomtinagar, LKO, UP',
-    lastDate: '2025-01-16',
-    advertisementNo: 'Vacancy Notice No. UPMRC/HRD/16/2024 dated 18.12.2024',
-    iprDate: '02-Jan-2024',
-    iprFile: '2539_20241227_IPR 2024.pdf',
-    unitHrRemarks: '',
-    vigilanceStatus: 'At present, no vigilance case is pending',
-  });
-  const handleVigilanceStatusChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const { value } = e.target;
-    setRemarks((prevRemarks) => ({
-      ...prevRemarks,
-      vigilanceStatus: value,
-    }));
-  };
+  
+  
   const handleSubmit = () => {
     // Perform form submission or data processing logic here
-    console.log(remarks);
+    
     setIsOpen(false);
   };
   return (
