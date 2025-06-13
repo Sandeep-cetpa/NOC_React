@@ -1,25 +1,18 @@
 import React, { useState } from 'react';
-import {
-  Search,
-  RefreshCw,
-  ArrowUpDown,
-  ChevronLeft,
-  ChevronRight,
-} from 'lucide-react';
+import { Search, RefreshCw, ArrowUpDown, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { format } from 'date-fns';
 
-
-const  RequestReceived = () => {
+const RequestReceived = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
-
 
   const nocData = [
     {
@@ -30,6 +23,7 @@ const  RequestReceived = () => {
       emp_purpose: 'passport',
       emp_name: 'Amit Kumar',
       department: 'Urban Development',
+      date: '2025-06-13',
     },
     {
       id: 2,
@@ -39,6 +33,7 @@ const  RequestReceived = () => {
       emp_purpose: 'passport',
       emp_name: 'Amit Kumar',
       department: 'Transport Authority',
+      date: '2025-06-13',
     },
     {
       id: 3,
@@ -48,6 +43,7 @@ const  RequestReceived = () => {
       emp_purpose: 'passport',
       emp_name: 'Amit Kumar',
       department: 'Municipal Corporation',
+      date: '2025-06-13',
     },
     {
       id: 4,
@@ -57,6 +53,7 @@ const  RequestReceived = () => {
       emp_purpose: 'passport',
       emp_name: 'Amit Kumar',
       department: 'Education Department',
+      date: '2025-06-13',
     },
     {
       id: 5,
@@ -66,8 +63,8 @@ const  RequestReceived = () => {
       emp_purpose: 'passport',
       emp_name: 'Amit Kumar',
       department: 'Industrial Development',
+      date: '2025-06-13',
     },
-   
   ];
 
   const filteredData = nocData.filter((item) => {
@@ -208,9 +205,10 @@ const  RequestReceived = () => {
                         <ArrowUpDown className="h-3 w-3" />
                       </Button>
                     </TableHead>
+                    <TableHead className=" text-white">Date</TableHead>
                     <TableHead className=" text-white">Designation</TableHead>
                     <TableHead className=" text-white">Name</TableHead>
-                    
+
                     {/* <TableHead className="text-white">Location</TableHead> */}
                     <TableHead className="text-white">Purpose</TableHead>
                     <TableHead className=" text-white">Department</TableHead>
@@ -223,7 +221,12 @@ const  RequestReceived = () => {
                       <TableCell>
                         <div className="font-medium ">{noc.employeeId}</div>
                       </TableCell>
-                      
+                      <TableCell className="text-sm text-gray-500 mt-1">
+                        <div className="truncate w-[100px]" title={noc.designation}>
+                          <p>{format(new Date(noc.date), 'dd MMM yyyy')}</p>
+                        </div>
+                      </TableCell>
+
                       <TableCell className="text-sm text-gray-500 mt-1">
                         <div className="truncate" title={noc.designation}>
                           {noc.designation}
@@ -236,14 +239,14 @@ const  RequestReceived = () => {
                           </div>
                         </div>
                       </TableCell>
-                     
+
                       {/* <TableCell>
                         <div className="text-sm text-gray-500 mt-1">{noc.location}</div>
                       </TableCell> */}
                       <TableCell>
                         <div className="text-sm text-blue-500 mt-1">{noc.emp_purpose}</div>
                       </TableCell>
-                       <TableCell>
+                      <TableCell>
                         <div className="text-sm text-gray-500 mt-1">{noc.department}</div>
                       </TableCell>
                     </TableRow>
@@ -305,4 +308,4 @@ const  RequestReceived = () => {
   );
 };
 
-export default  RequestReceived;
+export default RequestReceived;

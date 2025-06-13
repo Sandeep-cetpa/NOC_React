@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-
+import { format } from 'date-fns';
 
 const  DandArPendingRequests = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -30,6 +30,7 @@ const  DandArPendingRequests = () => {
       emp_purpose: 'passport',
       emp_name: 'Amit Kumar',
       department: 'Urban Development',
+      date: '2025-06-13',
     },
     {
       id: 2,
@@ -39,6 +40,7 @@ const  DandArPendingRequests = () => {
       emp_purpose: 'passport',
       emp_name: 'Amit Kumar',
       department: 'Transport Authority',
+      date: '2025-06-13',
     },
     {
       id: 3,
@@ -48,6 +50,7 @@ const  DandArPendingRequests = () => {
       emp_purpose: 'passport',
       emp_name: 'Amit Kumar',
       department: 'Municipal Corporation',
+      date: '2025-06-13',
     },
     {
       id: 4,
@@ -57,6 +60,7 @@ const  DandArPendingRequests = () => {
       emp_purpose: 'passport',
       emp_name: 'Amit Kumar',
       department: 'Education Department',
+      date: '2025-06-13',
     },
     {
       id: 5,
@@ -66,6 +70,7 @@ const  DandArPendingRequests = () => {
       emp_purpose: 'passport',
       emp_name: 'Amit Kumar',
       department: 'Industrial Development',
+      date: '2025-06-13',
     },
    
   ];
@@ -208,6 +213,7 @@ const  DandArPendingRequests = () => {
                         <ArrowUpDown className="h-3 w-3" />
                       </Button>
                     </TableHead>
+                     <TableHead className=" text-white">Date</TableHead>
                     <TableHead className=" text-white">Name</TableHead>
                     <TableHead className=" text-white">Designation</TableHead>
                     <TableHead className=" text-white">Department</TableHead>
@@ -222,6 +228,11 @@ const  DandArPendingRequests = () => {
                       <TableCell>
                         <div className="font-medium ">{noc.employeeId}</div>
                       </TableCell>
+                       <TableCell className="text-sm text-gray-500 mt-1">
+                                              <div className="truncate w-[100px]" title={noc.designation}>
+                                                <p>{format(new Date(noc.date), 'dd MMM yyyy')}</p>
+                                              </div>
+                                            </TableCell>
                       <TableCell>
                         <div className="flex items-center space-x-2">
                           <div>

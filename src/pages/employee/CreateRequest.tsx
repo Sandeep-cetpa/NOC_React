@@ -143,12 +143,12 @@ const CreateRequest = () => {
                 <p className="text-gray-500">No forms available</p>
               </div>
             ) : (
-              <div className="space-y-4 mt-0 w-1/4">
+              <div className="space-y-4 mt-0 w-1/3">
                 <Select
                   options={forms.map((form) => ({ label: form.title, value: form.id }))}
                   onChange={(e) => handleFormSelect(e?.value)}
                   value={{ label: selectedForm?.title, value: selectedForm?.id }}
-                  className="w-60 bg-white"
+                  className=" bg-white"
                   placeholder="Select Purpose"
                 />
               </div>
