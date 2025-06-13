@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
+import { format } from 'date-fns';
 
 const CompletedRequests = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -26,6 +27,7 @@ const CompletedRequests = () => {
       emp_purpose: 'External Employment',
       emp_name: 'Kamlesh Kumar',
       department: 'Electrical',
+      date: '2025-06-13',
     },
     {
       id: 2,
@@ -38,6 +40,7 @@ const CompletedRequests = () => {
       emp_purpose: 'passport',
       emp_name: 'Deependra Kumar Maurya',
       department: 'Transport Authority',
+      date: '2025-06-13',
     },
     {
       id: 3,
@@ -50,6 +53,7 @@ const CompletedRequests = () => {
       emp_purpose: 'passport',
       emp_name: 'Deepak Roy',
       department: 'Municipal Corporation',
+      date: '2025-06-13',
     },
     {
       id: 4,
@@ -62,6 +66,7 @@ const CompletedRequests = () => {
       emp_purpose: 'passport',
       emp_name: 'Deepak Roy',
       department: 'Education Department',
+      date: '2025-06-13',
     },
     {
       id: 5,
@@ -74,6 +79,7 @@ const CompletedRequests = () => {
       emp_purpose: 'passport',
       emp_name: 'Deepak Roy',
       department: 'Industrial Development',
+      date: '2025-06-13',
     },
     {
       id: 6,
@@ -86,6 +92,7 @@ const CompletedRequests = () => {
       emp_purpose: 'passport',
       emp_name: 'Deepak Roy',
       department: 'Parks & Recreation',
+      date: '2025-06-13',
     },
     {
       id: 7,
@@ -98,6 +105,7 @@ const CompletedRequests = () => {
       emp_purpose: 'passport',
       emp_name: 'Deepak Roy',
       department: 'Health Department',
+      date: '2025-06-13',
     },
     {
       id: 8,
@@ -110,6 +118,7 @@ const CompletedRequests = () => {
       emp_purpose: 'passport',
       emp_name: 'Deepak Roy',
       department: 'Urban Development',
+      date: '2025-06-13',
     },
     {
       id: 9,
@@ -122,6 +131,7 @@ const CompletedRequests = () => {
       emp_purpose: 'passport',
       emp_name: 'Deepak Roy',
       department: 'Municipal Corporation',
+      date: '2025-06-13',
     },
     {
       id: 10,
@@ -134,6 +144,7 @@ const CompletedRequests = () => {
       emp_purpose: 'passport',
       emp_name: 'Deepak Roy',
       department: 'Water Authority',
+      date: '2025-06-13',
     },
   ];
 
@@ -287,6 +298,9 @@ const CompletedRequests = () => {
                 <TableHeader>
                   <TableRow>
                     <TableHead>
+                      <span className="text-white">SN.</span>
+                    </TableHead>
+                    <TableHead>
                       <Button
                         variant="ghost"
                         size="sm"
@@ -308,10 +322,9 @@ const CompletedRequests = () => {
                         <ArrowUpDown className="h-3 w-3" />
                       </Button>
                     </TableHead>
-                    <TableHead className=" text-white">Name</TableHead>
-                    <TableHead className=" text-white">Designation</TableHead>
-                    <TableHead className=" text-white">Grade</TableHead>
-                    <TableHead className=" text-white">Department</TableHead>
+                    <TableHead className=" text-white">Name/Department</TableHead>
+                    <TableHead className=" text-white">Designation/Grade</TableHead>
+                    <TableHead className=" text-white">Date</TableHead>
                     <TableHead className="text-white">Location</TableHead>
                     <TableHead className="text-white">Status</TableHead>
                     <TableHead className="text-white">Purpose</TableHead>
@@ -320,7 +333,7 @@ const CompletedRequests = () => {
                 <TableBody>
                   {paginatedData.map((noc, index) => (
                     <TableRow key={noc.id} className="hover:bg-gray-50 transition-colors">
-                      {/* <TableCell className="font-medium">{startIndex + index + 1}</TableCell> */}
+                      <TableCell className="font-medium">{startIndex + index + 1}</TableCell>
                       <TableCell>
                         <div className="font-medium ">{noc.referenceId}</div>
                       </TableCell>
@@ -328,25 +341,25 @@ const CompletedRequests = () => {
                         <div className="font-medium ">{noc.employeeId}</div>
                       </TableCell>
                       <TableCell>
-                        <div className="flex items-center space-x-2">
-                          <Label className="text-sm text-gray-500 w-[150px] truncate" title={noc.emp_name}>
-                            {noc.emp_name}
-                          </Label>
+                        <div className="flex items-center space-x-2 text-sm ">
+                          <div className="w-[170px]">
+                            <p className="text-sm text-gray-500">{noc.emp_name}</p>
+                            <p className="text-sm text-gray-500 mt-1">{noc.department}</p>
+                          </div>
                         </div>
                       </TableCell>
                       <TableCell className="text-sm text-gray-500 mt-1">
-                        <div className="truncate" title={noc.designation}>
-                          {noc.designation}
+                        <div className="truncate w-[100px]" title={noc.designation}>
+                          <p>{noc.designation}</p>
+                          <p>{noc.positionGrade}</p>
                         </div>
                       </TableCell>
-                      <TableCell>
-                        <div className="text-sm text-gray-500 mt-1">{noc.positionGrade}</div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="text-sm text-gray-500 mt-1">
-                          <Label className="text-sm text-gray-500 w-[150px] truncate" title={noc.department}>{noc.department}</Label>
+                      <TableCell className="text-sm text-gray-500 mt-1">
+                        <div className="truncate w-[100px]" title={noc.designation}>
+                          <p>{format(new Date(noc.date), 'dd MMM yyyy')}</p>
                         </div>
                       </TableCell>
+
                       <TableCell>
                         <div className="text-sm text-gray-500 mt-1">{noc.location}</div>
                       </TableCell>
