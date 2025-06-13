@@ -396,7 +396,7 @@ const GmREquesteReceived = () => {
                         <Briefcase className="h-4 w-4 text-gray-400" />
                         <span className="text-gray-600">Designation:</span>
                         <span className="font-medium">{selectedRequest.designation}</span>
-                      </div>
+                      </div>   
                     </div>
                   </div>
                   <div>

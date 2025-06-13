@@ -6,7 +6,7 @@ const useUserRoles = () => {
   const isAdmin = roles.includes('admin');
   const isUser = roles.includes('user');
   return {
-    isSuperAdmin: false,
+    isSuperAdmin: true,
     isAdmin,
     isUser,
     roles,
