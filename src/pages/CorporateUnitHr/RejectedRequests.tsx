@@ -369,8 +369,8 @@ const RejectedRequests = () => {
                       <TableCell>
                         <div className="flex items-center space-x-2">
                           <div className="w-[130px]">
-                            <p className="text-sm text-gray-500">{noc.emp_name}</p>
-                            <p className="text-sm text-gray-500">{noc.department}</p>
+                            <p className="text-sm text-gray-500 w-[130px] truncate">{noc.emp_name}</p>
+                            <p className="text-sm text-gray-500 w-[130px] truncate">{noc.department}</p>
                           </div>
                         </div>
                       </TableCell>

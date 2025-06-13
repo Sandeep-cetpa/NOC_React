@@ -294,10 +294,11 @@ const NocRequestsFromVigilance = () => {
                     <TableHead>
                       <span className="text-white">Employee Code</span>
                     </TableHead>
-                    <TableHead className=" text-white">Name</TableHead>
-                    <TableHead className=" text-white">Designation</TableHead>
-                    <TableHead className=" text-white">Status</TableHead>
+                    <TableHead className=" text-white">Name/Department</TableHead>
+                    <TableHead className=" text-white">Designation/Grade</TableHead>
+
                     <TableHead className=" text-white">Date</TableHead>
+                    <TableHead className=" text-white">Status</TableHead>
                     <TableHead className="text-white">Unit</TableHead>
                     <TableHead className="text-white">Purpose</TableHead>
                     <TableHead className="text-white">Action</TableHead>
@@ -327,13 +328,14 @@ const NocRequestsFromVigilance = () => {
                           <p>{noc.designation}</p>
                         </div>
                       </TableCell>
-                      <TableCell>
-                        <div className="text-sm text-gray-500 mt-1">{noc.status}</div>
-                      </TableCell>
+
                       <TableCell>
                         <div className="text-sm text-gray-500 mt-1 w-[100px]">
                           {format(new Date(noc.date), 'dd MMM yyyy')}
                         </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="text-sm text-gray-500 mt-1">{noc.status}</div>
                       </TableCell>
                       <TableCell>
                         <div className="text-sm text-gray-500 mt-1 w-[120px] ">{noc.location}</div>

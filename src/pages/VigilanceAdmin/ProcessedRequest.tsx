@@ -7,6 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { format } from 'date-fns';
 
 interface Remarks {
   application: string;
@@ -37,6 +38,7 @@ const ProcessedRequest = () => {
       emp_purpose: 'passport',
       emp_name: 'Amit Kumar',
       department: 'Urban Development',
+      date: '2025-06-13',
     },
     {
       id: 2,
@@ -46,6 +48,7 @@ const ProcessedRequest = () => {
       emp_purpose: 'passport',
       emp_name: 'Amit Kumar',
       department: 'Transport Authority',
+      date: '2025-06-13',
     },
     {
       id: 3,
@@ -55,6 +58,7 @@ const ProcessedRequest = () => {
       emp_purpose: 'passport',
       emp_name: 'Amit Kumar',
       department: 'Municipal Corporation',
+      date: '2025-06-13',
     },
     {
       id: 4,
@@ -64,6 +68,7 @@ const ProcessedRequest = () => {
       emp_purpose: 'passport',
       emp_name: 'Amit Kumar',
       department: 'Education Department',
+      date: '2025-06-13',
     },
     {
       id: 5,
@@ -73,6 +78,7 @@ const ProcessedRequest = () => {
       emp_purpose: 'passport',
       emp_name: 'Amit Kumar',
       department: 'Industrial Development',
+      date: '2025-06-13',
     },
     {
       id: 6,
@@ -82,6 +88,7 @@ const ProcessedRequest = () => {
       emp_purpose: 'passport',
       emp_name: 'Amit Kumar',
       department: 'Parks & Recreation',
+      date: '2025-06-13',
     },
     {
       id: 7,
@@ -91,6 +98,7 @@ const ProcessedRequest = () => {
       emp_purpose: 'passport',
       emp_name: 'Amit Kumar',
       department: 'Health Department',
+      date: '2025-06-13',
     },
     {
       id: 8,
@@ -100,6 +108,7 @@ const ProcessedRequest = () => {
       emp_purpose: 'passport',
       emp_name: 'Amit Kumar',
       department: 'Urban Development',
+      date: '2025-06-13',
     },
     {
       id: 9,
@@ -109,6 +118,7 @@ const ProcessedRequest = () => {
       emp_purpose: 'passport',
       emp_name: 'Amit Kumar',
       department: 'Municipal Corporation',
+      date: '2025-06-13',
     },
     {
       id: 10,
@@ -118,6 +128,7 @@ const ProcessedRequest = () => {
       emp_purpose: 'passport',
       emp_name: 'Amit Kumar',
       department: 'Water Authority',
+      date: '2025-06-13',
     },
     {
       id: 11,
@@ -127,6 +138,7 @@ const ProcessedRequest = () => {
       emp_purpose: 'passport',
       emp_name: 'Amit Kumar',
       department: 'Public Works',
+      date: '2025-06-13',
     },
     {
       id: 12,
@@ -136,6 +148,7 @@ const ProcessedRequest = () => {
       emp_purpose: 'passport',
       emp_name: 'Amit Kumar',
       department: 'Telecom Authority',
+      date: '2025-06-13',
     },
   ];
   const filteredData = nocData.filter((item) => {
@@ -257,6 +270,7 @@ const ProcessedRequest = () => {
                       <ArrowUpDown className="h-3 w-3" />
                     </Button>
                   </TableHead>
+                  <TableHead className=" text-white">Date</TableHead>
                   <TableHead className=" text-white">Name</TableHead>
                   <TableHead className=" text-white">Designation</TableHead>
                   <TableHead className=" text-white">Department/Location</TableHead>
@@ -270,6 +284,11 @@ const ProcessedRequest = () => {
                     {/* <TableCell className="font-medium">{startIndex + index + 1}</TableCell> */}
                     <TableCell>
                       <div className="font-medium ">{noc.employeeId}</div>
+                    </TableCell>
+                    <TableCell className="text-sm text-gray-500 mt-1">
+                      <div className="truncate w-[100px]" title={noc.designation}>
+                        <p>{format(new Date(noc.date), 'dd MMM yyyy')}</p>
+                      </div>
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center space-x-2">

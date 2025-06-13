@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { format } from 'date-fns';
+
 interface Remarks {
   application: string;
   uploadAdvertisement: string;
@@ -41,6 +42,7 @@ const ReceivedRequests = () => {
       emp_name: 'Amit Kumar',
       date: '2025-03-02',
       department: 'Urban Development',
+      date: '2025-06-13',
     },
     {
       id: 2,
@@ -51,6 +53,7 @@ const ReceivedRequests = () => {
       emp_name: 'Amit Kumar',
       date: '2025-03-02',
       department: 'Transport Authority',
+      date: '2025-06-13',
     },
     {
       id: 3,
@@ -61,6 +64,7 @@ const ReceivedRequests = () => {
       emp_name: 'Amit Kumar',
       date: '2025-03-02',
       department: 'Municipal Corporation',
+      date: '2025-06-13',
     },
     {
       id: 4,
@@ -71,6 +75,7 @@ const ReceivedRequests = () => {
       emp_name: 'Amit Kumar',
       date: '2025-03-02',
       department: 'Education Department',
+      date: '2025-06-13',
     },
     {
       id: 5,
@@ -81,6 +86,7 @@ const ReceivedRequests = () => {
       emp_name: 'Amit Kumar',
       date: '2025-03-02',
       department: 'Industrial Development',
+      date: '2025-06-13',
     },
     {
       id: 6,
@@ -91,6 +97,7 @@ const ReceivedRequests = () => {
       emp_name: 'Amit Kumar',
       date: '2025-03-02',
       department: 'Parks & Recreation',
+      date: '2025-06-13',
     },
     {
       id: 7,
@@ -101,6 +108,7 @@ const ReceivedRequests = () => {
       emp_name: 'Amit Kumar',
       date: '2025-03-02',
       department: 'Health Department',
+      date: '2025-06-13',
     },
     {
       id: 8,
@@ -111,6 +119,7 @@ const ReceivedRequests = () => {
       emp_name: 'Amit Kumar',
       date: '2025-03-02',
       department: 'Urban Development',
+      date: '2025-06-13',
     },
     {
       id: 9,
@@ -121,6 +130,7 @@ const ReceivedRequests = () => {
       emp_name: 'Amit Kumar',
       date: '2025-03-02',
       department: 'Municipal Corporation',
+      date: '2025-06-13',
     },
     {
       id: 10,
@@ -131,6 +141,7 @@ const ReceivedRequests = () => {
       emp_name: 'Amit Kumar',
       date: '2025-03-02',
       department: 'Water Authority',
+      date: '2025-06-13',
     },
     {
       id: 11,
@@ -141,6 +152,7 @@ const ReceivedRequests = () => {
       emp_name: 'Amit Kumar',
       date: '2025-03-02',
       department: 'Public Works',
+      date: '2025-06-13',
     },
     {
       id: 12,
@@ -151,6 +163,7 @@ const ReceivedRequests = () => {
       emp_name: 'Amit Kumar',
       date: '2025-03-02',
       department: 'Telecom Authority',
+      date: '2025-06-13',
     },
   ];
   const filteredData = nocData.filter((item) => {
@@ -272,12 +285,10 @@ const ReceivedRequests = () => {
                           <SelectItem value="Purpose">Other</SelectItem>
                         </SelectContent>
                       </Select>
-
                       <Button variant="outline" className="flex items-center space-x-2">
                         <RefreshCw className="h-4 w-4" />
                       </Button>
                     </div>
-
                     <div className="flex  justify-between space-x-4">
                       <div className="flex items-center space-x-2 text-sm text-gray-600">
                         <span>
@@ -380,7 +391,6 @@ const ReceivedRequests = () => {
                     </TableBody>
                   </Table>
                 </div>
-
                 {/* Pagination */}
                 {totalPages > 1 && (
                   <div className="flex items-center justify-between mt-6">

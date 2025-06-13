@@ -333,6 +333,7 @@ const CompletedRequests = () => {
                       <TableCell>
                         <div className="font-medium w-[120px] ">{noc.employeeId}</div>
                       </TableCell>
+                     
                       <TableCell>
                         <div className="flex items-center space-x-2 text-sm ">
                           <div className="w-[170px]">
@@ -347,7 +348,7 @@ const CompletedRequests = () => {
                           <p>{noc.positionGrade}</p>
                         </div>
                       </TableCell>
-                      <TableCell className="text-sm text-gray-500 mt-1">
+                       <TableCell className="text-sm text-gray-500 mt-1">
                         <div className="truncate w-[100px]" title={noc.designation}>
                           <p>{format(new Date(noc.date), 'dd MMM yyyy')}</p>
                         </div>
