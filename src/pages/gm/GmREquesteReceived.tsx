@@ -53,7 +53,7 @@ const dummyData: Request[] = [
     name: 'Jane Smith',
     purpose: 'Document Update',
     description: 'Upload new documents',
-    remarksByUnitHR: 'Pending',
+    remarksByUnitHR: 'Pending', 
     remarksByCGM: 'In Review',
     remarksByCorporateHR: 'Awaiting',
     remarksByDAndAR: 'In Process',
@@ -299,37 +299,37 @@ const GmREquesteReceived = () => {
                     Description
                   </div>
                 </TableHead>
-                <TableHead className="text-white">
+                <TableHead className="text-white whitespace-nowrap">
                   <div className="flex items-center gap-2">
                     <Shield className="h-4 w-4" />
                     Remarks By Unit HR
                   </div>
                 </TableHead>
-                <TableHead className="text-white">
-                  <div className="flex items-center gap-2">
+                <TableHead className="text-white whitespace-nowrap">
+                  <div className="flex items-center gap-2 ">
                     <UserCog className="h-4 w-4" />
                     Remarks By CGM
                   </div>
                 </TableHead>
-                <TableHead className="text-white">
+                <TableHead className="text-white whitespace-nowrap">
                   <div className="flex items-center gap-2">
                     <Shield className="h-4 w-4" />
                     Remarks By Corporate HR
                   </div>
                 </TableHead>
-                <TableHead className="text-white">
+                <TableHead className="text-white whitespace-nowrap">
                   <div className="flex items-center gap-2">
                     <Shield className="h-4 w-4" />
                     Remarks By D & AR
                   </div>
                 </TableHead>
-                <TableHead className="text-white">
+                <TableHead className="text-white whitespace-nowrap">
                   <div className="flex items-center gap-2">
                     <Shield className="h-4 w-4" />
                     Remarks By Vigilance Officer
                   </div>
                 </TableHead>
-                <TableHead className="text-white">
+                <TableHead className="text-white whitespace-nowrap">
                   <div className="flex items-center gap-2">
                     <Shield className="h-4 w-4" />
                     Remarks By Dr. CVO
