@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { Search, RefreshCw, ArrowUpDown, ChevronLeft, ChevronRight, Eye } from 'lucide-react';
+import { Search, RefreshCw, ArrowUpDown, ChevronLeft, ChevronRight, Eye, ArrowRight, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { format } from 'date-fns';
@@ -211,6 +213,14 @@ const RequestUnderProcess = () => {
       direction: prev.key === key && prev.direction === 'asc' ? 'desc' : 'asc',
     }));
   };
+  const [selectedRequest, setSelectedRequest] = useState(null);
+  const [isOpen, setIsOpen] = React.useState(false);
+
+  const handleSubmit = () => {
+    // Perform form submission or data processing logic here
+
+    setIsOpen(false);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-6">
@@ -401,7 +411,12 @@ const RequestUnderProcess = () => {
                         <div className="text-sm text-blue-500 mt-1">{noc.emp_purpose}</div>
                       </TableCell>
                       <TableCell>
-                        <Button>
+                        <Button
+                          onClick={() => {
+                            setIsOpen(true);
+                            setSelectedRequest(noc);
+                          }}
+                        >
                           <Eye />
                         </Button>
                       </TableCell>
@@ -459,6 +474,56 @@ const RequestUnderProcess = () => {
             )}
           </CardContent>
         </Card>
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+          {selectedRequest && (
+            <DialogContent className="w-[90%] md:max-w-3xl">
+              <DialogHeader>
+                <DialogTitle>Remarks</DialogTitle>
+              </DialogHeader>
+              <div className="grid gap-6 py-6 pt-0 h-full max-h-[calc(100vh-20rem)] overflow-y-scroll">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                  <div>
+                    <Label>Employee Id</Label>
+                    <p className="text-sm text-muted-foreground">{selectedRequest.employeeId}</p>
+                  </div>
+                  <div>
+                    <Label>Name</Label>
+                    <p className="text-sm text-muted-foreground">{selectedRequest.emp_name}</p>
+                  </div>
+                  <div>
+                    <Label>Designation</Label>
+                    <p className="text-sm text-muted-foreground">{selectedRequest.designation}</p>
+                  </div>
+                  <div>
+                    <Label>Location</Label>
+                    <p className="text-sm text-muted-foreground">{selectedRequest.location}</p>
+                  </div>
+                  <div>
+                    <Label>Purpose</Label>
+                    <p className="text-sm text-muted-foreground">{selectedRequest.emp_purpose}</p>
+                  </div>
+                  <div>
+                    <Label>Department</Label>
+                    <p className="text-sm text-muted-foreground">{selectedRequest.department}</p>
+                  </div>
+                </div>
+              </div>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setIsOpen(false)}>
+                  Get Tctl
+                </Button>
+                <Button className="mt-2 md:mt-0 mb-2" variant="outline" onClick={() => setIsOpen(false)}>
+                  <ArrowRight className="mr-2 h-4 w-4" />
+                  Revert Vigilance User
+                </Button>
+                <Button onClick={handleSubmit}>
+                  <Send className="mr-2 h-4 w-4" />
+                  Send To Corporate HR
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          )}
+        </Dialog>
       </div>
     </div>
   );
