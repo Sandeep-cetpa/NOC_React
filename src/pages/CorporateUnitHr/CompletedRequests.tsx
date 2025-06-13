@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, RefreshCw, ArrowUpDown, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, RefreshCw, ArrowUpDown, ChevronLeft, ChevronRight, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -36,7 +36,7 @@ const CompletedRequests = () => {
       currentStatus: 'Completed',
       employeeId: '100650',
       designation: 'Sr Exec',
-      location: 'Office',
+      location: 'Corporate Office',
       emp_purpose: 'passport',
       emp_name: 'Deependra Kumar Maurya',
       department: 'Transport Authority',
@@ -49,7 +49,7 @@ const CompletedRequests = () => {
       currentStatus: 'Completed',
       employeeId: '100651',
       designation: 'GM',
-      location: 'Office',
+      location: 'Corporate Office',
       emp_purpose: 'passport',
       emp_name: 'Deepak Roy',
       department: 'Municipal Corporation',
@@ -62,7 +62,7 @@ const CompletedRequests = () => {
       currentStatus: 'Completed',
       employeeId: '100652',
       designation: 'GM',
-      location: 'Office',
+      location: 'Corporate Office',
       emp_purpose: 'passport',
       emp_name: 'Deepak Roy',
       department: 'Education Department',
@@ -75,7 +75,7 @@ const CompletedRequests = () => {
       currentStatus: 'Completed',
       employeeId: '100653',
       designation: 'GM',
-      location: 'Office',
+      location: 'Corporate Office',
       emp_purpose: 'passport',
       emp_name: 'Deepak Roy',
       department: 'Industrial Development',
@@ -88,7 +88,7 @@ const CompletedRequests = () => {
       currentStatus: 'Completed',
       employeeId: '100654',
       designation: 'GM',
-      location: 'Office',
+      location: 'Corporate Office',
       emp_purpose: 'passport',
       emp_name: 'Deepak Roy',
       department: 'Parks & Recreation',
@@ -101,7 +101,7 @@ const CompletedRequests = () => {
       currentStatus: 'Completed',
       employeeId: '100655',
       designation: 'GM',
-      location: 'Office',
+      location: 'Corporate Office',
       emp_purpose: 'passport',
       emp_name: 'Deepak Roy',
       department: 'Health Department',
@@ -114,7 +114,7 @@ const CompletedRequests = () => {
       currentStatus: 'Completed',
       employeeId: '100656',
       designation: 'GM',
-      location: 'Office',
+      location: 'Corporate Office',
       emp_purpose: 'passport',
       emp_name: 'Deepak Roy',
       department: 'Urban Development',
@@ -127,7 +127,7 @@ const CompletedRequests = () => {
       currentStatus: 'Completed',
       employeeId: '100657',
       designation: 'GM',
-      location: 'Office',
+      location: 'Corporate Office',
       emp_purpose: 'passport',
       emp_name: 'Deepak Roy',
       department: 'Municipal Corporation',
@@ -140,7 +140,7 @@ const CompletedRequests = () => {
       currentStatus: 'Completed',
       employeeId: '100658',
       designation: 'GM',
-      location: 'Office',
+      location: 'Corporate Office',
       emp_purpose: 'passport',
       emp_name: 'Deepak Roy',
       department: 'Water Authority',
@@ -312,22 +312,15 @@ const CompletedRequests = () => {
                       </Button>
                     </TableHead>
                     <TableHead>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleSort('employeeId')}
-                        className="flex items-center space-x-1 p-0 h-auto font-semibold text-white"
-                      >
-                        <span>Employee Code</span>
-                        <ArrowUpDown className="h-3 w-3" />
-                      </Button>
+                      <span className="text-white">Employee Code</span>
                     </TableHead>
                     <TableHead className=" text-white">Name/Department</TableHead>
                     <TableHead className=" text-white">Designation/Grade</TableHead>
                     <TableHead className=" text-white">Date</TableHead>
-                    <TableHead className="text-white">Location</TableHead>
+                    <TableHead className="text-white">Unit</TableHead>
                     <TableHead className="text-white">Status</TableHead>
                     <TableHead className="text-white">Purpose</TableHead>
+                    <TableHead className="text-white">Action</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -338,7 +331,7 @@ const CompletedRequests = () => {
                         <div className="font-medium ">{noc.referenceId}</div>
                       </TableCell>
                       <TableCell>
-                        <div className="font-medium ">{noc.employeeId}</div>
+                        <div className="font-medium w-[120px] ">{noc.employeeId}</div>
                       </TableCell>
                      
                       <TableCell>
@@ -360,15 +353,19 @@ const CompletedRequests = () => {
                           <p>{format(new Date(noc.date), 'dd MMM yyyy')}</p>
                         </div>
                       </TableCell>
-
                       <TableCell>
-                        <div className="text-sm text-gray-500 mt-1">{noc.location}</div>
+                        <div className="text-sm text-gray-500 mt-1 w-[120px]">{noc.location}</div>
                       </TableCell>
                       <TableCell>
                         <div className="text-sm text-gray-500 mt-1">{noc.currentStatus}</div>
                       </TableCell>
                       <TableCell>
                         <div className="text-sm text-blue-500 mt-1">{noc.emp_purpose}</div>
+                      </TableCell>
+                      <TableCell>
+                        <Button variant="outline" size="sm">
+                          <Eye />
+                        </Button>
                       </TableCell>
                     </TableRow>
                   ))}
