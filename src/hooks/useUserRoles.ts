@@ -14,9 +14,9 @@ const useUserRoles = () => {
     isUnitHr: false,
     isCgm: false,
     isDandAR: false,
-    isVigilanceAdmin: false,
+    isVigilanceAdmin: true,
     isCorporateUnitHr: false,
-    isGm: true,
+    isGm: false, //2 table are pending for this role
   };
 };
 

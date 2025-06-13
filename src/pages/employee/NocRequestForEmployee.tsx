@@ -159,7 +159,10 @@ const NocRequestForEmployee = () => {
                   Select Employee
                 </Label>
                 <Select
-                  options={employees.map((emp) => ({ label: emp.empName, value: emp.empCode }))}
+                  options={employees.map((emp) => ({
+                    label: `${emp.empCode} | ${emp.empName || 'Unknown'} | ${emp.designation} | ${emp.department}`,
+                    value: emp.empCode,
+                  }))}
                   onChange={(e) => handleEmployeeSelect(e?.value)}
                   value={{ label: selectedEmployee?.empName, value: selectedEmployee?.empCode }}
                   className="w-full bg-white"
