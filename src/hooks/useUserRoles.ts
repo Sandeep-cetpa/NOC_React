@@ -12,11 +12,11 @@ const useUserRoles = () => {
     roles,
     isLoading,
     isUnitHr: false,
-    isCgm: true,
+    isCgm: false,
     isDandAR: false,
     isVigilanceAdmin: false,
     isCorporateUnitHr: false,
-    isGm: false,
+    isGm: true,
   };
 };
 
