@@ -113,13 +113,14 @@ const ManageGreyList = () => {
           <h1 className="text-2xl font-bold tracking-tight">Greylist Management</h1>
           <p className="text-muted-foreground">Add or remove user </p>
         </div>
+        <div className="flex justify-end">
+          <Button onClick={() => setShowForm(!showForm)} className="">
+            Add user to grey list
+          </Button>
+        </div>
       </div>
       {/* Role Assignment Section */}
-      <div className="flex justify-end">
-        <Button onClick={() => setShowForm(!showForm)} className="">
-          Add user to grey list
-        </Button>
-      </div>
+
       {showForm && (
         <Card className="shadow-md border-slate-200">
           <CardHeader className="pb-3 border-b">
