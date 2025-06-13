@@ -42,7 +42,7 @@ const ReceivedRequests = () => {
       emp_name: 'Amit Kumar',
       date: '2025-03-02',
       department: 'Urban Development',
-      date: '2025-06-13',
+      
     },
     {
       id: 2,
@@ -53,7 +53,7 @@ const ReceivedRequests = () => {
       emp_name: 'Amit Kumar',
       date: '2025-03-02',
       department: 'Transport Authority',
-      date: '2025-06-13',
+      
     },
     {
       id: 3,
@@ -64,7 +64,7 @@ const ReceivedRequests = () => {
       emp_name: 'Amit Kumar',
       date: '2025-03-02',
       department: 'Municipal Corporation',
-      date: '2025-06-13',
+      
     },
     {
       id: 4,
@@ -75,7 +75,7 @@ const ReceivedRequests = () => {
       emp_name: 'Amit Kumar',
       date: '2025-03-02',
       department: 'Education Department',
-      date: '2025-06-13',
+      
     },
     {
       id: 5,
@@ -86,7 +86,7 @@ const ReceivedRequests = () => {
       emp_name: 'Amit Kumar',
       date: '2025-03-02',
       department: 'Industrial Development',
-      date: '2025-06-13',
+      
     },
     {
       id: 6,
@@ -97,7 +97,7 @@ const ReceivedRequests = () => {
       emp_name: 'Amit Kumar',
       date: '2025-03-02',
       department: 'Parks & Recreation',
-      date: '2025-06-13',
+      
     },
     {
       id: 7,
@@ -108,7 +108,7 @@ const ReceivedRequests = () => {
       emp_name: 'Amit Kumar',
       date: '2025-03-02',
       department: 'Health Department',
-      date: '2025-06-13',
+      
     },
     {
       id: 8,
@@ -119,7 +119,7 @@ const ReceivedRequests = () => {
       emp_name: 'Amit Kumar',
       date: '2025-03-02',
       department: 'Urban Development',
-      date: '2025-06-13',
+      
     },
     {
       id: 9,
@@ -130,7 +130,7 @@ const ReceivedRequests = () => {
       emp_name: 'Amit Kumar',
       date: '2025-03-02',
       department: 'Municipal Corporation',
-      date: '2025-06-13',
+      
     },
     {
       id: 10,
@@ -141,7 +141,7 @@ const ReceivedRequests = () => {
       emp_name: 'Amit Kumar',
       date: '2025-03-02',
       department: 'Water Authority',
-      date: '2025-06-13',
+     
     },
     {
       id: 11,
@@ -152,7 +152,7 @@ const ReceivedRequests = () => {
       emp_name: 'Amit Kumar',
       date: '2025-03-02',
       department: 'Public Works',
-      date: '2025-06-13',
+     
     },
     {
       id: 12,
@@ -163,7 +163,7 @@ const ReceivedRequests = () => {
       emp_name: 'Amit Kumar',
       date: '2025-03-02',
       department: 'Telecom Authority',
-      date: '2025-06-13',
+     
     },
   ];
   const filteredData = nocData.filter((item) => {
@@ -205,30 +205,11 @@ const ReceivedRequests = () => {
   };
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [isOpen, setIsOpen] = React.useState(false);
-  const [remarks, setRemarks] = React.useState<Remarks>({
-    application: '2539_20241227_NOC UPMRC.pdf',
-    uploadAdvertisement: '2539_20241227_Letter to Railway Board for Recruitment to the post of JGM-DGM (HR) (1).pdf',
-    applicationType: 'Absorption',
-    postAppliedFor: 'JGM/HR',
-    organization: 'UPMRC',
-    organizationAddress: 'Gomtinagar, LKO, UP',
-    lastDate: '2025-01-16',
-    advertisementNo: 'Vacancy Notice No. UPMRC/HRD/16/2024 dated 18.12.2024',
-    iprDate: '02-Jan-2024',
-    iprFile: '2539_20241227_IPR 2024.pdf',
-    unitHrRemarks: '',
-    vigilanceStatus: 'At present, no vigilance case is pending',
-  });
-  const handleVigilanceStatusChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const { value } = e.target;
-    setRemarks((prevRemarks) => ({
-      ...prevRemarks,
-      vigilanceStatus: value,
-    }));
-  };
+  
+  
   const handleSubmit = () => {
     // Perform form submission or data processing logic here
-    console.log(remarks);
+    
     setIsOpen(false);
   };
   return (
