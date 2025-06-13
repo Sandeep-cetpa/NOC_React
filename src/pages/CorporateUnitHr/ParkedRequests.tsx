@@ -1,17 +1,11 @@
 import React, { useState } from 'react';
-import {
-  Search,
-  RefreshCw,
-  ArrowUpDown,
-  ChevronLeft,
-  ChevronRight,
-} from 'lucide-react';
+import { Search, RefreshCw, ArrowUpDown, ChevronLeft, ChevronRight, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-
+import { format } from 'date-fns';
 
 const ParkedRequests = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -19,7 +13,6 @@ const ParkedRequests = () => {
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
-
 
   const nocData = [
     {
@@ -33,6 +26,7 @@ const ParkedRequests = () => {
       emp_purpose: 'External Employment',
       emp_name: 'Nitika Sharma',
       department: 'Electrical',
+      date: '2025-06-1',
     },
     {
       id: 2,
@@ -41,10 +35,11 @@ const ParkedRequests = () => {
       currentStatus: 'Action Taken',
       employeeId: '100650',
       designation: 'Hr',
-      location: 'Office',
+      location: 'Noida',
       emp_purpose: 'Others',
       emp_name: 'Deependra Singh',
       department: 'Transport Authority',
+      date: '2025-06-11',
     },
   ];
 
@@ -116,17 +111,6 @@ const ParkedRequests = () => {
                       <SelectItem value="hyderabad">Hyderabad</SelectItem>
                       <SelectItem value="pune">Pune</SelectItem>
                       <SelectItem value="jaipur">Jaipur</SelectItem>
-
-                    </SelectContent>
-                  </Select>
-                  <Select>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select Location" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="frontdesk">Front Desk</SelectItem>
-                      <SelectItem value="office">Office</SelectItem>
-                      <SelectItem value="other">Other</SelectItem>
                     </SelectContent>
                   </Select>
                   <Select>
@@ -144,30 +128,16 @@ const ParkedRequests = () => {
                       <SelectItem value="E7">E7</SelectItem>
                     </SelectContent>
                   </Select>
+
                   <Select>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select Department" />
+                      <SelectValue placeholder="Select Designation" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Department">Department</SelectItem>
-                      <SelectItem value="Location">Location</SelectItem>
-                      <SelectItem value="Purpose">Purpose</SelectItem>
-                      <SelectItem value="Employee Code">Employee Code</SelectItem>
-                      <SelectItem value="Employee Name">Employee Name</SelectItem>
-                      <SelectItem value="Designation">Designation</SelectItem>
-                      <SelectItem value="Date">Date</SelectItem>
-                      <SelectItem value="Time">Time</SelectItem>
+                      <SelectItem value="GM">GM</SelectItem>
+                      <SelectItem value="HR">HR</SelectItem>
                     </SelectContent>
                   </Select>
-                 <Select>
-                                     <SelectTrigger>
-                                       <SelectValue placeholder="Select Designation" />
-                                     </SelectTrigger>
-                                     <SelectContent>
-                                       <SelectItem value="GM">GM</SelectItem>
-                                       <SelectItem value="HR">HR</SelectItem>
-                                     </SelectContent>
-                                   </Select>
                   <Button variant="outline" className="flex items-center space-x-2">
                     <RefreshCw className="h-4 w-4" />
                   </Button>
@@ -198,17 +168,9 @@ const ParkedRequests = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    {/* <TableHead className="w-16">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleSort('id')}
-                        className="flex items-center space-x-1 p-0 h-auto font-semibold  text-white"
-                      >
-                        <span>SR.No</span>
-                        <ArrowUpDown className="h-3 w-3" />
-                      </Button>
-                    </TableHead> */}
+                    <TableHead className="w-16">
+                      <span className="text-white">SN.</span>
+                    </TableHead>
                     <TableHead>
                       <Button
                         variant="ghost"
@@ -221,52 +183,46 @@ const ParkedRequests = () => {
                       </Button>
                     </TableHead>
                     <TableHead>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleSort('employeeId')}
-                        className="flex items-center space-x-1 p-0 h-auto font-semibold text-white"
-                      >
-                        <span>Employee Code</span>
-                        <ArrowUpDown className="h-3 w-3" />
-                      </Button>
+                      <span className="text-white">Employee Code</span>
                     </TableHead>
-                    <TableHead className=" text-white">Name</TableHead>
-                    <TableHead className=" text-white">Designation</TableHead>
-                    <TableHead className=" text-white">Position Grade</TableHead>
-                    <TableHead className=" text-white">Department</TableHead>
-                    <TableHead className="text-white">Location</TableHead>
-                    <TableHead className="text-white">Current Status</TableHead>
+                    <TableHead className=" text-white">Name/Department</TableHead>
+                    <TableHead className=" text-white">Designation/Grade</TableHead>
+                    <TableHead className=" text-white">Date</TableHead>
+                    <TableHead className="text-white">Unit</TableHead>
+                    <TableHead className="text-white">Status</TableHead>
                     <TableHead className="text-white">Purpose</TableHead>
+                    <TableHead className="text-white">Action</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {paginatedData.map((noc, index) => (
                     <TableRow key={noc.id} className="hover:bg-gray-50 transition-colors">
-                      {/* <TableCell className="font-medium">{startIndex + index + 1}</TableCell> */}
+                      <TableCell className="font-medium">{startIndex + index + 1}</TableCell>
                       <TableCell>
                         <div className="font-medium ">{noc.referenceId}</div>
                       </TableCell>
                       <TableCell>
-                        <div className="font-medium ">{noc.employeeId}</div>
+                        <div className="font-medium w-[120px]">{noc.employeeId}</div>
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center space-x-2">
-                          <div>
-                            <div className="text-sm text-gray-500">{noc.emp_name}</div>
+                          <div className="w-[130px]">
+                            <p className="text-sm text-gray-500">{noc.emp_name}</p>
+                            <p className="text-sm text-gray-500">{noc.department}</p>
                           </div>
                         </div>
                       </TableCell>
                       <TableCell className="text-sm text-gray-500 mt-1">
                         <div className="truncate" title={noc.designation}>
-                          {noc.designation}
+                          <p>{noc.designation}</p>
+                          <p>{noc.positionGrade}</p>
                         </div>
                       </TableCell>
+
                       <TableCell>
-                        <div className="text-sm text-gray-500 mt-1">{noc.positionGrade}</div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="text-sm text-gray-500 mt-1">{noc.department}</div>
+                        <div className="text-sm text-gray-500 mt-1 w-[100px]">
+                          {format(new Date(noc.date), 'dd MMM yyyy')}
+                        </div>
                       </TableCell>
                       <TableCell>
                         <div className="text-sm text-gray-500 mt-1">{noc.location}</div>
@@ -276,6 +232,11 @@ const ParkedRequests = () => {
                       </TableCell>
                       <TableCell>
                         <div className="text-sm text-blue-500 mt-1">{noc.emp_purpose}</div>
+                      </TableCell>
+                      <TableCell>
+                        <Button variant="outline" size="sm">
+                          <Eye />
+                        </Button>
                       </TableCell>
                     </TableRow>
                   ))}
