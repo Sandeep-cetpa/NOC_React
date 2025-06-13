@@ -6,7 +6,7 @@ const useUserRoles = () => {
   const isAdmin = roles.includes('admin');
   const isUser = roles.includes('user');
   return {
-    isSuperAdmin: true,
+    isSuperAdmin: false,
     isAdmin,
     isUser,
     roles,
@@ -15,7 +15,7 @@ const useUserRoles = () => {
     isCgm: false,
     isDandAR: false,
     isVigilanceAdmin: false,
-    isCorporateUnitHr: false,
+    isCorporateUnitHr: true,
     isGm: false, //2 table are pending for this role
   };
 };

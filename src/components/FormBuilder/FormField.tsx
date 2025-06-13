@@ -92,9 +92,14 @@ export const FormField: React.FC<FormFieldProps> = ({ field, value, onChange, is
       );
     case 'file':
       return (
-        <div className="flex items-center space-x-2">
-          <Input {...baseProps} type={'file'} className="cursor-pointer" onChange={(e) => onChange(e.target.value)} />
-          <Upload />
+        <div className="flex items-center  py-2 py-1 pl-3  border-[1px] rounded-md ">
+          <input
+            type="file"
+            className="cursor-pointer"
+            disabled={isDisabled}
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+          />
         </div>
       );
     default:

@@ -36,7 +36,7 @@ interface UserState {
 
 const NocRequestForEmployee = () => {
   const user = useSelector((state: RootState) => state.user) as UserState;
-  const [selectedForm, setSelectedForm] = useState<Form | null>(null);
+  const [selectedForm, setSelectedForm] = useState<Form | null>(forms[0] || null);
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
   const employees = useSelector((state: RootState) => state.employee.employees);
   const [formData, setFormData] = useState<Record<string, any>>({});
@@ -163,8 +163,9 @@ const NocRequestForEmployee = () => {
                     label: `${emp.empCode} | ${emp.empName || 'Unknown'} | ${emp.designation} | ${emp.department}`,
                     value: emp.empCode,
                   }))}
+                  isMulti
                   onChange={(e) => handleEmployeeSelect(e?.value)}
-                  value={{ label: selectedEmployee?.empName, value: selectedEmployee?.empCode }}
+                  // value={[{ label: selectedEmployee?.empName, value: selectedEmployee?.empCode }]}
                   className="w-full bg-white"
                   placeholder="Select employee"
                 />
