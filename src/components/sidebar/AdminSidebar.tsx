@@ -53,14 +53,14 @@ export function AdminSidebar(props: React.ComponentProps<typeof Sidebar>) {
       ...(isSuperAdmin
         ? [
             {
-              title: 'Manage Admin',
-              url: '/admin-manage-role',
-              icon: Users, // Better for managing admins
-            },
-            {
               title: 'Create Form',
               url: '/form',
               icon: FileText, // Better for form creation
+            },
+            {
+              title: 'Manage Admin',
+              url: '/admin-manage-role',
+              icon: Users, // Better for managing admins
             },
           ]
         : []),
