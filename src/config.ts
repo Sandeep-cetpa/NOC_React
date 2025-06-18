@@ -10,7 +10,7 @@ const DFCCIL_UAT = {
 };
 
 const DFCCIL_PROD = {
-  apiUrl: 'https://taskmanagementservices.dfccil.com/api',
+  apiUrl: 'https://it.dfccil.com',
   orgHierarchy: 'https://orgsvc.dfccil.com/api',
   logoutUrl: 'https://it.dfccil.com/Home/Home',
   authUrl: 'https://app2.dfccil.com',
@@ -19,7 +19,9 @@ const DFCCIL_PROD = {
   redirectPath: 'create-request',
   applicationId: 8,
 };
-
+export const hiddenFieldsForNewPaasport = [123, 124, 125, 126];
+export const hiddenFieldsForExIndiaLeaveSponsored = [135, 136, 137];
+export const hiddenFieldsForExIndiaLeaveThirdParty = [136];
 export const ManualUrl = './TaskManagementSystem.pdf';
 
-export const environment = import.meta.env.VITE_ENV === 'production' ? DFCCIL_PROD : DFCCIL_UAT;
+export const environment = import.meta.env.VITE_ENV !== 'production' ? DFCCIL_PROD : DFCCIL_UAT;

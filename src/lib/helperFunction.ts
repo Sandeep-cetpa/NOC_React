@@ -172,14 +172,23 @@ export const getStatusText = (statusId: number): string => {
   }
 };
 
-  export const getGridClass = (width: string): string => {
-    const gridClasses = {
-      full: 'col-span-12',
-      half: 'col-span-12 sm:col-span-6',
-      third: 'col-span-12 sm:col-span-4',
-      quarter: 'col-span-12 sm:col-span-6 md:col-span-3',
-      'two-thirds': 'col-span-12 sm:col-span-8',
-      'three-quarters': 'col-span-12 sm:col-span-9',
-    };
-    return gridClasses[width] || gridClasses.full;
+export const getGridClass = (width: string): string => {
+  const gridClasses = {
+    full: 'col-span-12',
+    half: 'col-span-12 sm:col-span-6',
+    third: 'col-span-12 sm:col-span-4',
+    quarter: 'col-span-12 sm:col-span-6 md:col-span-3',
+    'two-thirds': 'col-span-12 sm:col-span-8',
+    'three-quarters': 'col-span-12 sm:col-span-9',
   };
+  return gridClasses[width] || gridClasses.full;
+};
+
+export function formatLabel(input) {
+  if (!input) return;
+  const cleanInput = input?.replace('*', '');
+  return cleanInput
+    .replace(/_/g, ' ') // Replace underscores with spaces
+    .toLowerCase() // Convert to lowercase
+    .replace(/\b\w/g, (c) => c.toUpperCase()); // Capitalize first letter of each word
+}

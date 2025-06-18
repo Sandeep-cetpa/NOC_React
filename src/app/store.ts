@@ -6,11 +6,12 @@ import employeeReducer from '../features/employee/employeeSlice';
 import userReducer from '../features/user/userSlice';
 import authReducer from '../features/auth/authSlice';
 import applicationsReducer from '../features/applications/applicationsSlice';
+import purposeReducer from '../features/purpose/purposeSlice';
 
 const sessionPersistConfig = {
   key: 'root',
   storage: sessionStorage, // Use session storage for most reducers
-  whitelist: ['employee', 'user', 'units', "auth", "applications"], // Persist these slices
+  whitelist: ['employee', 'user', 'units', 'auth', 'applications', 'pupose'], // Persist these slices
 };
 
 const rootReducer = combineReducers({
@@ -18,6 +19,7 @@ const rootReducer = combineReducers({
   user: userReducer,
   auth: authReducer,
   applications: applicationsReducer,
+  pupose: purposeReducer,
 });
 
 const persistedReducer = persistReducer(sessionPersistConfig, rootReducer);

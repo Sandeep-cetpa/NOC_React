@@ -527,7 +527,11 @@ const Forms = () => {
 
         {/* Form Builder/Preview Dialog */}
         <Dialog open={showFormDialog} onOpenChange={setShowFormDialog}>
-          <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
+          <DialogContent
+            className="max-w-6xl max-h-[90vh] overflow-y-auto"
+            onPointerDownOutside={(e) => e.preventDefault()}
+            onEscapeKeyDown={(e) => e.preventDefault()}
+          >
             <DialogHeader>
               <DialogTitle className="flex items-center space-x-2">
                 {previewMode[currentFormForAction?.id] ? (

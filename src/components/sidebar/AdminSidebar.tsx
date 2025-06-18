@@ -2,11 +2,8 @@ import * as React from 'react';
 import {
   User,
   LogOut,
-  BadgeAlert,
-  UserRoundCog,
   ChevronsRight,
   ChevronsLeft,
-  // New icons for navigation
   Users,
   FileText,
   Inbox,
@@ -19,7 +16,6 @@ import {
   XCircle,
   Archive,
   Eye,
-  UserX,
 } from 'lucide-react';
 import { NavMain } from '@/components/nav-main';
 import {
@@ -33,8 +29,8 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 
-import { useSelector, useDispatch } from 'react-redux';
-import { RootState, AppDispatch } from '@/app/store';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '@/app/store';
 import { Separator } from '@radix-ui/react-separator';
 import { useNavigate } from 'react-router';
 import { removeSessionItem } from '@/lib/helperFunction';
@@ -47,7 +43,6 @@ export function AdminSidebar(props: React.ComponentProps<typeof Sidebar>) {
   const { state, toggleSidebar } = useSidebar();
   const navigate = useNavigate();
   const { isSuperAdmin, isCgm, isDandAR, isGm, isVigilanceAdmin, isCorporateUnitHr, isUnitHr } = useUserRoles();
-
   const data = {
     navMain: [
       ...(isSuperAdmin

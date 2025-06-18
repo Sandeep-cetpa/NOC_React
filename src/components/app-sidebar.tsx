@@ -21,11 +21,13 @@ import { setEmployeesData } from '@/features/employee/employeeSlice';
 import toast from 'react-hot-toast';
 import { setUnits } from '@/features/unit/unitSlice';
 import { RootState } from '@/app/store';
+import { fetchPurpose } from '@/features/purpose/purposeSlice';
 
 export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
   const navigate = useNavigate();
   const { state, toggleSidebar } = useSidebar();
   const employees = useSelector((state: RootState) => state.employee.employees);
+  const purposes = useSelector((state: RootState) => state.pupose.purpose);
   const { isNodalOfficer, isSuperAdmin, isAdmin, isUnitCGM, isUnitHr } = useUserRoles();
   const hasAccess = true;
   // const hasAccess = isNodalOfficer || isSuperAdmin || isAdmin || isUnitCGM;
@@ -40,11 +42,11 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
       url: '/track-noc',
       icon: MonitorCog,
     },
-    (isUnitHr && {
+    isUnitHr && {
       title: 'NOC Request for employee',
       url: '/noc-request-for-employee',
       icon: FileText,
-    })
+    },
   ].filter(Boolean);
   const dispatch = useDispatch();
   // const isAuthenticated = auth.isAuthenticated;
@@ -90,7 +92,12 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
     removeSessionItem('token');
     window.location.href = environment.logoutUrl;
   };
-
+  //  console.log(purposes,"purposes")
+  // React.useEffect(() => {
+  //   if (purposes.length === 0) {
+  //     dispatch(fetchPurpose());
+  //   }
+  // }, [purposes]);
   return (
     <Sidebar collapsible="icon" {...props} className="">
       <div className="flex justify-end md:pt-[90px] ">

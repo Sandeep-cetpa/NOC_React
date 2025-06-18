@@ -6,50 +6,47 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { ChevronDown, Check, Circle, Upload } from 'lucide-react';
+import { ChevronDown, Check } from 'lucide-react';
+import { formatLabel } from '@/lib/helperFunction';
 
 interface FormFieldProps {
   field: {
-    id: string;
-    type: string;
-    label: string;
-    placeholder?: string;
-    required?: boolean;
-    options?: string[];
+    FieldId: string;
+    DataType: String;
+    FieldName: string;
+    Options?: string[];
+    jid: String;
+    isInTableValue: boolean;
   };
   value: any;
   onChange: (value: any) => void;
   isDisabled?: boolean;
+  purposeId?: string;
 }
 
-export const FormField: React.FC<FormFieldProps> = ({ field, value, onChange, isDisabled }) => {
+export const FormField: React.FC<FormFieldProps> = ({ field, value, onChange, isDisabled, purposeId }) => {
   const baseProps = {
-    id: field.id,
-    placeholder: field.placeholder,
-    required: field.required,
+    id: field.FieldId,
+    placeholder: formatLabel(field.FieldName),
+    required: field.FieldName.includes('*'),
     value: value || '',
-    className: 'w-full',
+    className: '',
     disabled: isDisabled,
   };
-
-  switch (field.type) {
+  switch (field.jid) {
     case 'textarea':
       return <Textarea {...baseProps} rows={3} onChange={(e) => onChange(e.target.value)} />;
 
-    case 'select':
+    case 'Select':
       return (
         <Select disabled={isDisabled} value={value || ''} onValueChange={(value) => onChange(value)}>
           <SelectTrigger className="w-full">
-            <SelectValue placeholder={field.placeholder || `Select ${field.label}`} />
-            <ChevronDown className="h-4 w-4 opacity-50" />
+            <SelectValue placeholder={formatLabel(field.FieldName) || `Select ${formatLabel(field.FieldName)}`} />
           </SelectTrigger>
           <SelectContent>
-            {field.options?.map((option, index) => (
-              <SelectItem key={index} value={option}>
-                <div className="flex items-center">
-                  <Check className="mr-2 h-4 w-4 opacity-0 data-[state=checked]:opacity-100" />
-                  {option}
-                </div>
+            {field?.Options?.map((option: any, index) => (
+              <SelectItem key={index} value={String(option?.optionId)}>
+                {option?.optionValue}
               </SelectItem>
             ))}
           </SelectContent>
@@ -58,51 +55,58 @@ export const FormField: React.FC<FormFieldProps> = ({ field, value, onChange, is
     case 'checkbox':
       return (
         <div className="flex items-center space-x-2">
-          <Checkbox id={field.id} checked={value || false} onCheckedChange={(checked) => onChange(checked)} />
-          <Label htmlFor={field.id} className="flex items-center">
-            {field.required && <span className="text-red-500 mr-1">*</span>}
-            {field.label}
+          <Checkbox id={field.FieldId} checked={value || false} onCheckedChange={(checked) => onChange(checked)} />
+          <Label htmlFor={field.FieldId} className="flex items-center">
+            {field.FieldName.includes('*') && <span className="text-red-500 mr-1">*</span>}
+            {formatLabel(field.FieldName)}
           </Label>
         </div>
       );
     case 'switch':
       return (
         <div className="flex items-center space-x-2">
-          <Switch id={field.id} checked={value || false} onCheckedChange={(checked) => onChange(checked)} />
-          <Label htmlFor={field.id} className="flex items-center">
-            {field.required && <span className="text-red-500 mr-1">*</span>}
-            {field.label}
+          <Switch id={field.FieldId} checked={value || false} onCheckedChange={(checked) => onChange(checked)} />
+          <Label htmlFor={field.FieldId} className="flex items-center">
+            {field.FieldName.includes('*') && <span className="text-red-500 mr-1">*</span>}
+            {formatLabel(field.FieldName)}
           </Label>
         </div>
       );
     case 'radio':
       return (
-        <RadioGroup value={value || ''} onValueChange={(value) => onChange(value)}>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            {field.options?.map((option, index) => (
-              <div key={index} className="flex items-center space-x-2">
-                <RadioGroupItem value={option} id={`${field.id}-${index}`} />
-                <Label htmlFor={`${field.id}-${index}`} className="flex items-center">
-                  {option}
-                </Label>
-              </div>
-            ))}
-          </div>
-        </RadioGroup>
-      );
-    case 'file':
-      return (
-        <div className="flex items-center  py-2 py-1 pl-3  border-[1px] rounded-md ">
+        <div className="flex items-center">
           <input
-            type="file"
-            className="cursor-pointer"
-            disabled={isDisabled}
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
+            className="h-5 w-5"
+            checked={value}
+            id={`${field.FieldId}`}
+            onChange={(value) => onChange(value.target.checked)}
+            name={purposeId}
+            type="radio"
           />
+          <Label className="ml-2" htmlFor={`${field.FieldId}`}>
+            {formatLabel(field.FieldName)}
+          </Label>
+        </div>
+      );
+    case 'File':
+      return (
+        <div className="flex flex-col ">
+          <div className="flex items-center  py-1 pl-1  border-[1px] rounded-md ">
+            <input
+              type="file"
+              className="cursor-pointer"
+              disabled={isDisabled}
+              value={value}
+              onChange={(e) => onChange(e.target.value)}
+            />
+          </div>
         </div>
       );
     default:
-      return <Input {...baseProps} type={field.type} onChange={(e) => onChange(e.target.value)} />;
+      return (
+        <div className="flex flex-col">
+          <Input {...baseProps} type={field.jid.toLocaleLowerCase()} onChange={(e) => onChange(e.target.value)} />
+        </div>
+      );
   }
 };

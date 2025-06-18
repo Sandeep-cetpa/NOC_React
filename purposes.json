@@ -1,0 +1,905 @@
+[
+  {
+    "PurposeId": 45,
+    "PurposeName": "Higher Education",
+    "isInTableValue": false,
+    "Fields": [
+      {
+        "FieldId": 102,
+        "FieldName": "name_of_course_*",
+        "DataType": "nvarchar",
+        "jid": "text",
+        "Options": null,
+        "isInTableValue": false,
+        "filledBy": null
+      },
+      {
+        "FieldId": 103,
+        "FieldName": "institute_*",
+        "DataType": "nvarchar",
+        "jid": "text",
+        "Options": null,
+        "isInTableValue": false,
+        "filledBy": null
+      },
+      {
+        "FieldId": 104,
+        "FieldName": "course_type_*",
+        "DataType": "nvarchar",
+        "jid": "Select",
+        "Options": [
+          {
+            "optionValue": "Weekend Class",
+            "optionId": 9
+          },
+          {
+            "optionValue": " Online",
+            "optionId": 10
+          },
+          {
+            "optionValue": " Distance Learning",
+            "optionId": 11
+          }
+        ],
+        "isInTableValue": false,
+        "filledBy": null
+      },
+      {
+        "FieldId": 105,
+        "FieldName": "course_starting_date_*",
+        "DataType": "Date",
+        "jid": "Date",
+        "Options": null,
+        "isInTableValue": false,
+        "filledBy": null
+      },
+      {
+        "FieldId": 106,
+        "FieldName": "duration_(in_months)_*",
+        "DataType": "int",
+        "jid": "text",
+        "Options": null,
+        "isInTableValue": false,
+        "filledBy": null
+      },
+      {
+        "FieldId": 107,
+        "FieldName": "university_/_board",
+        "DataType": "nvarchar",
+        "jid": "text",
+        "Options": null,
+        "isInTableValue": false,
+        "filledBy": null
+      },
+      {
+        "FieldId": 108,
+        "FieldName": "course_application_*",
+        "DataType": "nvarchar",
+        "jid": "File",
+        "Options": null,
+        "isInTableValue": false,
+        "filledBy": null
+      },
+      {
+        "FieldId": 109,
+        "FieldName": "upload_course_details_*",
+        "DataType": "nvarchar",
+        "jid": "File",
+        "Options": null,
+        "isInTableValue": false,
+        "filledBy": null
+      },
+      {
+        "FieldId": 110,
+        "FieldName": "supporting_document_(if_any)",
+        "DataType": "nvarchar",
+        "jid": "File",
+        "Options": null,
+        "isInTableValue": false,
+        "filledBy": null
+      }
+    ]
+  },
+  {
+    "PurposeId": 47,
+    "PurposeName": "External Employment ",
+    "isInTableValue": true,
+    "Fields": [
+      {
+        "FieldId": 224,
+        "FieldName": "Organization_(Name_in_full)",
+        "DataType": "nvarchar",
+        "jid": "text",
+        "Options": null,
+        "isInTableValue": true,
+        "filledBy": null
+      },
+      {
+        "FieldId": 225,
+        "FieldName": "Designation_&_Place_of_posting",
+        "DataType": "nvarchar",
+        "jid": "text",
+        "Options": null,
+        "isInTableValue": true,
+        "filledBy": null
+      },
+      {
+        "FieldId": 226,
+        "FieldName": "Administrative/_nodal Ministry/_Deptt. concerned_(in_case_of_officers_of_PSUs_etc.)",
+        "DataType": "nvarchar",
+        "jid": "text",
+        "Options": null,
+        "isInTableValue": true,
+        "filledBy": null
+      },
+      {
+        "FieldId": 227,
+        "FieldName": "From",
+        "DataType": "Date",
+        "jid": "Date",
+        "Options": null,
+        "isInTableValue": true,
+        "filledBy": null
+      },
+      {
+        "FieldId": 228,
+        "FieldName": "To",
+        "DataType": "Date",
+        "jid": "Date",
+        "Options": null,
+        "isInTableValue": true,
+        "filledBy": null
+      },
+      {
+        "FieldId": 229,
+        "FieldName": "Whether_the_officer_has_been_placed_on_the_Agreed_List_or_List_of_Officers_of_Doubtful_Integrity\r\n",
+        "DataType": "nvarchar",
+        "jid": "text",
+        "Options": null,
+        "isInTableValue": false,
+        "filledBy": "vigilanceuser"
+      },
+      {
+        "FieldId": 230,
+        "FieldName": "Whether_any_allegation_of_misconduct_involving_vigilance_angle_was_examined_against_the_officer_during_the_last_IO_years_and_if_so_with\r\n",
+        "DataType": "nvarchar",
+        "jid": "text",
+        "Options": null,
+        "isInTableValue": false,
+        "filledBy": "vigilanceuser"
+      },
+      {
+        "FieldId": 231,
+        "FieldName": "Whether_any_punishment_was_awarded_to_the_officer_during_the_last_10_years_and_if_so,_the_date_of_imposition_and_details\r\n",
+        "DataType": "nvarchar",
+        "jid": "text",
+        "Options": null,
+        "isInTableValue": false,
+        "filledBy": "vigilanceuser"
+      },
+      {
+        "FieldId": 232,
+        "FieldName": "Is_any_disciplinary/_criminal_proceedings_or_charge_sheet_pending_against_the_officer,_as_on_date._[If_so,_details_to_be_furnished_including_reference_no.,_if_any,_of_the_Commission]\r\n",
+        "DataType": "nvarchar",
+        "jid": "text",
+        "Options": null,
+        "isInTableValue": false,
+        "filledBy": "vigilanceuser"
+      },
+      {
+        "FieldId": 233,
+        "FieldName": "Is_any_action_contemplated_against_the_officer_as_on_date_[If_so,_details_to_be_furnished_(*)]\r\n",
+        "DataType": "nvarchar",
+        "jid": "text",
+        "Options": null,
+        "isInTableValue": false,
+        "filledBy": "vigilanceuser"
+      },
+      {
+        "FieldId": 234,
+        "FieldName": "Whether_any_action_is_contemplated_against_the_officer_as_on_date_[if_so,_details_to_be_furnished]",
+        "DataType": "nvarchar",
+        "jid": "text",
+        "Options": null,
+        "isInTableValue": false,
+        "filledBy": "vigilanceuser"
+      },
+      {
+        "FieldId": 141,
+        "FieldName": "Application_Type_*",
+        "DataType": "nvarchar",
+        "jid": "Select",
+        "Options": [
+          {
+            "optionValue": "Absorption",
+            "optionId": 21
+          },
+          {
+            "optionValue": "Deputation",
+            "optionId": 22
+          },
+          {
+            "optionValue": "Direct Recruitment",
+            "optionId": 23
+          }
+        ],
+        "isInTableValue": false,
+        "filledBy": null
+      },
+      {
+        "FieldId": 116,
+        "FieldName": "Post_Applied_For_*",
+        "DataType": "nvarchar",
+        "jid": "text",
+        "Options": null,
+        "isInTableValue": false,
+        "filledBy": null
+      },
+      {
+        "FieldId": 117,
+        "FieldName": "organization_*",
+        "DataType": "nvarchar",
+        "jid": "text",
+        "Options": null,
+        "isInTableValue": false,
+        "filledBy": null
+      },
+      {
+        "FieldId": 118,
+        "FieldName": "organization_address_*",
+        "DataType": "nvarchar",
+        "jid": "text",
+        "Options": null,
+        "isInTableValue": false,
+        "filledBy": null
+      },
+      {
+        "FieldId": 119,
+        "FieldName": "application_*",
+        "DataType": "nvarchar",
+        "jid": "File",
+        "Options": null,
+        "isInTableValue": false,
+        "filledBy": null
+      },
+      {
+        "FieldId": 120,
+        "FieldName": "last_date_*",
+        "DataType": "Date",
+        "jid": "Date",
+        "Options": null,
+        "isInTableValue": false,
+        "filledBy": null
+      },
+      {
+        "FieldId": 148,
+        "FieldName": "Advertisement_No_*",
+        "DataType": "nvarchar",
+        "jid": "text",
+        "Options": null,
+        "isInTableValue": false,
+        "filledBy": null
+      },
+      {
+        "FieldId": 121,
+        "FieldName": "upload_advertisement_*",
+        "DataType": "nvarchar",
+        "jid": "File",
+        "Options": null,
+        "isInTableValue": false,
+        "filledBy": null
+      }
+    ]
+  },
+  {
+    "PurposeId": 48,
+    "PurposeName": "Passport",
+    "isInTableValue": false,
+    "Fields": [
+      {
+        "FieldId": 142,
+        "FieldName": "New_Passport_*",
+        "DataType": "nvarchar",
+        "jid": "radio",
+        "Options": null,
+        "isInTableValue": false,
+        "filledBy": null
+      },
+      {
+        "FieldId": 122,
+        "FieldName": "Renewal_*",
+        "DataType": "nvarchar",
+        "jid": "radio",
+        "Options": null,
+        "isInTableValue": false,
+        "filledBy": null
+      },
+      {
+        "FieldId": 123,
+        "FieldName": "old_passport_number_*",
+        "DataType": "nvarchar",
+        "jid": "text",
+        "Options": null,
+        "isInTableValue": false,
+        "filledBy": null
+      },
+      {
+        "FieldId": 124,
+        "FieldName": "validity_from_*",
+        "DataType": "Date",
+        "jid": "Date",
+        "Options": null,
+        "isInTableValue": false,
+        "filledBy": null
+      },
+      {
+        "FieldId": 125,
+        "FieldName": "validity_to_*",
+        "DataType": "Date",
+        "jid": "Date",
+        "Options": null,
+        "isInTableValue": false,
+        "filledBy": null
+      },
+      {
+        "FieldId": 126,
+        "FieldName": "upload_old_passport_copy_*",
+        "DataType": "nvarchar",
+        "jid": "File",
+        "Options": null,
+        "isInTableValue": false,
+        "filledBy": null
+      },
+      {
+        "FieldId": 215,
+        "FieldName": "_Upload_Document_*",
+        "DataType": "nvarchar",
+        "jid": "File",
+        "Options": null,
+        "isInTableValue": false,
+        "filledBy": null
+      }
+    ]
+  },
+  {
+    "PurposeId": 49,
+    "PurposeName": "Ex India Leave",
+    "isInTableValue": true,
+    "Fields": [
+      {
+        "FieldId": 127,
+        "FieldName": "country(s)_*",
+        "DataType": "nvarchar",
+        "jid": "text",
+        "Options": null,
+        "isInTableValue": false,
+        "filledBy": null
+      },
+      {
+        "FieldId": 216,
+        "FieldName": "from",
+        "DataType": "Date",
+        "jid": "Date",
+        "Options": null,
+        "isInTableValue": true,
+        "filledBy": null
+      },
+      {
+        "FieldId": 217,
+        "FieldName": "to",
+        "DataType": "Date",
+        "jid": "Date",
+        "Options": null,
+        "isInTableValue": true,
+        "filledBy": null
+      },
+      {
+        "FieldId": 218,
+        "FieldName": "name_of_countries_to_be_visited",
+        "DataType": "nvarchar",
+        "jid": "text",
+        "Options": null,
+        "isInTableValue": true,
+        "filledBy": null
+      },
+      {
+        "FieldId": 219,
+        "FieldName": "purpose",
+        "DataType": "nvarchar",
+        "jid": "text",
+        "Options": null,
+        "isInTableValue": true,
+        "filledBy": null
+      },
+      {
+        "FieldId": 220,
+        "FieldName": "estimated_expenditure",
+        "DataType": "nvarchar",
+        "jid": "number",
+        "Options": null,
+        "isInTableValue": true,
+        "filledBy": null
+      },
+      {
+        "FieldId": 221,
+        "FieldName": "source_of_funds",
+        "DataType": "nvarchar",
+        "jid": "text",
+        "Options": null,
+        "isInTableValue": true,
+        "filledBy": null
+      },
+      {
+        "FieldId": 222,
+        "FieldName": "remarks",
+        "DataType": "nvarchar",
+        "jid": "text",
+        "Options": null,
+        "isInTableValue": true,
+        "filledBy": null
+      },
+      {
+        "FieldId": 146,
+        "FieldName": "purpose_*",
+        "DataType": "nvarchar",
+        "jid": "text",
+        "Options": null,
+        "isInTableValue": false,
+        "filledBy": null
+      },
+      {
+        "FieldId": 128,
+        "FieldName": "from_*",
+        "DataType": "Date",
+        "jid": "Date",
+        "Options": null,
+        "isInTableValue": false,
+        "filledBy": null
+      },
+      {
+        "FieldId": 129,
+        "FieldName": "to_*",
+        "DataType": "Date",
+        "jid": "Date",
+        "Options": null,
+        "isInTableValue": false,
+        "filledBy": null
+      },
+      {
+        "FieldId": 130,
+        "FieldName": "leave_type_*",
+        "DataType": "nvarchar",
+        "jid": "Select",
+        "Options": [
+          {
+            "optionValue": "LAP",
+            "optionId": 14
+          },
+          {
+            "optionValue": " LHAP",
+            "optionId": 15
+          },
+          {
+            "optionValue": " CL",
+            "optionId": 16
+          },
+          {
+            "optionValue": " LWP",
+            "optionId": 17
+          }
+        ],
+        "isInTableValue": false,
+        "filledBy": null
+      },
+      {
+        "FieldId": 147,
+        "FieldName": "Leave_Suffix/Prefix_",
+        "DataType": "nvarchar",
+        "jid": "text",
+        "Options": null,
+        "isInTableValue": false,
+        "filledBy": null
+      },
+      {
+        "FieldId": 131,
+        "FieldName": "passport_number_*",
+        "DataType": "nvarchar",
+        "jid": "text",
+        "Options": null,
+        "isInTableValue": false,
+        "filledBy": null
+      },
+      {
+        "FieldId": 132,
+        "FieldName": "validity_*",
+        "DataType": "Date",
+        "jid": "Date",
+        "Options": null,
+        "isInTableValue": false,
+        "filledBy": null
+      },
+      {
+        "FieldId": 133,
+        "FieldName": "estimated_expenditure_*",
+        "DataType": "int",
+        "jid": "text",
+        "Options": null,
+        "isInTableValue": false,
+        "filledBy": null
+      },
+      {
+        "FieldId": 134,
+        "FieldName": "source_of_fund_*",
+        "DataType": "nvarchar",
+        "jid": "Select",
+        "Options": [
+          {
+            "optionValue": "Self",
+            "optionId": 18
+          },
+          {
+            "optionValue": " Sponsored",
+            "optionId": 19
+          },
+          {
+            "optionValue": " Third Party",
+            "optionId": 20
+          }
+        ],
+        "isInTableValue": false,
+        "filledBy": null
+      },
+      {
+        "FieldId": 135,
+        "FieldName": "name_of_sponsor_/_third_party_*",
+        "DataType": "nvarchar",
+        "jid": "text",
+        "Options": null,
+        "isInTableValue": false,
+        "filledBy": null
+      },
+      {
+        "FieldId": 136,
+        "FieldName": "pan_*",
+        "DataType": "nvarchar",
+        "jid": "text",
+        "Options": null,
+        "isInTableValue": false,
+        "filledBy": null
+      },
+      {
+        "FieldId": 137,
+        "FieldName": "sponsorship_letter_*",
+        "DataType": "nvarchar",
+        "jid": "File",
+        "Options": null,
+        "isInTableValue": false,
+        "filledBy": null
+      },
+      {
+        "FieldId": 138,
+        "FieldName": "proof_of_fund_*",
+        "DataType": "nvarchar",
+        "jid": "File",
+        "Options": null,
+        "isInTableValue": false,
+        "filledBy": null
+      },
+      {
+        "FieldId": 139,
+        "FieldName": "foreign_visit_(last_5_years)*",
+        "DataType": "nvarchar",
+        "jid": "text",
+        "Options": null,
+        "isInTableValue": false,
+        "filledBy": null
+      },
+      {
+        "FieldId": 140,
+        "FieldName": "basic_pay_*",
+        "DataType": "int",
+        "jid": "text",
+        "Options": null,
+        "isInTableValue": false,
+        "filledBy": null
+      }
+    ]
+  },
+  {
+    "PurposeId": 50,
+    "PurposeName": "Others",
+    "isInTableValue": false,
+    "Fields": [
+      {
+        "FieldId": 143,
+        "FieldName": "subject_*",
+        "DataType": "nvarchar",
+        "jid": "text",
+        "Options": null,
+        "isInTableValue": false,
+        "filledBy": null
+      },
+      {
+        "FieldId": 144,
+        "FieldName": "description_*",
+        "DataType": "nvarchar",
+        "jid": "text",
+        "Options": null,
+        "isInTableValue": false,
+        "filledBy": null
+      },
+      {
+        "FieldId": 145,
+        "FieldName": "supporting_documents",
+        "DataType": "nvarchar",
+        "jid": "File",
+        "Options": null,
+        "isInTableValue": false,
+        "filledBy": null
+      }
+    ]
+  },
+  {
+    "PurposeId": 51,
+    "PurposeName": "Deputation Extension",
+    "isInTableValue": false,
+    "Fields": [
+      {
+        "FieldId": 149,
+        "FieldName": "extension_sought_from_*",
+        "DataType": "Date",
+        "jid": "Date",
+        "Options": null,
+        "isInTableValue": false,
+        "filledBy": null
+      },
+      {
+        "FieldId": 150,
+        "FieldName": "extension_sought_to_*",
+        "DataType": "Date",
+        "jid": "Date",
+        "Options": null,
+        "isInTableValue": false,
+        "filledBy": null
+      }
+    ]
+  },
+  {
+    "PurposeId": 52,
+    "PurposeName": "Re-Employment",
+    "isInTableValue": false,
+    "Fields": [
+      {
+        "FieldId": 151,
+        "FieldName": "extension_sought_from_*",
+        "DataType": "Date",
+        "jid": "Date",
+        "Options": null,
+        "isInTableValue": false,
+        "filledBy": null
+      },
+      {
+        "FieldId": 152,
+        "FieldName": "extension_sought_to_*",
+        "DataType": "Date",
+        "jid": "Date",
+        "Options": null,
+        "isInTableValue": false,
+        "filledBy": null
+      },
+      {
+        "FieldId": 157,
+        "FieldName": "supporting_documents_*",
+        "DataType": "nvarchar",
+        "jid": "File",
+        "Options": null,
+        "isInTableValue": false,
+        "filledBy": null
+      }
+    ]
+  },
+  {
+    "PurposeId": 53,
+    "PurposeName": "Probation Confirmation",
+    "isInTableValue": false,
+    "Fields": [
+      {
+        "FieldId": 153,
+        "FieldName": "due_date_for_probation_confirmation_*",
+        "DataType": "Date",
+        "jid": "Date",
+        "Options": null,
+        "isInTableValue": false,
+        "filledBy": null
+      }
+    ]
+  },
+  {
+    "PurposeId": 54,
+    "PurposeName": "Award",
+    "isInTableValue": false,
+    "Fields": [
+      {
+        "FieldId": 154,
+        "FieldName": "Citation_*",
+        "DataType": "nvarchar",
+        "jid": "File",
+        "Options": null,
+        "isInTableValue": false,
+        "filledBy": null
+      },
+      {
+        "FieldId": 155,
+        "FieldName": "Details_Of_Previous_Award",
+        "DataType": "nvarchar",
+        "jid": "text",
+        "Options": null,
+        "isInTableValue": false,
+        "filledBy": null
+      },
+      {
+        "FieldId": 156,
+        "FieldName": "Award_Type(Annual/Monthly)",
+        "DataType": "nvarchar",
+        "jid": "text",
+        "Options": null,
+        "isInTableValue": false,
+        "filledBy": null
+      }
+    ]
+  },
+  {
+    "PurposeId": 56,
+    "PurposeName": "Resignation",
+    "isInTableValue": false,
+    "Fields": [
+      {
+        "FieldId": 160,
+        "FieldName": "date_of_tendering_resignation_*",
+        "DataType": "Date",
+        "jid": "Date",
+        "Options": null,
+        "isInTableValue": false,
+        "filledBy": null
+      },
+      {
+        "FieldId": 161,
+        "FieldName": "resigning_w.e.f._(dd/mm/yyyy)_*",
+        "DataType": "Date",
+        "jid": "Date",
+        "Options": null,
+        "isInTableValue": false,
+        "filledBy": null
+      },
+      {
+        "FieldId": 162,
+        "FieldName": "no_of_days_of_short_notice_period_in_numbers_*",
+        "DataType": "int",
+        "jid": "text",
+        "Options": null,
+        "isInTableValue": false,
+        "filledBy": null
+      },
+      {
+        "FieldId": 163,
+        "FieldName": "upload_resignation_application_*",
+        "DataType": "nvarchar",
+        "jid": "File",
+        "Options": null,
+        "isInTableValue": false,
+        "filledBy": null
+      },
+      {
+        "FieldId": 164,
+        "FieldName": "if_leaving_to_join_another_org.,_whether_obtained_noc_to_apply_*",
+        "DataType": "nvarchar",
+        "jid": "Select",
+        "Options": [
+          {
+            "optionValue": "Yes",
+            "optionId": 24
+          },
+          {
+            "optionValue": " No",
+            "optionId": 25
+          }
+        ],
+        "isInTableValue": false,
+        "filledBy": null
+      },
+      {
+        "FieldId": 165,
+        "FieldName": "upload_noc_*",
+        "DataType": "nvarchar",
+        "jid": "File",
+        "Options": null,
+        "isInTableValue": false,
+        "filledBy": null
+      }
+    ]
+  },
+  {
+    "PurposeId": 57,
+    "PurposeName": "Superannuation",
+    "isInTableValue": false,
+    "Fields": [
+      {
+        "FieldId": 166,
+        "FieldName": "date_of_birth_*",
+        "DataType": "Date",
+        "jid": "Date",
+        "Options": null,
+        "isInTableValue": false,
+        "filledBy": null
+      },
+      {
+        "FieldId": 167,
+        "FieldName": "date_of_retirement_*",
+        "DataType": "Date",
+        "jid": "Date",
+        "Options": null,
+        "isInTableValue": false,
+        "filledBy": null
+      },
+      {
+        "FieldId": 214,
+        "FieldName": "date_of_Joining_*",
+        "DataType": "Date",
+        "jid": "Date",
+        "Options": null,
+        "isInTableValue": false,
+        "filledBy": null
+      }
+    ]
+  },
+  {
+    "PurposeId": 58,
+    "PurposeName": "Promotion",
+    "isInTableValue": false,
+    "Fields": [
+      {
+        "FieldId": 168,
+        "FieldName": "promotion_due_from_(dd/mm/yyyy)_*",
+        "DataType": "Date",
+        "jid": "Date",
+        "Options": null,
+        "isInTableValue": false,
+        "filledBy": null
+      }
+    ]
+  },
+  {
+    "PurposeId": 59,
+    "PurposeName": "Permanent Absorption",
+    "isInTableValue": false,
+    "Fields": [
+      {
+        "FieldId": 169,
+        "FieldName": "post_applied_for_*",
+        "DataType": "nvarchar",
+        "jid": "text",
+        "Options": null,
+        "isInTableValue": false,
+        "filledBy": null
+      },
+      {
+        "FieldId": 170,
+        "FieldName": "upload_application_form_*",
+        "DataType": "nvarchar",
+        "jid": "File",
+        "Options": null,
+        "isInTableValue": false,
+        "filledBy": null
+      },
+      {
+        "FieldId": 171,
+        "FieldName": "name_of_parent_org._*",
+        "DataType": "nvarchar",
+        "jid": "text",
+        "Options": null,
+        "isInTableValue": false,
+        "filledBy": null
+      }
+    ]
+  }
+]
