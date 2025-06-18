@@ -232,6 +232,21 @@ const CreateRequest = () => {
               className="space-y-6"
             >
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {Number(selectedForm.PurposeId) === 47 && formData.isDirector && (
+                  <div className="flex flex-col ">
+                    <Label className="mb-2">Father's Name</Label>
+                    <div className="flex items-center  py-1 pl-1">
+                      <Input
+                        type="text"
+                        className="cursor-pointer"
+                        disabled={false}
+                        placeholder="Enter father name"
+                        value={formData['FatherName']}
+                        onChange={(value) => handleInputChange('FatherName', value?.target?.value)}
+                      />
+                    </div>
+                  </div>
+                )}
                 {selectedForm?.Fields?.filter((item) => !item?.isInTableValue && item?.filledBy === null)
                   .filter((ele) => {
                     const fieldId = Number(ele?.FieldId);
@@ -281,19 +296,6 @@ const CreateRequest = () => {
                 )}
                 {Number(selectedForm.PurposeId) === 47 && formData.isDirector && (
                   <>
-                    <div className="flex flex-col ">
-                      <Label className="mb-2">Father's Name</Label>
-                      <div className="flex items-center  py-1 pl-1">
-                        <Input
-                          type="text"
-                          className="cursor-pointer"
-                          disabled={false}
-                          placeholder="Enter father name"
-                          value={formData['FatherName']}
-                          onChange={(value) => handleInputChange('FatherName', value?.target?.value)}
-                        />
-                      </div>
-                    </div>
                     <div className="flex flex-col ">
                       <Label className="mb-2">
                         Service to which officer belongs including batch/year cadre etc. wherever applicable.
@@ -345,59 +347,62 @@ const CreateRequest = () => {
                   </div>
                 </div>
               </div>
-              {selectedForm && selectedForm.isInTableValue && (
-                <div className="overflow-x-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableCell className="font-medium w-2">SN.</TableCell>
-                        {selectedForm?.Fields?.filter((item) => item?.isInTableValue && !item?.filledBy)
-                          .filter((ele) =>
-                            !formData['122'] ? !hiddenFieldsForNewPaasport?.includes(Number(ele?.FieldId)) : true
-                          )
-                          .map((field) => (
-                            <TableCell key={field?.FieldId} className="font-medium">
-                              <Label htmlFor={field?.FieldId} className="block mb-1 text-sm font-medium">
-                                {formatLabel(field?.FieldName)}
-                              </Label>
-                            </TableCell>
-                          ))}
-                        <TableCell className="font-medium w-4">Action</TableCell>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {Object.entries(tableRows).map(([uuid, fields], index) => (
-                        <TableRow key={uuid}>
-                          <TableCell className="w-2">{index + 1}</TableCell>
-                          {Object?.entries(fields)?.map(([fieldId, value]) => {
-                            const field = selectedForm?.Fields?.find((f) => Number(f?.FieldId) === Number(fieldId));
-                            if (!field) return null;
-                            return (
-                              <TableCell key={fieldId}>
-                                <FormField
-                                  field={field}
-                                  value={formData[uuid]?.[fieldId] ?? value}
-                                  onChange={(newValue) => handleFieldChange(uuid, fieldId, newValue)}
-                                  purposeId={selectedForm.PurposeId}
-                                />
+              {selectedForm &&
+                ((Number(selectedForm.PurposeId) === 47 && formData.isDirector && selectedForm.isInTableValue) ||
+                  (Number(selectedForm.PurposeId) !== 47 && selectedForm.isInTableValue)) && (
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableCell className="font-medium w-2">SN.</TableCell>
+                          {selectedForm?.Fields?.filter((item) => item?.isInTableValue && !item?.filledBy)
+                            .filter((ele) =>
+                              !formData['122'] ? !hiddenFieldsForNewPaasport?.includes(Number(ele?.FieldId)) : true
+                            )
+                            .map((field) => (
+                              <TableCell key={field?.FieldId} className="font-medium">
+                                <Label htmlFor={field?.FieldId} className="block mb-1 text-sm font-medium">
+                                  {formatLabel(field?.FieldName)}
+                                </Label>
                               </TableCell>
-                            );
-                          })}
-                          <TableCell>
-                            <Button
-                              disabled={Object.keys(tableRows).length === 1}
-                              onClick={() => removeRow(uuid)}
-                              type="button"
-                            >
-                              <Trash2 />
-                            </Button>
-                          </TableCell>
+                            ))}
+                          <TableCell className="font-medium w-4">Action</TableCell>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
-              )}
+                      </TableHeader>
+                      <TableBody>
+                        {Object.entries(tableRows).map(([uuid, fields], index) => (
+                          <TableRow key={uuid}>
+                            <TableCell className="w-2">{index + 1}</TableCell>
+                            {Object.entries(fields).map(([fieldId, value]) => {
+                              const field = selectedForm?.Fields?.find((f) => Number(f?.FieldId) === Number(fieldId));
+                              if (!field) return null;
+                              return (
+                                <TableCell key={fieldId}>
+                                  <FormField
+                                    field={field}
+                                    value={formData[uuid]?.[fieldId] ?? value}
+                                    onChange={(newValue) => handleFieldChange(uuid, fieldId, newValue)}
+                                    purposeId={selectedForm.PurposeId}
+                                  />
+                                </TableCell>
+                              );
+                            })}
+                            <TableCell>
+                              <Button
+                                disabled={Object.keys(tableRows).length === 1}
+                                onClick={() => removeRow(uuid)}
+                                type="button"
+                              >
+                                <Trash2 />
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
+
               {submitStatus && (
                 <Alert
                   className={
