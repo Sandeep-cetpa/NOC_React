@@ -1,5 +1,5 @@
 const DFCCIL_UAT = {
-  apiUrl: 'https://uattaskmanageapi.dfccil.com/api',
+  apiUrl: 'https://localhost:5001/api',
   orgHierarchy: 'https://uatorganization.dfccil.com/api',
   logoutUrl: 'http://uatlogin.dfccil.com/applications',
   authUrl: 'https://app2.dfccil.com',
@@ -10,7 +10,8 @@ const DFCCIL_UAT = {
 };
 
 const DFCCIL_PROD = {
-  apiUrl: 'https://it.dfccil.com',
+  // apiUrl: 'https://it.dfccil.com',
+   apiUrl: 'https://localhost:5001/api',
   orgHierarchy: 'https://orgsvc.dfccil.com/api',
   logoutUrl: 'https://it.dfccil.com/Home/Home',
   authUrl: 'https://app2.dfccil.com',

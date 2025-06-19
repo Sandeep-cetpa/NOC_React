@@ -192,3 +192,50 @@ export function formatLabel(input) {
     .toLowerCase() // Convert to lowercase
     .replace(/\b\w/g, (c) => c.toUpperCase()); // Capitalize first letter of each word
 }
+export const validateForm = (selectedForm, formData, setSubmitStatus) => {
+  if (!selectedForm) {
+    console.error('No form selected');
+    return false;
+  }
+  let requiredFields = selectedForm.Fields.filter((field) => {
+    return field.FieldName.endsWith('*');
+  });
+  const is122True = formData[122];
+  const is142True = formData[142];
+  let fieldsToIgnore = [];
+  if (is122True) {
+    fieldsToIgnore = [142, 122];
+  } else if (is142True) {
+    fieldsToIgnore = [123, 122, 124, 125, 126, 142];
+  }
+  requiredFields = requiredFields.filter((field) => {
+    const fieldId = parseInt(field.FieldId); // Ensure consistent type
+    return !fieldsToIgnore.includes(fieldId);
+  });
+  const missingFields = requiredFields.filter((field) => {
+    const fieldId = field.FieldId;
+    const value = formData[fieldId] || formData[`File${fieldId}`];
+    const fileKey = `File${fieldId}`;
+    if (formData.hasOwnProperty(fileKey)) {
+      const fileValue = formData[fileKey];
+      if (!fileValue) return true;
+      if (Array.isArray(fileValue)) {
+        return fileValue.length === 0;
+      }
+      return !fileValue;
+    }
+    if (!value) {
+      return true; // Field is missing/empty
+    }
+    return false; // Field has a value
+  });
+  if (missingFields.length > 0) {
+    const fieldNames = missingFields.map((f) => formatLabel(f.FieldName)).join(', ');
+    setSubmitStatus({
+      type: 'error',
+      message: `Please fill in the required fields: ${fieldNames}`,
+    });
+    return false;
+  }
+  return true;
+};

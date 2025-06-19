@@ -220,7 +220,7 @@ const ReceivedRequests = () => {
           <TabsTrigger value="corporate">Request From Corporate Office</TabsTrigger>
         </TabsList>
         <TabsContent value="unit">
-          <div className="max-w-7xl mx-auto">
+          <div >
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
@@ -474,7 +474,7 @@ const ReceivedRequests = () => {
         </TabsContent>
         <TabsContent value="corporate">
           {' '}
-          <div className="max-w-7xl mx-auto">
+          <div >
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">

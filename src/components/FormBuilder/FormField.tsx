@@ -3,10 +3,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { ChevronDown, Check } from 'lucide-react';
 import { formatLabel } from '@/lib/helperFunction';
 
 interface FormFieldProps {
@@ -22,9 +20,10 @@ interface FormFieldProps {
   onChange: (value: any) => void;
   isDisabled?: boolean;
   purposeId?: string;
+  fileRef: any;
 }
 
-export const FormField: React.FC<FormFieldProps> = ({ field, value, onChange, isDisabled, purposeId }) => {
+export const FormField: React.FC<FormFieldProps> = ({ field, value, onChange, isDisabled, purposeId, fileRef }) => {
   const baseProps = {
     id: field.FieldId,
     placeholder: formatLabel(field.FieldName),
@@ -36,7 +35,6 @@ export const FormField: React.FC<FormFieldProps> = ({ field, value, onChange, is
   switch (field.jid) {
     case 'textarea':
       return <Textarea {...baseProps} rows={3} onChange={(e) => onChange(e.target.value)} />;
-
     case 'Select':
       return (
         <Select disabled={isDisabled} value={value || ''} onValueChange={(value) => onChange(value)}>
@@ -77,7 +75,7 @@ export const FormField: React.FC<FormFieldProps> = ({ field, value, onChange, is
         <div className="flex items-center">
           <input
             className="h-5 w-5"
-            checked={value}
+            checked={value || false}
             id={`${field.FieldId}`}
             onChange={(value) => onChange(value.target.checked)}
             name={purposeId}
@@ -93,11 +91,11 @@ export const FormField: React.FC<FormFieldProps> = ({ field, value, onChange, is
         <div className="flex flex-col ">
           <div className="flex items-center  py-1 pl-1  border-[1px] rounded-md ">
             <input
+              ref={fileRef}
               type="file"
               className="cursor-pointer"
               disabled={isDisabled}
-              value={value}
-              onChange={(e) => onChange(e.target.value)}
+              onChange={(e) => onChange(e.target.files[0])}
             />
           </div>
         </div>

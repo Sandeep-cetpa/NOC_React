@@ -25,12 +25,14 @@ const RenderForm = ({
   handleFieldChange,
   removeRow,
   isSubmitting,
+  fileRef,
 }) => {
   if (!selectedForm) return null;
+
   return (
     <div>
       {selectedForm && (
-        <Card className="bg-yellow-100">
+        <Card className="">
           <CardHeader className="border-b">
             <CardTitle>{selectedForm.PurposeName}</CardTitle>
           </CardHeader>
@@ -83,7 +85,7 @@ const RenderForm = ({
                           {field?.FieldName.includes('*') && <span className="text-red-500 ml-1">*</span>}
                         </Label>
                       )}
-                      <FormField
+                      <FormField fileRef={fileRef}
                         field={field}
                         value={formData[field?.jid === 'File' ? `File${field?.FieldId}` : field?.FieldId]}
                         onChange={(value) => handleInputChange(field?.FieldId, value, field?.jid)}
@@ -99,7 +101,9 @@ const RenderForm = ({
                         className="cursor-pointer"
                         disabled={false}
                         checked={formData['isDirector']}
-                        onCheckedChange={(value) => handleInputChange('isDirector', value)}
+                        onCheckedChange={(value) => {
+                          handleInputChange('isDirector', value);
+                        }}
                       />
                       <span className="ml-2">{formData.isDirector ? 'Yes' : 'No'}</span>
                     </div>
@@ -138,11 +142,13 @@ const RenderForm = ({
                   <Label className="mb-2">Upload IPR</Label>
                   <div className="flex items-center  py-1 pl-1  border-[1px] rounded-md ">
                     <input
+                      ref={fileRef}
                       type="file"
                       className="cursor-pointer"
                       disabled={false}
-                      value={formData['iprFile']}
-                      onChange={(value) => handleInputChange('iprFile', value?.target?.value)}
+                      onChange={(value) => {
+                        handleInputChange('iprFile', value?.target?.files[0]);
+                      }}
                     />
                   </div>
                 </div>

@@ -1,14 +1,16 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Heading from '@/components/ui/heading';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { FileText, FormInput } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
 import { FormField } from '@/components/FormBuilder/FormField';
 import { v4 as uuidv4 } from 'uuid';
-import { formatLabel } from '@/lib/helperFunction';
+import { formatLabel, validateForm } from '@/lib/helperFunction';
 import Select from 'react-select';
 import forms from '../../../purposes.json';
 import RenderForm from '@/components/RenderForm';
+import toast from 'react-hot-toast';
+import axiosInstance from '@/services/axiosInstance';
+import { useNavigate } from 'react-router';
 interface FormField {
   FieldId: string;
   DataType: String;
@@ -28,9 +30,10 @@ const CreateRequest = () => {
   const [selectedForm, setSelectedForm] = useState<Form | null>(null);
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const navigate = useNavigate();
   const [tableRows, setTableRows] = useState([]);
+  const fileRef = useRef();
   const [submitStatus, setSubmitStatus] = useState<{ type: string; message: string } | null>(null);
-  const { toast } = useToast();
   const handleFormSelect = (formId: string) => {
     const form = forms.find((f) => String(f.PurposeId) === formId);
     setSelectedForm(form || null);
@@ -43,39 +46,84 @@ const CreateRequest = () => {
   };
   const handleInputChange = (fieldId: string, value: any, fieldType?: any) => {
     const key = fieldType === 'File' ? `File${fieldId}` : fieldId;
-    if (Number(fieldId) === 142) {
-      setFormData((prev) => ({
-        ...prev,
-        [key]: value,
-        ['122']: false,
-      }));
-    } else if (Number(fieldId) === 122) {
-      setFormData((prev) => ({
-        ...prev,
-        [key]: value,
-        ['142']: false,
-      }));
-    } else {
-      setFormData((prev) => ({
-        ...prev,
-        [key]: value,
-      }));
-    }
-  };
-  const validateForm = () => {
-    if (!selectedForm) return false;
-    const requiredFields = selectedForm.Fields.filter((field) => field.FieldName.includes('*'));
-    const missingFields = requiredFields.filter((field) => !formData[field.FieldId]);
-
-    if (missingFields.length > 0) {
-      setSubmitStatus({
-        type: 'error',
-        message: `Please fill in the required fields: ${missingFields.map((f) => formatLabel(f.FieldName)).join(', ')}`,
+    const numericFieldId = Number(fieldId);
+    // Handle exclusive selection between 122 and 142 (radio group logic)
+    if (numericFieldId === 122 && value === true) {
+      if (fileRef.current) {
+        fileRef.current.value = ''; // this is allowed
+      }
+      setFormData({
+        '122': true,
+        '142': false,
       });
-      return false;
+      return;
     }
-    return true;
+
+    if (numericFieldId === 142 && value === true) {
+      if (fileRef.current) {
+        fileRef.current.value = ''; // this is allowed
+      }
+      setFormData({
+        '142': true,
+        '122': false,
+      });
+      return;
+    }
+
+    setFormData((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
   };
+
+  // const validateForm = () => {
+  //   if (!selectedForm) {
+  //     console.error('No form selected');
+  //     return false;
+  //   }
+  //   let requiredFields = selectedForm.Fields.filter((field) => {
+  //     return field.FieldName.endsWith('*');
+  //   });
+  //   const is122True = formData[122];
+  //   const is142True = formData[142];
+  //   let fieldsToIgnore = [];
+  //   if (is122True) {
+  //     fieldsToIgnore = [142, 122];
+  //   } else if (is142True) {
+  //     fieldsToIgnore = [123, 122, 124, 125, 126, 142];
+  //   }
+  //   requiredFields = requiredFields.filter((field) => {
+  //     const fieldId = parseInt(field.FieldId); // Ensure consistent type
+  //     return !fieldsToIgnore.includes(fieldId);
+  //   });
+  //   const missingFields = requiredFields.filter((field) => {
+  //     const fieldId = field.FieldId;
+  //     const value = formData[fieldId] || formData[`File${fieldId}`];
+  //     const fileKey = `File${fieldId}`;
+  //     if (formData.hasOwnProperty(fileKey)) {
+  //       const fileValue = formData[fileKey];
+  //       if (!fileValue) return true;
+  //       if (Array.isArray(fileValue)) {
+  //         return fileValue.length === 0;
+  //       }
+  //       return !fileValue;
+  //     }
+  //     if (!value) {
+  //       return true; // Field is missing/empty
+  //     }
+  //     return false; // Field has a value
+  //   });
+  //   if (missingFields.length > 0) {
+  //     const fieldNames = missingFields.map((f) => formatLabel(f.FieldName)).join(', ');
+  //     setSubmitStatus({
+  //       type: 'error',
+  //       message: `Please fill in the required fields: ${fieldNames}`,
+  //     });
+  //     return false;
+  //   }
+  //   return true;
+  // };
+
   useEffect(() => {
     if (selectedForm && selectedForm.Fields.length > 0) {
       const initialUUID = uuidv4();
@@ -122,9 +170,7 @@ const CreateRequest = () => {
   };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (formData[122]) {
-      if (!validateForm()) return;
-    }
+    if (!validateForm(selectedForm, formData, setSubmitStatus)) return;
     if (!formData.iprFile) {
       setSubmitStatus({
         type: 'error',
@@ -146,20 +192,35 @@ const CreateRequest = () => {
       const submission = {
         purposeId: selectedForm?.PurposeId,
         ...formData,
-        ...tableRows,
       };
-      console.log(submission);
-      setSubmitStatus({
-        type: 'success',
-        message: 'Form submitted successfully!',
+      const payloadFormData = new FormData();
+      function appendFormData(formData, data, parentKey = '') {
+        for (const key in data) {
+          const value = data[key];
+          const formKey = parentKey ? `${parentKey}[${key}]` : key;
+          if (value instanceof File) {
+            formData.append(formKey, value);
+          } else if (value && typeof value === 'object' && !(value instanceof Date)) {
+            appendFormData(formData, value, formKey);
+          } else {
+            formData.append(formKey, value);
+          }
+        }
+      }
+      appendFormData(payloadFormData, submission);
+      payloadFormData.append('fkAutoId', '1776');
+      if (Object.entries(tableRows).length > 1) {
+        payloadFormData.append('dynamicTable', JSON.stringify(tableRows));
+      }
+      const response = await axiosInstance.post('/User/NOC', payloadFormData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
       });
-
-      toast({
-        title: 'Success!',
-        description: 'Your form has been submitted successfully.',
-        duration: 5000,
-      });
-      setFormData({});
+      if (response.data.success) {
+        console.log(response.data);
+        toast.success(`Your request has been submitted successfully. Reference ID: ${response.data.userId}`);
+        setFormData({});
+        navigate('/track-noc');
+      }
     } catch (error) {
       setSubmitStatus({
         type: 'error',
@@ -209,6 +270,7 @@ const CreateRequest = () => {
         </Card>
       }
       <RenderForm
+        fileRef={fileRef}
         tableRows={tableRows}
         handleFieldChange={handleFieldChange}
         handleInputChange={handleInputChange}
