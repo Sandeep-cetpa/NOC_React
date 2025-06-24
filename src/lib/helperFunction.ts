@@ -1,6 +1,66 @@
 import { RootState } from '@/app/store';
+import { hiddenFieldsForExIndiaLeaveSponsored, hiddenFieldsForExIndiaLeaveThirdParty } from '@/config';
 import { format, parse } from 'date-fns';
-import { useSelector } from 'react-redux';
+
+import { Clock, AlertCircle, CheckCircle, XCircle, User, Users, Briefcase, ShieldCheck, Calendar } from 'lucide-react'; // replace with your icons
+
+export const statusConfig = {
+  "Raised By User": {
+    label: "Raised By User",
+    color: "bg-purple-100 text-purple-800 border-purple-200",
+    icon: User,
+  },
+  "Under Unit HR": {
+    label: "Under Unit HR",
+    color: "bg-indigo-100 text-indigo-800 border-indigo-200",
+    icon: Users,
+  },
+  "Rejected": {
+    label: "Rejected",
+    color: "bg-red-100 text-red-800 border-red-200",
+    icon: XCircle,
+  },
+  "Under CGM": {
+    label: "Under CGM",
+    color: "bg-pink-100 text-pink-800 border-pink-200",
+    icon: Briefcase,
+  },
+  "Under Corporate HR": {
+    label: "Under Corporate HR",
+    color: "bg-yellow-100 text-yellow-800 border-yellow-200",
+    icon: Clock,
+  },
+  "Under D and AR": {
+    label: "Under D and AR",
+    color: "bg-blue-100 text-blue-800 border-blue-200",
+    icon: AlertCircle,
+  },
+  "Under Vigilance": {
+    label: "Under Vigilance",
+    color: "bg-gray-100 text-gray-800 border-gray-200",
+    icon: ShieldCheck,
+  },
+  "Under GM HR": {
+    label: "Under GM HR",
+    color: "bg-teal-100 text-teal-800 border-teal-200",
+    icon: Calendar,
+  },
+  "Completed": {
+    label: "Completed",
+    color: "bg-green-100 text-green-800 border-green-200",
+    icon: CheckCircle,
+  },
+  "Under GM Cadre": {
+    label: "Under GM Cadre",
+    color: "bg-cyan-100 text-cyan-800 border-cyan-200",
+    icon: Calendar,
+  },
+  "Approved": {
+    label: "Approved",
+    color: "bg-green-100 text-green-800 border-green-200",
+    icon: CheckCircle,
+  },
+};
 
 export const setSessionItem = (key: string, value: any) => {
   const valueToStore = typeof value === 'object' ? JSON.stringify(value) : value;
@@ -64,7 +124,6 @@ export const getShortMonth = (dateString) => {
 };
 
 export const findEmployeeDetails = (employees: any, empCode: string) => {
-  console.log(empCode, 'see the data');
   const employee = employees.find((emp) => emp?.empCode === empCode);
   if (employee) {
     return {
@@ -194,48 +253,77 @@ export function formatLabel(input) {
 }
 export const validateForm = (selectedForm, formData, setSubmitStatus) => {
   if (!selectedForm) {
-    console.error('No form selected');
     return false;
   }
-  let requiredFields = selectedForm.Fields.filter((field) => {
-    return field.FieldName.endsWith('*');
-  });
+
+  let requiredFields = selectedForm.Fields.filter((field) => field.FieldName.endsWith('*'));
+
   const is122True = formData[122];
   const is142True = formData[142];
+
   let fieldsToIgnore = [];
   if (is122True) {
     fieldsToIgnore = [142, 122];
   } else if (is142True) {
     fieldsToIgnore = [123, 122, 124, 125, 126, 142];
   }
+
   requiredFields = requiredFields.filter((field) => {
-    const fieldId = parseInt(field.FieldId); // Ensure consistent type
+    const fieldId = parseInt(field.FieldId);
     return !fieldsToIgnore.includes(fieldId);
   });
+
+  const value134 = formData[134];
+  const isPurpose49 = Number(selectedForm.PurposeId) === 49;
+
   const missingFields = requiredFields.filter((field) => {
-    const fieldId = field.FieldId;
-    const value = formData[fieldId] || formData[`File${fieldId}`];
+    const fieldId = parseInt(field.FieldId);
+    if (isPurpose49) {
+      if (value134 === '18' && hiddenFieldsForExIndiaLeaveSponsored.includes(fieldId)) {
+        return false;
+      }
+      if (value134 === '20' && hiddenFieldsForExIndiaLeaveThirdParty.includes(fieldId)) {
+        return false;
+      }
+    }
+
     const fileKey = `File${fieldId}`;
     if (formData.hasOwnProperty(fileKey)) {
       const fileValue = formData[fileKey];
-      if (!fileValue) return true;
-      if (Array.isArray(fileValue)) {
-        return fileValue.length === 0;
-      }
-      return !fileValue;
+      return !fileValue || (Array.isArray(fileValue) && fileValue.length === 0);
     }
-    if (!value) {
-      return true; // Field is missing/empty
-    }
-    return false; // Field has a value
+
+    const value = formData[fieldId];
+    return !value;
   });
-  if (missingFields.length > 0) {
-    const fieldNames = missingFields.map((f) => formatLabel(f.FieldName)).join(', ');
+  const extraMissingFields = [];
+  if (!formData.iprFile) {
+    extraMissingFields.push({ FieldName: 'IPR File', FieldId: 'iprFile' });
+  }
+  if (!formData.iprDate1) {
+    extraMissingFields.push({ FieldName: 'IPR Date', FieldId: 'iprDate1' });
+  }
+  const allMissing = [...missingFields.map((f) => parseInt(f.FieldId)), ...extraMissingFields.map((f) => f.FieldId)];
+  const allMissingWithFiledName = [...missingFields, ...extraMissingFields];
+  if (allMissing.length > 0) {
+    // Custom message logic (if you want to keep separate messages):
+    const fieldNames = allMissingWithFiledName.map((f) => formatLabel(f.FieldName)).join(', ');
     setSubmitStatus({
       type: 'error',
       message: `Please fill in the required fields: ${fieldNames}`,
     });
-    return false;
   }
-  return true;
+  return allMissing;
 };
+export function getObjectFromSessionStorage(key) {
+  const item = sessionStorage.getItem(key);
+  if (item) {
+    try {
+      return JSON.parse(item);
+    } catch (e) {
+      console.error('Error parsing JSON from sessionStorage:', e);
+      return null;
+    }
+  }
+  return null;
+}

@@ -1,8 +1,9 @@
 import axios from 'axios';
 import { environment } from '@/config';
-import { getSessionItem, removeSessionItem } from '@/lib/helperFunction';
+import { getObjectFromSessionStorage, getSessionItem, removeSessionItem } from '@/lib/helperFunction';
 import toast from 'react-hot-toast';
 import logger from '@/lib/logger';
+import { oidcConfig } from '@/auth/oidcConfig';
 
 // Utility function for getting the token
 const getAccessToken = () => getSessionItem('token');
@@ -17,7 +18,9 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   (config) => {
-    const accessToken = getAccessToken();
+    const tokenData = getObjectFromSessionStorage(`oidc.user:${oidcConfig.authority}:${oidcConfig.client_id}`);
+
+    const accessToken = tokenData?.access_token;
     if (accessToken) {
       config.headers['Authorization'] = `Bearer ${accessToken}`;
     }

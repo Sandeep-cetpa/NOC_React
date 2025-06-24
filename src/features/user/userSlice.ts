@@ -2,8 +2,9 @@ import axiosInstance from '@/services/axiosInstance';
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
 
 interface UserState {
-  Roles: string | null;
+  Roles: any[] | null;
   unique_name: string | null;
+  EmpID: number | null;
   EmpCode: string | null;
   Designation: string | null;
   Unit: string | null;
@@ -16,38 +17,75 @@ interface UserState {
 }
 
 interface ProfileResponse {
-  statusCode: number;
-  message: string;
-  data: {
-    empId: number;
-    empCode: string;
-    name: string;
-    email: string;
+  employeeInfo: {
+    employeeMasterAutoId: number;
+    employeeCode: string;
+    gender: string;
+    userName: string;
+    post: string;
+    genericDesignation: string;
+    positions: number;
+    positionGrade: string;
+    deptDfccil: string;
+    subDeptDf: string;
+    dob: string;
+    doretirement: string;
+    location: string;
+    dorecruiting: string | null;
+    dojdfccil: string;
+    dotends: string | null;
+    depTenurecompletiondate: string | null;
+    depExtensionuptodate: string | null;
+    deputationTenure: string | null;
+    dorepatriation: string | null;
+    doabsorption: string | null;
+    dofirstPromotion: string | null;
+    dosecondPromotion: string | null;
+    dothirdPromotion: string | null;
+    doreemployment: string | null;
+    doabsconding: string | null;
+    toemploy: string;
+    empSubgroup: string | null;
+    ethnicOrigin: string | null;
+    religion: string | null;
+    rbfileNo: string | null;
+    lastDesignation: string | null;
+    services: string | null;
+    ditsdoarailway: string | null;
+    parentRailway: string | null;
+    gazettedNonGazetted: string | null;
+    doletter: string | null;
+    personnelArea: string | null;
+    personnelSubArea: string;
     mobile: string;
+    pwd: string;
+    emailAddress: string;
+    status: number;
+    modifyBy: string;
+    modifyDate: string;
+    modifyIp: string;
+    userType: number;
     designation: string;
-    unit: string;
-    unitId: number;
-    department: string;
-    level: string;
-    roles: string[];
-    ssoUserInfo: {
-      username: string;
-      unitName: string;
-      unitId: string;
-      designation: string;
-      level: string;
-      department: string;
-    };
+    aboutUs: string;
+    extnNo: string | null;
+    faxNo: string | null;
+    mtnno: string | null;
+    photo: string;
+    anniversaryDate: string;
+    personalMobile: string | null;
+    personalEmailAddress: string;
+    parentOrganzation: string | null;
+    duration: string | null;
+    reportingOfficer: string;
+    fatherName: string;
   };
-  dataLength: number;
-  totalRecords: number;
-  error: boolean;
-  errorDetail: null | string;
+  vigilanceDetails: any[];
 }
 
 const initialState: UserState = {
   Roles: null,
   unique_name: null,
+  EmpID: null,
   EmpCode: null,
   Designation: null,
   Unit: null,
@@ -62,14 +100,11 @@ const initialState: UserState = {
 // Create async thunk for fetching user profile
 export const fetchUserProfile = createAsyncThunk('user/fetchProfile', async (_, { rejectWithValue }) => {
   try {
-    const response = await axiosInstance.get<ProfileResponse>('/Account/profile');
-
+    const response = await axiosInstance.get<ProfileResponse>('/User/NOC/GetProfile');
     const data = response.data;
-
     if (data.error) {
       throw new Error(data.errorDetail || 'Unknown error occurred');
     }
-
     return data;
   } catch (error: any) {
     return rejectWithValue(error.response?.data?.message || error.message || 'Failed to fetch user profile');
@@ -96,17 +131,16 @@ const userSlice = createSlice({
       .addCase(fetchUserProfile.fulfilled, (state, action) => {
         state.loading = false;
 
-        const { data } = action.payload;
-
-        // Map API response to existing state structure
-        state.EmpCode = data.empCode;
-        state.unique_name = data.name;
-        state.Designation = data.designation;
-        state.Unit = data.unit;
-        state.unitId = data.unitId.toString();
-        state.Department = data.department;
-        state.Lavel = data.level;
-        state.Roles = data.roles.join(',');
+        const { employeeInfo, vigilanceDetails } = action.payload;
+        state.EmpCode = employeeInfo.employeeCode;
+        state.unique_name = employeeInfo.userName;
+        state.Designation = employeeInfo.designation;
+        state.EmpID = employeeInfo.employeeMasterAutoId;
+        state.Unit = employeeInfo.location;
+        state.unitId = employeeInfo?.unitId?.toString();
+        state.Department = employeeInfo.deptDfccil;
+        state.Lavel = employeeInfo.positionGrade;
+        state.Roles = vigilanceDetails;
       })
       .addCase(fetchUserProfile.rejected, (state, action) => {
         state.loading = false;

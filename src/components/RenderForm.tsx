@@ -26,13 +26,14 @@ const RenderForm = ({
   removeRow,
   isSubmitting,
   fileRef,
+  missingFields,
 }) => {
   if (!selectedForm) return null;
-
+  console.log(missingFields);
   return (
-    <div>
+    <div className="opacity-95">
       {selectedForm && (
-        <Card className="">
+        <div className="bg-white rounded-2xl shadow-2xl border border-gray-100">
           <CardHeader className="border-b">
             <CardTitle>{selectedForm.PurposeName}</CardTitle>
           </CardHeader>
@@ -85,7 +86,15 @@ const RenderForm = ({
                           {field?.FieldName.includes('*') && <span className="text-red-500 ml-1">*</span>}
                         </Label>
                       )}
-                      <FormField fileRef={fileRef}
+                      <FormField
+                        className={
+                          missingFields?.includes(Number(field?.FieldId))
+                            ? 'border-2 border-red-500'
+                            : field?.jid === 'File'
+                            ? 'border-[1px]'
+                            : ''
+                        }
+                        fileRef={fileRef}
                         field={field}
                         value={formData[field?.jid === 'File' ? `File${field?.FieldId}` : field?.FieldId]}
                         onChange={(value) => handleInputChange(field?.FieldId, value, field?.jid)}
@@ -140,11 +149,15 @@ const RenderForm = ({
                 )}
                 <div className="flex flex-col ">
                   <Label className="mb-2">Upload IPR</Label>
-                  <div className="flex items-center  py-1 pl-1  border-[1px] rounded-md ">
+                  <div
+                    className={`flex items-center  py-1 pl-1 ${
+                      missingFields?.includes('iprFile') ? 'border-2 border-red-500' : 'border-[1px]'
+                    } rounded-md `}
+                  >
                     <input
                       ref={fileRef}
                       type="file"
-                      className="cursor-pointer"
+                      className=" cursor-pointer"
                       disabled={false}
                       onChange={(value) => {
                         handleInputChange('iprFile', value?.target?.files[0]);
@@ -154,10 +167,14 @@ const RenderForm = ({
                 </div>
                 <div className="flex flex-col ">
                   <Label className="mb-2">IPR Date</Label>
-                  <div className="flex items-center  py-1 pl-1  border-[1px] rounded-md ">
+                  <div
+                    className={`flex items-center  py-1 pl-1 ${
+                      missingFields?.includes('iprFile') ? 'border-2 border-red-500' : 'border-[1px]'
+                    } rounded-md `}
+                  >
                     <input
+                      className="ml-2 cursor-pointer"
                       type="date"
-                      className="cursor-pointer ml-2"
                       value={formData['iprDate1']}
                       onChange={(value) => handleInputChange('iprDate1', value?.target?.value)}
                     />
@@ -239,12 +256,13 @@ const RenderForm = ({
                 </Alert>
               )}
               <div className="flex justify-between">
-                {selectedForm && selectedForm.isInTableValue && (
-                  <Button type="button" onClick={addNewRow}>
-                    Add Row
-                  </Button>
-                )}
-
+                {selectedForm &&
+                  selectedForm?.isInTableValue &&
+                  (selectedForm.PurposeId !== 47 || (selectedForm.PurposeId === 47 && formData.isDirector)) && (
+                    <Button type="button" onClick={addNewRow}>
+                      Add Row
+                    </Button>
+                  )}
                 <Button type="submit" disabled={isSubmitting} className="bg-blue-600 hover:bg-blue-700">
                   {isSubmitting ? (
                     <>
@@ -261,7 +279,7 @@ const RenderForm = ({
               </div>
             </form>
           </CardContent>
-        </Card>
+        </div>
       )}
     </div>
   );

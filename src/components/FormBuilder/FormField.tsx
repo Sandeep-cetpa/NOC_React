@@ -21,15 +21,24 @@ interface FormFieldProps {
   isDisabled?: boolean;
   purposeId?: string;
   fileRef: any;
+  className: string;
 }
 
-export const FormField: React.FC<FormFieldProps> = ({ field, value, onChange, isDisabled, purposeId, fileRef }) => {
+export const FormField: React.FC<FormFieldProps> = ({
+  field,
+  value,
+  onChange,
+  isDisabled,
+  purposeId,
+  fileRef,
+  className,
+}) => {
   const baseProps = {
     id: field.FieldId,
     placeholder: formatLabel(field.FieldName),
-    required: field.FieldName.includes('*'),
+    // required: field.FieldName.includes('*'),
     value: value || '',
-    className: '',
+    className: className,
     disabled: isDisabled,
   };
   switch (field.jid) {
@@ -38,7 +47,7 @@ export const FormField: React.FC<FormFieldProps> = ({ field, value, onChange, is
     case 'Select':
       return (
         <Select disabled={isDisabled} value={value || ''} onValueChange={(value) => onChange(value)}>
-          <SelectTrigger className="w-full">
+          <SelectTrigger className={`w-full ${className}`}>
             <SelectValue placeholder={formatLabel(field.FieldName) || `Select ${formatLabel(field.FieldName)}`} />
           </SelectTrigger>
           <SelectContent>
@@ -72,7 +81,7 @@ export const FormField: React.FC<FormFieldProps> = ({ field, value, onChange, is
       );
     case 'radio':
       return (
-        <div className="flex items-center">
+        <div className={`flex items-center ${className}`}>
           <input
             className="h-5 w-5"
             checked={value || false}
@@ -89,7 +98,7 @@ export const FormField: React.FC<FormFieldProps> = ({ field, value, onChange, is
     case 'File':
       return (
         <div className="flex flex-col ">
-          <div className="flex items-center  py-1 pl-1  border-[1px] rounded-md ">
+          <div className={`flex items-center py-1 pl-1   rounded-md ${className}`}>
             <input
               ref={fileRef}
               type="file"
@@ -102,7 +111,7 @@ export const FormField: React.FC<FormFieldProps> = ({ field, value, onChange, is
       );
     default:
       return (
-        <div className="flex flex-col">
+        <div>
           <Input {...baseProps} type={field.jid.toLocaleLowerCase()} onChange={(e) => onChange(e.target.value)} />
         </div>
       );
