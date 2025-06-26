@@ -5,9 +5,9 @@ export const useAppName = () => {
   const applications = useAppSelector((state) => state.applications.applications);
 
   const currentApplication = applications.find((app) => app.id === environment.applicationId) ?? {
-    name: 'Task Management',
-    hindiName: 'e-प्रबंधन',
-    description: 'Task Management',
+    name: 'No Objection Certificate',
+    hindiName: 'e-अनापत्ति',
+    description: 'Apply and Track issuance of NoC.',
   };
 
   return {

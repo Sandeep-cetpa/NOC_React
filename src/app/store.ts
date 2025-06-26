@@ -7,11 +7,12 @@ import userReducer from '../features/user/userSlice';
 import authReducer from '../features/auth/authSlice';
 import applicationsReducer from '../features/applications/applicationsSlice';
 import purposeReducer from '../features/purpose/purposeSlice';
+import statusReducer from '../features/status/statusSlice';
 
 const sessionPersistConfig = {
   key: 'root',
   storage: sessionStorage, // Use session storage for most reducers
-  whitelist: ['employee', 'user', 'units', 'auth', 'applications', 'pupose'], // Persist these slices
+  whitelist: ['employee', 'user', 'units', 'auth', 'applications', 'pupose', 'allStatus'], // Persist these slices
 };
 
 const rootReducer = combineReducers({
@@ -20,6 +21,7 @@ const rootReducer = combineReducers({
   auth: authReducer,
   applications: applicationsReducer,
   pupose: purposeReducer,
+  allStatus: statusReducer,
 });
 
 const persistedReducer = persistReducer(sessionPersistConfig, rootReducer);

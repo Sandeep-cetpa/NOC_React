@@ -22,32 +22,36 @@ import toast from 'react-hot-toast';
 import { setUnits } from '@/features/unit/unitSlice';
 import { RootState } from '@/app/store';
 import { fetchPurpose } from '@/features/purpose/purposeSlice';
+import { fetchStatus } from '@/features/status/statusSlice';
+import { fetchApplications } from '@/features/applications/applicationsSlice';
 
 export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
   const navigate = useNavigate();
   const { state, toggleSidebar } = useSidebar();
   const employees = useSelector((state: RootState) => state.employee.employees);
+  const status = useSelector((state: RootState) => state.allStatus.allStatus);
   const purposes = useSelector((state: RootState) => state.pupose.purpose);
-  const { isNodalOfficer, isSuperAdmin, isAdmin, isUnitCGM, isUnitHr } = useUserRoles();
-  const hasAccess = true;
+  const applications = useSelector((state: RootState) => state.applications.applications);
+  const { isUnitHr, roles } = useUserRoles();
+  const hasAccess = roles.length > 0;
   // const hasAccess = isNodalOfficer || isSuperAdmin || isAdmin || isUnitCGM;
-  const navMainItems = [
-    {
-      title: 'Create Request',
-      url: '/create-request',
-      icon: FileText,
-    },
-    {
-      title: 'Track NOC',
-      url: '/track-noc',
-      icon: MonitorCog,
-    },
-    isUnitHr && {
-      title: 'NOC Request for employee',
-      url: '/noc-request-for-employee',
-      icon: FileText,
-    },
-  ].filter(Boolean);
+
+  const navMainItems = {
+    navMain: [
+      {
+        title: 'Create Request',
+        url: '/create-request',
+        icon: FileText,
+        items: [],
+      },
+      {
+        title: 'Track NOC',
+        url: '/track-noc',
+        icon: MonitorCog,
+        items: [],
+      },
+    ],
+  };
   const dispatch = useDispatch();
   // const isAuthenticated = auth.isAuthenticated;
   const isAuthenticated = true;
@@ -88,6 +92,11 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
       fetchData();
     }
   }, [isAuthenticated, employees]);
+  React.useEffect(() => {
+    if (isAuthenticated && status.length === 0) {
+      dispatch(fetchStatus());
+    }
+  }, [isAuthenticated, status]);
   const handleLogout = () => {
     removeSessionItem('token');
     window.location.href = environment.logoutUrl;
@@ -98,6 +107,11 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
   //     dispatch(fetchPurpose());
   //   }
   // }, [purposes]);
+  React.useEffect(() => {
+    if (applications?.length === 0) {
+      dispatch(fetchApplications());
+    }
+  }, [applications]);
   return (
     <Sidebar collapsible="icon" {...props} className="">
       <div className="flex justify-end md:pt-[90px] ">
@@ -109,7 +123,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
       </div>
       <SidebarSeparator />
       <SidebarContent className="flex justify-between">
-        <NavMain items={navMainItems} />
+        <NavMain items={navMainItems.navMain} />
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
