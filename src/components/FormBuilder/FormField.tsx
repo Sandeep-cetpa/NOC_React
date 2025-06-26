@@ -22,8 +22,18 @@ interface FormFieldProps {
   purposeId?: string;
   fileRef: any;
   className: string;
+  className: string;
 }
 
+export const FormField: React.FC<FormFieldProps> = ({
+  field,
+  value,
+  onChange,
+  isDisabled,
+  purposeId,
+  fileRef,
+  className,
+}) => {
 export const FormField: React.FC<FormFieldProps> = ({
   field,
   value,
@@ -38,6 +48,7 @@ export const FormField: React.FC<FormFieldProps> = ({
     placeholder: formatLabel(field.fieldName),
     // required: field.fieldName.includes('*'),
     value: value || '',
+    className: className,
     className: className,
     disabled: isDisabled,
   };
@@ -82,6 +93,7 @@ export const FormField: React.FC<FormFieldProps> = ({
     case 'radio':
       return (
         <div className={`flex items-center ${className}`}>
+        <div className={`flex items-center ${className}`}>
           <input
             className="h-5 w-5"
             checked={value || false}
@@ -99,6 +111,7 @@ export const FormField: React.FC<FormFieldProps> = ({
       return (
         <div className="flex flex-col ">
           <div className={`flex items-center py-1 pl-1   rounded-md ${className}`}>
+          <div className={`flex items-center py-1 pl-1   rounded-md ${className}`}>
             <input
               ref={fileRef}
               type="file"
@@ -111,6 +124,7 @@ export const FormField: React.FC<FormFieldProps> = ({
       );
     default:
       return (
+        <div>
         <div>
           <Input {...baseProps} type={field.jid.toLocaleLowerCase()} onChange={(e) => onChange(e.target.value)} />
         </div>

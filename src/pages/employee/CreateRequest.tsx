@@ -46,6 +46,7 @@ const CreateRequest = () => {
     const form = forms.find((f) => Number(f.purposeId) === Number(formId));
     setSelectedForm(form || null);
     setMisssingFields([]);
+    setMisssingFields([]);
     if (Number(formId) === 48) {
       setFormData({ 142: true });
     } else {
@@ -153,8 +154,14 @@ const CreateRequest = () => {
     const result = validateForm(selectedForm, formData, setSubmitStatus);
     setMisssingFields(result);
     if (result?.length > 0) {
+    const result = validateForm(selectedForm, formData, setSubmitStatus);
+    setMisssingFields(result);
+    if (result?.length > 0) {
       return;
     }
+
+    if (!validateForm(selectedForm, formData, setSubmitStatus)) return;
+
 
     if (!validateForm(selectedForm, formData, setSubmitStatus)) return;
 
@@ -182,6 +189,7 @@ const CreateRequest = () => {
       }
       appendFormData(payloadFormData, submission);
       payloadFormData.append('fkAutoId', userInfo.EmpID.toString());
+      payloadFormData.append('fkAutoId', userInfo.EmpID.toString());
       if (Object.entries(tableRows).length > 1) {
         payloadFormData.append('dynamicTable', JSON.stringify(tableRows));
       }
@@ -189,8 +197,11 @@ const CreateRequest = () => {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       if (response?.data?.success) {
+      if (response?.data?.success) {
         toast.success(`Your request has been submitted successfully. Reference ID: ${response.data.userId}`);
         setFormData({});
+        setMisssingFields([]);
+        setSelectedForm(null);
         setMisssingFields([]);
         setSelectedForm(null);
         navigate('/track-noc');
@@ -243,8 +254,11 @@ const CreateRequest = () => {
           </CardContent>
         </div>
       </div>
+        </div>
+      </div>
       <RenderForm
         fileRef={fileRef}
+        missingFields={missingFields}
         missingFields={missingFields}
         tableRows={tableRows}
         handleFieldChange={handleFieldChange}
@@ -258,6 +272,8 @@ const CreateRequest = () => {
         selectedForm={selectedForm}
       />
       {!selectedForm && (
+        <div className="w-full mt-8">
+          <NOCProcessInfo />
         <div className="w-full mt-8">
           <NOCProcessInfo />
         </div>

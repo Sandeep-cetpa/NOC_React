@@ -27,12 +27,15 @@ const RenderForm = ({
   isSubmitting,
   fileRef,
   missingFields,
+  missingFields,
 }) => {
   if (!selectedForm) return null;
-
+  console.log(missingFields);
   return (
     <div className="opacity-95">
+    <div className="opacity-95">
       {selectedForm && (
+        <div className="bg-white rounded-2xl shadow-2xl border border-gray-100">
         <div className="bg-white rounded-2xl shadow-2xl border border-gray-100">
           <CardHeader className="border-b">
             <CardTitle>{selectedForm.purposeName}</CardTitle>
@@ -155,9 +158,15 @@ const RenderForm = ({
                       missingFields?.includes('iprFile') ? 'border-2 border-red-500' : 'border-[1px]'
                     } rounded-md `}
                   >
+                  <div
+                    className={`flex items-center  py-1 pl-1 ${
+                      missingFields?.includes('iprFile') ? 'border-2 border-red-500' : 'border-[1px]'
+                    } rounded-md `}
+                  >
                     <input
                       ref={fileRef}
                       type="file"
+                      className=" cursor-pointer"
                       className=" cursor-pointer"
                       disabled={false}
                       onChange={(value) => {
@@ -173,7 +182,13 @@ const RenderForm = ({
                       missingFields?.includes('iprFile') ? 'border-2 border-red-500' : 'border-[1px]'
                     } rounded-md `}
                   >
+                  <div
+                    className={`flex items-center  py-1 pl-1 ${
+                      missingFields?.includes('iprFile') ? 'border-2 border-red-500' : 'border-[1px]'
+                    } rounded-md `}
+                  >
                     <input
+                      className="ml-2 cursor-pointer"
                       className="ml-2 cursor-pointer"
                       type="date"
                       value={formData['iprDate1']}
@@ -281,6 +296,7 @@ const RenderForm = ({
               </div>
             </form>
           </CardContent>
+        </div>
         </div>
       )}
     </div>

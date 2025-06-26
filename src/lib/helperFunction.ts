@@ -1,5 +1,6 @@
 import { RootState } from '@/app/store';
 import { hiddenFieldsForExIndiaLeaveSponsored, hiddenFieldsForExIndiaLeaveThirdParty } from '@/config';
+import { hiddenFieldsForExIndiaLeaveSponsored, hiddenFieldsForExIndiaLeaveThirdParty } from '@/config';
 import { format, parse } from 'date-fns';
 
 import { Clock, AlertCircle, CheckCircle, XCircle, User, Users, Briefcase, ShieldCheck, Calendar } from 'lucide-react'; // replace with your icons
@@ -261,12 +262,14 @@ export const validateForm = (selectedForm, formData, setSubmitStatus) => {
   const is122True = formData[122];
   const is142True = formData[142];
 
+
   let fieldsToIgnore = [];
   if (is122True) {
     fieldsToIgnore = [142, 122];
   } else if (is142True) {
     fieldsToIgnore = [123, 122, 124, 125, 126, 142];
   }
+
 
   requiredFields = requiredFields.filter((field) => {
     const fieldId = parseInt(field.fieldId);
@@ -312,6 +315,18 @@ export const validateForm = (selectedForm, formData, setSubmitStatus) => {
       type: 'error',
       message: `Please fill in the required fields: ${fieldNames}`,
     });
+  }
+  return allMissing;
+};
+export function getObjectFromSessionStorage(key) {
+  const item = sessionStorage.getItem(key);
+  if (item) {
+    try {
+      return JSON.parse(item);
+    } catch (e) {
+      console.error('Error parsing JSON from sessionStorage:', e);
+      return null;
+    }
   }
   return allMissing;
 };

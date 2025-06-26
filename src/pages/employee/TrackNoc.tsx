@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Search,
   Filter,
@@ -20,6 +21,7 @@ import {
   ArrowUpDown,
   ChevronLeft,
   ChevronRight,
+  FileQuestion,
   FileQuestion,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -44,15 +46,27 @@ import Loader from '@/components/ui/loader';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/app/store';
 import { statusConfig } from '@/lib/helperFunction';
+import axiosInstance from '@/services/axiosInstance';
+import UserNOCDetailsDialog from '@/components/dialogs/UserNOCDetailDialog';
+import Loader from '@/components/ui/loader';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/app/store';
+import { statusConfig } from '@/lib/helperFunction';
 
 const TrackNoc = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const allStatus = useSelector((state: RootState) => state.allStatus.allStatus);
   const userDetails = useSelector((state: RootState) => state.user);
+  const allStatus = useSelector((state: RootState) => state.allStatus.allStatus);
+  const userDetails = useSelector((state: RootState) => state.user);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
   const [selectedNoc, setSelectedNoc] = useState({});
+  const [selectedNoc, setSelectedNoc] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
+  const [isOpen, setIsOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [nocData, setNocData] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [nocData, setNocData] = useState([]);
@@ -80,6 +94,10 @@ const TrackNoc = () => {
   // Filter and search logic
   const filteredData = nocData.filter((item) => {
     const matchesSearch =
+      item?.currentStatus?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      String(item?.refId)?.includes(searchQuery.toLowerCase()) ||
+      item.purposeName.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesStatus = statusFilter === 'all' || item.currentStatus === statusFilter;
       item?.currentStatus?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       String(item?.refId)?.includes(searchQuery.toLowerCase()) ||
       item.purposeName.toLowerCase().includes(searchQuery.toLowerCase());
@@ -117,9 +135,14 @@ const TrackNoc = () => {
     if (!status) {
       return;
     }
+    if (!status) {
+      return;
+    }
     const config = statusConfig[status];
     const IconComponent = config?.icon || Clock;
+    const IconComponent = config?.icon || Clock;
     return (
+      <Badge className={`${config?.color} hover:bg-none text-center items-center space-x-1 px-2 py-1`}>
       <Badge className={`${config?.color} hover:bg-none text-center items-center space-x-1 px-2 py-1`}>
         <IconComponent className="h-3 w-3" />
         <span>{config.label}</span>
@@ -127,6 +150,9 @@ const TrackNoc = () => {
     );
   };
 
+  if (isLoading) {
+    return <Loader />;
+  }
   if (isLoading) {
     return <Loader />;
   }
@@ -146,6 +172,7 @@ const TrackNoc = () => {
               </p>
             </div>
             <div className="flex items-center space-x-3">
+              <Button onClick={() => getAllUserNoc(438)} variant="outline" className="flex items-center space-x-2">
               <Button onClick={() => getAllUserNoc(438)} variant="outline" className="flex items-center space-x-2">
                 <RefreshCw className="h-4 w-4" />
                 <span>Refresh</span>
@@ -176,6 +203,13 @@ const TrackNoc = () => {
                   }}
                 >
                   <SelectTrigger className="w-56">
+                <Select
+                  value={statusFilter}
+                  onValueChange={(e) => {
+                    setStatusFilter(e);
+                  }}
+                >
+                  <SelectTrigger className="w-56">
                     <div className="flex items-center space-x-2">
                       <Filter className="h-4 w-4" />
                       <SelectValue placeholder="Filter by Status" />
@@ -183,6 +217,11 @@ const TrackNoc = () => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Status</SelectItem>
+                    {allStatus?.map((ele) => (
+                      <SelectItem key={ele?.statusId} value={ele?.statusName}>
+                        {ele?.statusName}
+                      </SelectItem>
+                    ))}
                     {allStatus?.map((ele) => (
                       <SelectItem key={ele?.statusId} value={ele?.statusName}>
                         {ele?.statusName}
@@ -224,12 +263,14 @@ const TrackNoc = () => {
                       <span>SN</span>
                     </TableHead>
                     <TableHead className="text-white">
+                    <TableHead className="text-white">
                       <span>Creation Date</span>
                     </TableHead>
                     <TableHead>
                       <Button
                         variant="ghost"
                         size="sm"
+                        onClick={() => handleSort('refId')}
                         onClick={() => handleSort('refId')}
                         className="flex items-center space-x-1 p-0 h-auto font-semibold text-white"
                       >
@@ -242,6 +283,7 @@ const TrackNoc = () => {
                       <Button
                         variant="ghost"
                         size="sm"
+                        onClick={() => handleSort('currentStatus')}
                         onClick={() => handleSort('currentStatus')}
                         className="flex items-center space-x-1 p-0 h-auto font-semibold  text-white"
                       >
@@ -291,7 +333,18 @@ const TrackNoc = () => {
                 <div className="mx-auto w-12 h-12 bg-red-50 rounded-full flex items-center justify-center mb-4">
                   <FileQuestion className="w-6 h-6 text-red-500" />
                 </div>
+            </div>
+            {paginatedData.length === 0 && (
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 text-center">
+                <div className="mx-auto w-12 h-12 bg-red-50 rounded-full flex items-center justify-center mb-4">
+                  <FileQuestion className="w-6 h-6 text-red-500" />
+                </div>
 
+                <h3 className="font-semibold text-gray-800 mb-2">No Results Found</h3>
+                <p className="text-sm text-gray-600 mb-4">No NOC application found !!</p>
+              </div>
+            )}
+            <UserNOCDetailsDialog nocData={selectedNoc} isOpen={isOpen} onOpenChange={setIsOpen} />
                 <h3 className="font-semibold text-gray-800 mb-2">No Results Found</h3>
                 <p className="text-sm text-gray-600 mb-4">No NOC application found !!</p>
               </div>
