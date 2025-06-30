@@ -13,10 +13,6 @@ interface FormFieldProps {
     dataType: String;
     fieldName: string;
     options?: string[];
-    fieldId: string;
-    dataType: String;
-    fieldName: string;
-    options?: string[];
     jid: String;
     isInTableValue: boolean;
   };
@@ -41,9 +37,6 @@ export const FormField: React.FC<FormFieldProps> = ({
     id: field.fieldId,
     placeholder: formatLabel(field.fieldName),
     // required: field.fieldName.includes('*'),
-    id: field.fieldId,
-    placeholder: formatLabel(field.fieldName),
-    // required: field.fieldName.includes('*'),
     value: value || '',
     className: className,
     disabled: isDisabled,
@@ -56,11 +49,8 @@ export const FormField: React.FC<FormFieldProps> = ({
         <Select disabled={isDisabled} value={value || ''} onValueChange={(value) => onChange(value)}>
           <SelectTrigger className={`w-full ${className}`}>
             <SelectValue placeholder={formatLabel(field.fieldName) || `Select ${formatLabel(field.fieldName)}`} />
-          <SelectTrigger className={`w-full ${className}`}>
-            <SelectValue placeholder={formatLabel(field.fieldName) || `Select ${formatLabel(field.fieldName)}`} />
           </SelectTrigger>
           <SelectContent>
-            {field?.options?.map((option: any, index) => (
             {field?.options?.map((option: any, index) => (
               <SelectItem key={index} value={String(option?.optionId)}>
                 {option?.optionValue}
@@ -76,20 +66,12 @@ export const FormField: React.FC<FormFieldProps> = ({
           <Label htmlFor={field.fieldId} className="flex items-center">
             {field.fieldName.includes('*') && <span className="text-red-500 mr-1">*</span>}
             {formatLabel(field.fieldName)}
-          <Checkbox id={field.fieldId} checked={value || false} onCheckedChange={(checked) => onChange(checked)} />
-          <Label htmlFor={field.fieldId} className="flex items-center">
-            {field.fieldName.includes('*') && <span className="text-red-500 mr-1">*</span>}
-            {formatLabel(field.fieldName)}
           </Label>
         </div>
       );
     case 'switch':
       return (
         <div className="flex items-center space-x-2">
-          <Switch id={field.fieldId} checked={value || false} onCheckedChange={(checked) => onChange(checked)} />
-          <Label htmlFor={field.fieldId} className="flex items-center">
-            {field.fieldName.includes('*') && <span className="text-red-500 mr-1">*</span>}
-            {formatLabel(field.fieldName)}
           <Switch id={field.fieldId} checked={value || false} onCheckedChange={(checked) => onChange(checked)} />
           <Label htmlFor={field.fieldId} className="flex items-center">
             {field.fieldName.includes('*') && <span className="text-red-500 mr-1">*</span>}
@@ -104,13 +86,10 @@ export const FormField: React.FC<FormFieldProps> = ({
             className="h-5 w-5"
             checked={value || false}
             id={`${field.fieldId}`}
-            id={`${field.fieldId}`}
             onChange={(value) => onChange(value.target.checked)}
             name={purposeId}
             type="radio"
           />
-          <Label className="ml-2" htmlFor={`${field.fieldId}`}>
-            {formatLabel(field.fieldName)}
           <Label className="ml-2" htmlFor={`${field.fieldId}`}>
             {formatLabel(field.fieldName)}
           </Label>
