@@ -6,37 +6,46 @@ import { FormField } from '@/components/FormBuilder/FormField';
 import { v4 as uuidv4 } from 'uuid';
 import { formatLabel, validateForm } from '@/lib/helperFunction';
 import Select from 'react-select';
-import forms from '../../../purposes.json';
+// import forms from '../../../purposes.json';
 import RenderForm from '@/components/RenderForm';
 import toast from 'react-hot-toast';
 import axiosInstance from '@/services/axiosInstance';
 import { useNavigate } from 'react-router';
+import NOCProcessInfo from '@/components/NewFlow';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/app/store';
+import Loader from '@/components/ui/loader';
+import { Label } from '@/components/ui/label';
 interface FormField {
-  FieldId: string;
-  DataType: String;
-  FieldName: string;
-  Options?: string[];
+  fieldId: string;
+  dataType: String;
+  fieldName: string;
+  options?: string[];
   jid: String;
   isInTableValue: boolean;
   filledBy: any;
 }
 interface Form {
-  PurposeId: string;
-  PurposeName: string;
-  Fields: FormField[];
+  purposeId: string;
+  purposeName: string;
+  fields: FormField[];
   isInTableValue?: boolean;
 }
 const CreateRequest = () => {
   const [selectedForm, setSelectedForm] = useState<Form | null>(null);
   const [formData, setFormData] = useState<Record<string, any>>({});
+  const [forms, setForms] = useState([]);
+  const userInfo = useSelector((state: RootState) => state.user);
+  const [missingFields, setMisssingFields] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
   const [tableRows, setTableRows] = useState([]);
   const fileRef = useRef();
   const [submitStatus, setSubmitStatus] = useState<{ type: string; message: string } | null>(null);
   const handleFormSelect = (formId: string) => {
-    const form = forms.find((f) => String(f.PurposeId) === formId);
+    const form = forms.find((f) => Number(f.purposeId) === Number(formId));
     setSelectedForm(form || null);
+    setMisssingFields([]);
     if (Number(formId) === 48) {
       setFormData({ 142: true });
     } else {
@@ -47,7 +56,6 @@ const CreateRequest = () => {
   const handleInputChange = (fieldId: string, value: any, fieldType?: any) => {
     const key = fieldType === 'File' ? `File${fieldId}` : fieldId;
     const numericFieldId = Number(fieldId);
-    // Handle exclusive selection between 122 and 142 (radio group logic)
     if (numericFieldId === 122 && value === true) {
       if (fileRef.current) {
         fileRef.current.value = ''; // this is allowed
@@ -75,62 +83,31 @@ const CreateRequest = () => {
       [key]: value,
     }));
   };
-
-  // const validateForm = () => {
-  //   if (!selectedForm) {
-  //     console.error('No form selected');
-  //     return false;
-  //   }
-  //   let requiredFields = selectedForm.Fields.filter((field) => {
-  //     return field.FieldName.endsWith('*');
-  //   });
-  //   const is122True = formData[122];
-  //   const is142True = formData[142];
-  //   let fieldsToIgnore = [];
-  //   if (is122True) {
-  //     fieldsToIgnore = [142, 122];
-  //   } else if (is142True) {
-  //     fieldsToIgnore = [123, 122, 124, 125, 126, 142];
-  //   }
-  //   requiredFields = requiredFields.filter((field) => {
-  //     const fieldId = parseInt(field.FieldId); // Ensure consistent type
-  //     return !fieldsToIgnore.includes(fieldId);
-  //   });
-  //   const missingFields = requiredFields.filter((field) => {
-  //     const fieldId = field.FieldId;
-  //     const value = formData[fieldId] || formData[`File${fieldId}`];
-  //     const fileKey = `File${fieldId}`;
-  //     if (formData.hasOwnProperty(fileKey)) {
-  //       const fileValue = formData[fileKey];
-  //       if (!fileValue) return true;
-  //       if (Array.isArray(fileValue)) {
-  //         return fileValue.length === 0;
-  //       }
-  //       return !fileValue;
-  //     }
-  //     if (!value) {
-  //       return true; // Field is missing/empty
-  //     }
-  //     return false; // Field has a value
-  //   });
-  //   if (missingFields.length > 0) {
-  //     const fieldNames = missingFields.map((f) => formatLabel(f.FieldName)).join(', ');
-  //     setSubmitStatus({
-  //       type: 'error',
-  //       message: `Please fill in the required fields: ${fieldNames}`,
-  //     });
-  //     return false;
-  //   }
-  //   return true;
-  // };
-
+  const getAllPurpose = async () => {
+    try {
+      setIsSubmitting(true);
+      const response = await axiosInstance('User/NOC/Purposes');
+      if (response.data.success) {
+        setForms(response.data.data);
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
   useEffect(() => {
-    if (selectedForm && selectedForm.Fields.length > 0) {
+    getAllPurpose();
+  }, []);
+  useEffect(() => {
+    if (selectedForm && selectedForm.fields.length > 0) {
       const initialUUID = uuidv4();
       const initialObject = {};
-      selectedForm?.Fields?.filter((item) => item?.isInTableValue && !item.filledBy).forEach((field) => {
-        initialObject[field.FieldId] = ''; // Initialize with empty string
-      });
+      selectedForm?.fields
+        ?.filter((item) => item?.isInTableValue && !item.filledBy)
+        .forEach((field) => {
+          initialObject[field.fieldId] = ''; // Initialize with empty string
+        });
       const formattedData = {
         [initialUUID]: initialObject,
       };
@@ -149,9 +126,11 @@ const CreateRequest = () => {
   const addNewRow = () => {
     const newUUID = uuidv4();
     const newRowObject = {};
-    selectedForm.Fields?.filter((item) => item?.isInTableValue && !item.filledBy).forEach((field) => {
-      newRowObject[field.FieldId] = '';
-    });
+    selectedForm.fields
+      ?.filter((item) => item?.isInTableValue && !item.filledBy)
+      .forEach((field) => {
+        newRowObject[field.fieldId] = '';
+      });
     setTableRows((prev) => ({
       ...prev,
       [newUUID]: newRowObject,
@@ -168,29 +147,23 @@ const CreateRequest = () => {
       return updated;
     });
   };
+  console.log(formData, 'formData');
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const result = validateForm(selectedForm, formData, setSubmitStatus);
+    setMisssingFields(result);
+    if (result?.length > 0) {
+      return;
+    }
+
     if (!validateForm(selectedForm, formData, setSubmitStatus)) return;
-    if (!formData.iprFile) {
-      setSubmitStatus({
-        type: 'error',
-        message: `Please upload IPR File to proceed`,
-      });
-      return;
-    }
-    if (!formData.iprDate1) {
-      setSubmitStatus({
-        type: 'error',
-        message: `Please fill IPR date to proceed`,
-      });
-      return;
-    }
+
     setIsSubmitting(true);
     setSubmitStatus(null);
 
     try {
       const submission = {
-        purposeId: selectedForm?.PurposeId,
+        purposeId: selectedForm?.purposeId,
         ...formData,
       };
       const payloadFormData = new FormData();
@@ -208,17 +181,18 @@ const CreateRequest = () => {
         }
       }
       appendFormData(payloadFormData, submission);
-      payloadFormData.append('fkAutoId', '1776');
+      payloadFormData.append('fkAutoId', userInfo.EmpID.toString());
       if (Object.entries(tableRows).length > 1) {
         payloadFormData.append('dynamicTable', JSON.stringify(tableRows));
       }
       const response = await axiosInstance.post('/User/NOC', payloadFormData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
-      if (response.data.success) {
-        console.log(response.data);
+      if (response?.data?.success) {
         toast.success(`Your request has been submitted successfully. Reference ID: ${response.data.userId}`);
         setFormData({});
+        setMisssingFields([]);
+        setSelectedForm(null);
         navigate('/track-noc');
       }
     } catch (error) {
@@ -230,21 +204,18 @@ const CreateRequest = () => {
       setIsSubmitting(false);
     }
   };
+  if (isSubmitting) {
+    return <Loader />;
+  }
   return (
     <div className="p-6 space-y-6">
-      <div className="flex flex-row items-center justify-between">
-        <div className="space-y-1">
-          <Heading type={2}>Create Request</Heading>
+      <div>
+        <div className="flex flex-row items-center justify-between">
+          <div className="space-y-1">
+            <Heading type={2}>Create Request</Heading>
+          </div>
         </div>
-      </div>
-      {
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <FormInput className="h-5 w-5 text-blue-500" />
-              <span className="text-lg">Select a purpose</span>
-            </CardTitle>
-          </CardHeader>
+        <div className="bg-white rounded-2xl shadow-lg border border-gray-200">
           <CardContent>
             {forms?.length === 0 ? (
               <div className="text-center py-8">
@@ -252,13 +223,16 @@ const CreateRequest = () => {
                 <p className="text-gray-500">No forms available</p>
               </div>
             ) : (
-              <div className="space-y-4 mt-0 w-full md:w-1/3 md:pr-2">
+              <div className=" w-full mt-4 md:w-1/3 md:pr-2">
+                <Label htmlFor="form-select" className="block mb-2 text-sm font-bold">
+                  Select Purpose <span className="text-red-500 ml-1">*</span>
+                </Label>
                 <Select
-                  options={forms.map((form) => ({ label: form.PurposeName, value: String(form.PurposeId) }))}
+                  options={forms.map((form) => ({ label: form.purposeName, value: String(form.purposeId) }))}
                   onChange={(e) => handleFormSelect(e?.value)}
                   value={
                     selectedForm
-                      ? { label: selectedForm?.PurposeName, value: selectedForm?.PurposeId }
+                      ? { label: selectedForm?.purposeName, value: selectedForm?.purposeId }
                       : { label: 'Please select the purpose' }
                   }
                   className=" bg-white"
@@ -267,10 +241,11 @@ const CreateRequest = () => {
               </div>
             )}
           </CardContent>
-        </Card>
-      }
+        </div>
+      </div>
       <RenderForm
         fileRef={fileRef}
+        missingFields={missingFields}
         tableRows={tableRows}
         handleFieldChange={handleFieldChange}
         handleInputChange={handleInputChange}
@@ -283,17 +258,8 @@ const CreateRequest = () => {
         selectedForm={selectedForm}
       />
       {!selectedForm && (
-        <div className="w-full md:w-1/3 mt-8">
-          <div className="bg-white rounded-lg shadow border border-gray-200">
-            <div className="p-4 border-b border-gray-200">
-              <div className="flex items-center space-x-2">
-                <FileText className="h-5 w-5 text-blue-600" />
-                <h2 className="text-lg font-semibold text-gray-900">
-                  Please select the purpose to start NOC application
-                </h2>
-              </div>
-            </div>
-          </div>
+        <div className="w-full mt-8">
+          <NOCProcessInfo />
         </div>
       )}
     </div>

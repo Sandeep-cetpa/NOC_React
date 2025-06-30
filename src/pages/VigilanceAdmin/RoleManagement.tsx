@@ -127,7 +127,6 @@ const RoleManagement = () => {
         department: emp.department || '',
       }));
   }, [employees]);
-  console.log('filteredEmployees', filteredEmployees);
   // API calls
   const getPermissionAndRoleList = async () => {
     try {

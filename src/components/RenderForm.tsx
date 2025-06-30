@@ -26,15 +26,16 @@ const RenderForm = ({
   removeRow,
   isSubmitting,
   fileRef,
+  missingFields,
 }) => {
   if (!selectedForm) return null;
 
   return (
-    <div>
+    <div className="opacity-95">
       {selectedForm && (
-        <Card className="">
+        <div className="bg-white rounded-2xl shadow-2xl border border-gray-100">
           <CardHeader className="border-b">
-            <CardTitle>{selectedForm.PurposeName}</CardTitle>
+            <CardTitle>{selectedForm.purposeName}</CardTitle>
           </CardHeader>
           <CardContent className="pt-6">
             <form
@@ -44,8 +45,8 @@ const RenderForm = ({
               }}
               className="space-y-6"
             >
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {Number(selectedForm.PurposeId) === 47 && formData.isDirector && (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {Number(selectedForm.purposeId) === 47 && formData.isDirector && (
                   <div className="flex flex-col ">
                     <Label className="mb-2">Father's Name</Label>
                     <div className="flex items-center  py-1 pl-1">
@@ -60,13 +61,14 @@ const RenderForm = ({
                     </div>
                   </div>
                 )}
-                {selectedForm?.Fields?.filter((item) => !item?.isInTableValue && item?.filledBy === null)
+                {selectedForm?.fields
+                  ?.filter((item) => !item?.isInTableValue && item?.filledBy === null)
                   .filter((ele) => {
-                    const fieldId = Number(ele?.FieldId);
+                    const fieldId = Number(ele?.fieldId);
                     if (!formData['122'] && hiddenFieldsForNewPaasport?.includes(fieldId)) {
                       return false;
                     }
-                    if (Number(selectedForm.PurposeId) === 49) {
+                    if (Number(selectedForm.purposeId) === 49) {
                       const value134 = formData[134];
                       if (value134 == '18' && hiddenFieldsForExIndiaLeaveSponsored.includes(fieldId)) {
                         return false;
@@ -78,22 +80,30 @@ const RenderForm = ({
                     return true;
                   })
                   .map((field) => (
-                    <div key={field.FieldId}>
+                    <div key={field.fieldId}>
                       {field.jid !== 'checkbox' && (
-                        <Label htmlFor={field?.FieldId} className="block mb-1 text-sm font-medium">
-                          {formatLabel(field?.FieldName)}
-                          {field?.FieldName.includes('*') && <span className="text-red-500 ml-1">*</span>}
+                        <Label htmlFor={field?.fieldId} className="block mb-1 text-sm font-medium">
+                          {formatLabel(field?.fieldName)}
+                          {field?.fieldName.includes('*') && <span className="text-red-500 ml-1">*</span>}
                         </Label>
                       )}
-                      <FormField fileRef={fileRef}
+                      <FormField
+                        className={
+                          missingFields?.includes(Number(field?.fieldId))
+                            ? 'border-2 border-red-500'
+                            : field?.jid === 'File'
+                            ? 'border-[1px]'
+                            : ''
+                        }
+                        fileRef={fileRef}
                         field={field}
-                        value={formData[field?.jid === 'File' ? `File${field?.FieldId}` : field?.FieldId]}
-                        onChange={(value) => handleInputChange(field?.FieldId, value, field?.jid)}
-                        purposeId={selectedForm?.PurposeId}
+                        value={formData[field?.jid === 'File' ? `File${field?.fieldId}` : field?.fieldId]}
+                        onChange={(value) => handleInputChange(field?.fieldId, value, field?.jid)}
+                        purposeId={selectedForm?.purposeId}
                       />
                     </div>
                   ))}
-                {Number(selectedForm?.PurposeId) === 47 && (
+                {Number(selectedForm?.purposeId) === 47 && (
                   <div className="flex flex-col ">
                     <Label className="mb-2">Applying for Post of Director</Label>
                     <div className="flex items-center">
@@ -109,7 +119,7 @@ const RenderForm = ({
                     </div>
                   </div>
                 )}
-                {Number(selectedForm.PurposeId) === 47 && formData.isDirector && (
+                {Number(selectedForm.purposeId) === 47 && formData.isDirector && (
                   <>
                     <div className="flex flex-col ">
                       <Label className="mb-2">
@@ -140,11 +150,15 @@ const RenderForm = ({
                 )}
                 <div className="flex flex-col ">
                   <Label className="mb-2">Upload IPR</Label>
-                  <div className="flex items-center  py-1 pl-1  border-[1px] rounded-md ">
+                  <div
+                    className={`flex items-center  py-1 pl-1 ${
+                      missingFields?.includes('iprFile') ? 'border-2 border-red-500' : 'border-[1px]'
+                    } rounded-md `}
+                  >
                     <input
                       ref={fileRef}
                       type="file"
-                      className="cursor-pointer"
+                      className=" cursor-pointer"
                       disabled={false}
                       onChange={(value) => {
                         handleInputChange('iprFile', value?.target?.files[0]);
@@ -154,10 +168,14 @@ const RenderForm = ({
                 </div>
                 <div className="flex flex-col ">
                   <Label className="mb-2">IPR Date</Label>
-                  <div className="flex items-center  py-1 pl-1  border-[1px] rounded-md ">
+                  <div
+                    className={`flex items-center  py-1 pl-1 ${
+                      missingFields?.includes('iprFile') ? 'border-2 border-red-500' : 'border-[1px]'
+                    } rounded-md `}
+                  >
                     <input
+                      className="ml-2 cursor-pointer"
                       type="date"
-                      className="cursor-pointer ml-2"
                       value={formData['iprDate1']}
                       onChange={(value) => handleInputChange('iprDate1', value?.target?.value)}
                     />
@@ -165,21 +183,22 @@ const RenderForm = ({
                 </div>
               </div>
               {selectedForm &&
-                ((Number(selectedForm.PurposeId) === 47 && formData.isDirector && selectedForm.isInTableValue) ||
-                  (Number(selectedForm.PurposeId) !== 47 && selectedForm.isInTableValue)) && (
+                ((Number(selectedForm.purposeId) === 47 && formData.isDirector && selectedForm.isInTableValue) ||
+                  (Number(selectedForm.purposeId) !== 47 && selectedForm.isInTableValue)) && (
                   <div className="overflow-x-auto">
                     <Table>
                       <TableHeader>
                         <TableRow>
                           <TableCell className="font-medium w-2">SN.</TableCell>
-                          {selectedForm?.Fields?.filter((item) => item?.isInTableValue && !item?.filledBy)
+                          {selectedForm?.fields
+                            ?.filter((item) => item?.isInTableValue && !item?.filledBy)
                             .filter((ele) =>
-                              !formData['122'] ? !hiddenFieldsForNewPaasport?.includes(Number(ele?.FieldId)) : true
+                              !formData['122'] ? !hiddenFieldsForNewPaasport?.includes(Number(ele?.fieldId)) : true
                             )
                             .map((field) => (
-                              <TableCell key={field?.FieldId} className="font-medium">
-                                <Label htmlFor={field?.FieldId} className="block mb-1 text-sm font-medium">
-                                  {formatLabel(field?.FieldName)}
+                              <TableCell key={field?.fieldId} className="font-medium">
+                                <Label htmlFor={field?.fieldId} className="block mb-1 text-sm font-medium">
+                                  {formatLabel(field?.fieldName)}
                                 </Label>
                               </TableCell>
                             ))}
@@ -191,7 +210,7 @@ const RenderForm = ({
                           <TableRow key={uuid}>
                             <TableCell className="w-2">{index + 1}</TableCell>
                             {Object.entries(fields).map(([fieldId, value]) => {
-                              const field = selectedForm?.Fields?.find((f) => Number(f?.FieldId) === Number(fieldId));
+                              const field = selectedForm?.fields?.find((f) => Number(f?.fieldId) === Number(fieldId));
                               if (!field) return null;
                               return (
                                 <TableCell key={fieldId}>
@@ -199,7 +218,7 @@ const RenderForm = ({
                                     field={field}
                                     value={formData[uuid]?.[fieldId] ?? value}
                                     onChange={(newValue) => handleFieldChange(uuid, fieldId, newValue)}
-                                    purposeId={selectedForm.PurposeId}
+                                    purposeId={selectedForm.purposeId}
                                   />
                                 </TableCell>
                               );
@@ -239,12 +258,13 @@ const RenderForm = ({
                 </Alert>
               )}
               <div className="flex justify-between">
-                {selectedForm && selectedForm.isInTableValue && (
-                  <Button type="button" onClick={addNewRow}>
-                    Add Row
-                  </Button>
-                )}
-
+                {selectedForm &&
+                  selectedForm?.isInTableValue &&
+                  (selectedForm.purposeId !== 47 || (selectedForm.purposeId === 47 && formData.isDirector)) && (
+                    <Button type="button" onClick={addNewRow}>
+                      Add Row
+                    </Button>
+                  )}
                 <Button type="submit" disabled={isSubmitting} className="bg-blue-600 hover:bg-blue-700">
                   {isSubmitting ? (
                     <>
@@ -261,7 +281,7 @@ const RenderForm = ({
               </div>
             </form>
           </CardContent>
-        </Card>
+        </div>
       )}
     </div>
   );

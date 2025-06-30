@@ -1,22 +1,33 @@
 import { RootState } from '@/app/store';
-import { useState } from 'react';
+import { useSelector } from 'react-redux';
 const useUserRoles = () => {
-  const [roles, setRoles] = useState<string[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const isAdmin = roles.includes('admin');
-  const isUser = roles.includes('user');
+  const userRoles = useSelector((state: RootState) => state?.user?.Roles) || [];
+  const roleIds = userRoles?.map((role) => role?.roleId);
+  const isAdmin = roleIds.includes(1); // Replace with actual Admin roleId
+  const isSuperAdmin = roleIds.includes(2); // Replace with actual SuperAdmin roleId
+  const isUnitHr = roleIds.includes(6); // Replace with actual UnitHr roleId
+  const isCgm = roleIds.includes(8); // Replace with actual CGM roleId
+  const isDandAR = roleIds.includes(7);
+  const isVigilanceAdmin = roleIds.includes(4);
+  const isVigilanceUser = roleIds.includes(4);
+  const isCorporateUnitHr = roleIds.includes(10); // Replace with actual CorporateUnitHr roleId
+  const isGm = roleIds.includes(9);
+  const hrUser = roleIds.includes(3);
+  const isUser = roleIds.includes(5);
   return {
-    isSuperAdmin: false,
+    isSuperAdmin,
     isAdmin,
     isUser,
-    roles,
-    isLoading,
-    isUnitHr: false,
-    isCgm: false,
-    isDandAR: false,
-    isVigilanceAdmin: false,
-    isCorporateUnitHr: true,
-    isGm: false, //2 table are pending for this role
+    roles: userRoles,
+    isLoading: false,
+    isUnitHr,
+    isCgm,
+    isDandAR,
+    isVigilanceAdmin,
+    isCorporateUnitHr,
+    isVigilanceUser,
+    isGm, //2 table are pending for this role
+    hrUser, //2 table are pending for this role
   };
 };
 

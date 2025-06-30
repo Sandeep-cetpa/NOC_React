@@ -6,7 +6,7 @@ import AdminPrivateRoute from './AdminPrivateRoute';
 import ManageRoles from '@/pages/admin/ManageRoles';
 import CreateRequest from '@/pages/employee/CreateRequest';
 import TrackNoc from '@/pages/employee/TrackNoc';
-import NocRequestForEmployee from '@/pages/employee/NocRequestForEmployee';
+import NocRequestForEmployee from '@/pages/UnitHr/NocRequestForEmployee';
 import FrontChannelLogout from '@/auth/FrontChannelLogout';
 import RequestReceived from '@/pages/cgm/RequestReceived';
 import ProcessedRequestByCgm from '@/pages/cgm/ProcessedRequestByCgm';
