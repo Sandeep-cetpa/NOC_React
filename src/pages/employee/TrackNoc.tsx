@@ -76,25 +76,6 @@ const TrackNoc = () => {
       getAllUserNoc(userDetails.EmpID);
     }
   }, []);
-  const getAllUserNoc = async (userId) => {
-    try {
-      setIsLoading(true);
-      const response = await axiosInstance.get(`/User/NOC?fkAutoId=${userId}`);
-
-      if (response.data.success) {
-        setNocData(response.data.data);
-      }
-    } catch (err) {
-      console.log(err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-  useEffect(() => {
-    if (userDetails.EmpID) {
-      getAllUserNoc(userDetails.EmpID);
-    }
-  }, []);
 
   // Filter and search logic
   const filteredData = nocData.filter((item) => {
@@ -275,43 +256,21 @@ const TrackNoc = () => {
                   {paginatedData.map((noc, index) => (
                     <TableRow key={noc.id} className="hover:bg-gray-50 py-2 transition-colors">
                       <TableCell className="font-medium py-2">{startIndex + index + 1}</TableCell>
-                      <TableCell className='py-2'>
-                        {noc.initiationDate ? (
-                          <div className="text-sm text-600">{format(new Date(noc.initiationDate), 'dd MMM yyyy')}</div>
-                        ) : (
-                          '--'
-                        )}
-                    <TableRow key={noc.id} className="hover:bg-gray-50 py-2 transition-colors">
-                      <TableCell className="font-medium py-2">{startIndex + index + 1}</TableCell>
-                      <TableCell className='py-2'>
+                      <TableCell className="py-2">
                         {noc.initiationDate ? (
                           <div className="text-sm text-600">{format(new Date(noc.initiationDate), 'dd MMM yyyy')}</div>
                         ) : (
                           '--'
                         )}
                       </TableCell>
-                      <TableCell className='py-2'>
-                        <div className="font-medium text-blue-600">NOC-{noc?.refId}</div>
-                      <TableCell className='py-2'>
+                      <TableCell className="py-2">
                         <div className="font-medium text-blue-600">NOC-{noc?.refId}</div>
                       </TableCell>
 
                       <TableCell className="max-w-xs py-2">
                         <div className="font-medium">{noc.purposeName}</div>
-                      <TableCell className="max-w-xs py-2">
-                        <div className="font-medium">{noc.purposeName}</div>
                       </TableCell>
-                      <TableCell className='py-2'>{getStatusBadge(noc?.currentStatus)}</TableCell>
-                      <TableCell className="text-right py-2">
-                        <Button
-                          onClick={() => {
-                            setSelectedNoc(noc);
-                            setIsOpen(true);
-                          }}
-                        >
-                          <Eye />
-                        </Button>
-                      <TableCell className='py-2'>{getStatusBadge(noc?.currentStatus)}</TableCell>
+                      <TableCell className="py-2">{getStatusBadge(noc?.currentStatus)}</TableCell>
                       <TableCell className="text-right py-2">
                         <Button
                           onClick={() => {

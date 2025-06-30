@@ -30,7 +30,6 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
   const { state, toggleSidebar } = useSidebar();
   const employees = useSelector((state: RootState) => state.employee.employees);
   const status = useSelector((state: RootState) => state.allStatus.allStatus);
-  const status = useSelector((state: RootState) => state.allStatus.allStatus);
   const purposes = useSelector((state: RootState) => state.pupose.purpose);
   const applications = useSelector((state: RootState) => state.applications.applications);
   const { isUnitHr, roles } = useUserRoles();
