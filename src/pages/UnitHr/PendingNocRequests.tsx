@@ -89,6 +89,7 @@ const PendingNocRequests = () => {
       if (response.data.success) {
         setIsOpen(false);
         getAllRequests(selectedUnit);
+        setRemarks('');
         toast.success('Request approved successfully');
       }
     } catch (error) {

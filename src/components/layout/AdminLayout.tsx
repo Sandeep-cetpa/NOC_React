@@ -17,7 +17,7 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             <div className="flex items-center mt-2 gap-0 justify-center text-primary text-center rounded-md font-bold text-3xl">
               {fullName}
             </div>
-            <div className="bg-white flex-1 overflow-auto">{children}</div>
+            <div className="bg-white  overflow-auto">{children}</div>
           </div>
         </div>
       </div>

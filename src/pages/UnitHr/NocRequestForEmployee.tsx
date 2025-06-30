@@ -99,7 +99,7 @@ const NocRequestForEmployee = () => {
   useEffect(() => {
     getPurposeForUnitHr();
   }, []);
-
+  console.log(selectedEmployee, 'selected Employeeee');
   const handleInputChange = (fieldId: string, value: any, fieldType?: any) => {
     const key = fieldType === 'File' ? `File${fieldId}` : fieldId;
     const numericfieldId = Number(fieldId);
@@ -218,17 +218,17 @@ const NocRequestForEmployee = () => {
         }
       }
       appendFormData(payloadFormData, submission);
-      payloadFormData.append('fkAutoId', '1776');
+      payloadFormData.append('fkAutoId', selectedEmployee?.employeeMasterAutoId);
       if (Object.entries(tableRows).length > 1) {
         payloadFormData.append('dynamicTable', JSON.stringify(tableRows));
       }
-      const response = await axiosInstance.post('/User/NOC', payloadFormData, {
+      const response = await axiosInstance.post('/UnitHR/NOC', payloadFormData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       if (response.data.success) {
         toast.success(`Your request has been submitted successfully. Reference ID: ${response.data.userId}`);
         setFormData({});
-        navigate('/track-noc');
+        navigate('/unit-hr-pending-noc-requests');
       }
     } catch (error) {
       setSubmitStatus({

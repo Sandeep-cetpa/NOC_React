@@ -265,6 +265,17 @@ const RenderForm = ({
                       Add Row
                     </Button>
                   )}
+              </div>
+              <div>
+                <Input
+                  value={formData.remarks}
+                  name="remarks"
+                  onChange={(event) => handleInputChange(event.target.name, event.target.value)}
+                  placeholder="Enter remarks here..."
+                  type="text"
+                />
+              </div>
+              <div className="flex justify-end">
                 <Button type="submit" disabled={isSubmitting} className="bg-blue-600 hover:bg-blue-700">
                   {isSubmitting ? (
                     <>
