@@ -29,7 +29,7 @@ const RenderForm = ({
   missingFields,
 }) => {
   if (!selectedForm) return null;
-
+  console.log(missingFields);
   return (
     <div className="opacity-95">
       {selectedForm && (
