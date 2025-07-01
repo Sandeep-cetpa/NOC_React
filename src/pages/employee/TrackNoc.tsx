@@ -117,12 +117,13 @@ const TrackNoc = () => {
     if (!status) {
       return;
     }
-    const config = statusConfig[status];
+    console.log(status);
+    const config = statusConfig(status);
     const IconComponent = config?.icon || Clock;
     return (
       <Badge className={`${config?.color} hover:bg-none text-center items-center space-x-1 px-2 py-1`}>
         <IconComponent className="h-3 w-3" />
-        <span>{config.label}</span>
+        <span>{config?.label}</span>
       </Badge>
     );
   };
@@ -183,8 +184,8 @@ const TrackNoc = () => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Status</SelectItem>
-                    {allStatus?.map((ele) => (
-                      <SelectItem key={ele?.statusId} value={ele?.statusName}>
+                    {allStatus?.map((ele, index) => (
+                      <SelectItem key={index} value={ele?.statusName}>
                         {ele?.statusName}
                       </SelectItem>
                     ))}
@@ -254,7 +255,7 @@ const TrackNoc = () => {
                 </TableHeader>
                 <TableBody>
                   {paginatedData.map((noc, index) => (
-                    <TableRow key={noc.id} className="hover:bg-gray-50 py-2 transition-colors">
+                    <TableRow key={noc?.refId} className="hover:bg-gray-50 py-2 transition-colors">
                       <TableCell className="font-medium py-2">{startIndex + index + 1}</TableCell>
                       <TableCell className="py-2">
                         {noc.initiationDate ? (

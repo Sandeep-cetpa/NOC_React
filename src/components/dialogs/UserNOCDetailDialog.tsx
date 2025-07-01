@@ -54,7 +54,7 @@ const UserNOCDetailsDialog = ({ nocData, isOpen, onOpenChange }) => {
   if (!nocData) return null;
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-7xl ">
+      <DialogContent className="max-w-6xl ">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <User className="w-5 h-5" />
@@ -62,9 +62,9 @@ const UserNOCDetailsDialog = ({ nocData, isOpen, onOpenChange }) => {
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-6 max-w-7xl max-h-[80vh] overflow-y-auto">
+        <div className="space-y-6 max-h-[70vh] overflow-y-auto">
           {/* Application Details */}
-          <div className="bg-blue-50 p-4 rounded-lg">
+          <div className="bg-blue-50 p-3 rounded-lg">
             <h3 className="font-semibold text-lg mb-3 flex items-center gap-2">
               <CalendarDays className="w-5 h-5" />
               Application Details
@@ -82,7 +82,7 @@ const UserNOCDetailsDialog = ({ nocData, isOpen, onOpenChange }) => {
           </div>
           {/* Other Fields */}
           {nocData.officerRemarks && (
-            <div className="bg-green-50 p-4 rounded-lg">
+            <div className="bg-green-50 p-3 rounded-lg">
               <h3 className="font-semibold text-lg mb-3 flex items-center gap-2">
                 <Mail className="w-5 h-5" />
                 Additional Information
@@ -97,7 +97,7 @@ const UserNOCDetailsDialog = ({ nocData, isOpen, onOpenChange }) => {
                 {nocData?.officerRemarks?.iprFile && (
                   <div>
                     <label className="text-sm font-medium text-gray-600">IPR File</label>
-                    <div className="flex items-center gap-2 bg-white p-3 rounded border">
+                    <div className="flex items-center gap-2 bg-white py-1 px-2 mt-1 rounded border">
                       <Download className="w-4 h-4 text-blue-600" />
                       <span className="text-blue-600 cursor-pointer hover:underline">
                         {nocData?.officerRemarks?.iprFile}
@@ -108,7 +108,7 @@ const UserNOCDetailsDialog = ({ nocData, isOpen, onOpenChange }) => {
                 {nocData?.officerRemarks?.iprDate && (
                   <div>
                     <label className="text-sm font-medium text-gray-600">IPR Date</label>
-                    <p className="bg-white p-3 rounded border">{formatDate(nocData?.officerRemarks?.iprDate)}</p>
+                    <p className="bg-white py-1 px-2 rounded border">{formatDate(nocData?.officerRemarks?.iprDate)}</p>
                   </div>
                 )}
               </div>
@@ -116,7 +116,7 @@ const UserNOCDetailsDialog = ({ nocData, isOpen, onOpenChange }) => {
           )}
           {/* Form Inputs */}
           {nocData.inputs && nocData.inputs.length > 0 && (
-            <div className="bg-yellow-50 p-4 rounded-lg">
+            <div className="bg-yellow-50 p-3 rounded-lg">
               <h3 className="font-semibold text-lg mb-3 flex items-center gap-2">
                 <FileText className="w-5 h-5" />
                 Application Form Data
@@ -203,9 +203,9 @@ const UserNOCDetailsDialog = ({ nocData, isOpen, onOpenChange }) => {
             </div>
           )}
         </div>
-        <div className="flex justify-end">
+        {/* <div className="flex justify-end">
           <Button onClick={() => onOpenChange(false)}>Close</Button>
-        </div>
+        </div> */}
       </DialogContent>
     </Dialog>
   );

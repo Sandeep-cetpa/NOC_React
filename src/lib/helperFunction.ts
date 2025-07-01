@@ -2,65 +2,94 @@ import { RootState } from '@/app/store';
 import { hiddenFieldsForExIndiaLeaveSponsored, hiddenFieldsForExIndiaLeaveThirdParty } from '@/config';
 import { format, parse } from 'date-fns';
 
-import { Clock, AlertCircle, CheckCircle, XCircle, User, Users, Briefcase, ShieldCheck, Calendar } from 'lucide-react'; // replace with your icons
-
-export const statusConfig = {
-  'Raised By User': {
-    label: 'Raised By User',
-    color: 'bg-purple-100 text-purple-800 border-purple-200',
-    icon: User,
-  },
-  'Under Unit HR': {
-    label: 'Under Unit HR',
-    color: 'bg-indigo-100 text-indigo-800 border-indigo-200',
-    icon: Users,
-  },
-  Rejected: {
-    label: 'Rejected',
-    color: 'bg-red-100 text-red-800 border-red-200',
-    icon: XCircle,
-  },
-  'Under CGM': {
-    label: 'Under CGM',
-    color: 'bg-pink-100 text-pink-800 border-pink-200',
-    icon: Briefcase,
-  },
-  'Under Corporate HR': {
-    label: 'Under Corporate HR',
-    color: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-    icon: Clock,
-  },
-  'Under D and AR': {
-    label: 'Under D and AR',
-    color: 'bg-blue-100 text-blue-800 border-blue-200',
-    icon: AlertCircle,
-  },
-  'Under Vigilance': {
-    label: 'Under Vigilance',
-    color: 'bg-gray-100 text-gray-800 border-gray-200',
-    icon: ShieldCheck,
-  },
-  'Under GM HR': {
-    label: 'Under GM HR',
-    color: 'bg-teal-100 text-teal-800 border-teal-200',
-    icon: Calendar,
-  },
-  Completed: {
-    label: 'Completed',
-    color: 'bg-green-100 text-green-800 border-green-200',
-    icon: CheckCircle,
-  },
-  'Under GM Cadre': {
-    label: 'Under GM Cadre',
-    color: 'bg-cyan-100 text-cyan-800 border-cyan-200',
-    icon: Calendar,
-  },
-  Approved: {
-    label: 'Approved',
-    color: 'bg-green-100 text-green-800 border-green-200',
-    icon: CheckCircle,
-  },
-};
+import {
+  User,
+  Users,
+  XCircle,
+  Briefcase,
+  Clock,
+  AlertCircle,
+  ShieldCheck,
+  Calendar,
+  CheckCircle,
+  HelpCircle,
+} from 'lucide-react';
+export function statusConfig(status: string) {
+  switch (status) {
+    case 'Raised By User':
+      return {
+        label: 'Raised By User',
+        color: 'bg-purple-100 text-purple-800 border-purple-200',
+        icon: User,
+      };
+    case 'Under Unit HR':
+      return {
+        label: 'Under Unit HR',
+        color: 'bg-indigo-100 text-indigo-800 border-indigo-200',
+        icon: Users,
+      };
+    case 'Rejected':
+      return {
+        label: 'Rejected',
+        color: 'bg-red-100 text-red-800 border-red-200',
+        icon: XCircle,
+      };
+    case 'Under CGM':
+      return {
+        label: 'Under CGM',
+        color: 'bg-pink-100 text-pink-800 border-pink-200',
+        icon: Briefcase,
+      };
+    case 'Under Corporate HR':
+      return {
+        label: 'Under Corporate HR',
+        color: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+        icon: Clock,
+      };
+    case 'Under D and AR':
+      return {
+        label: 'Under D and AR',
+        color: 'bg-blue-100 text-blue-800 border-blue-200',
+        icon: AlertCircle,
+      };
+    case 'Under Vigilance':
+      return {
+        label: 'Under Vigilance',
+        color: 'bg-gray-100 text-gray-800 border-gray-200',
+        icon: ShieldCheck,
+      };
+    case 'Under GM HR':
+      return {
+        label: 'Under GM HR',
+        color: 'bg-teal-100 text-teal-800 border-teal-200',
+        icon: Calendar,
+      };
+    case 'Completed':
+      return {
+        label: 'Completed',
+        color: 'bg-green-100 text-green-800 border-green-200',
+        icon: CheckCircle,
+      };
+    case 'Under GM Cadre':
+      return {
+        label: 'Under GM Cadre',
+        color: 'bg-cyan-100 text-cyan-800 border-cyan-200',
+        icon: Calendar,
+      };
+    case 'Approved':
+      return {
+        label: 'Approved',
+        color: 'bg-green-100 text-green-800 border-green-200',
+        icon: CheckCircle,
+      };
+    default:
+      return {
+        label: status, // fallback: show whatever status came
+        color: 'bg-gray-100 text-gray-800 border-gray-200',
+        icon: HelpCircle,
+      };
+  }
+}
 
 export const setSessionItem = (key: string, value: any) => {
   const valueToStore = typeof value === 'object' ? JSON.stringify(value) : value;
@@ -300,8 +329,17 @@ export const validateForm = (selectedForm, formData, setSubmitStatus) => {
   if (!formData.iprFile) {
     extraMissingFields.push({ fieldName: 'IPR File', fieldId: 'iprFile' });
   }
-  if (!formData.iprDate1) {
-    extraMissingFields.push({ fieldName: 'IPR Date', fieldId: 'iprDate1' });
+  if (!formData.iprDate) {
+    extraMissingFields.push({ fieldName: 'IPR Date', fieldId: 'iprDate' });
+  }
+  if (selectedForm.purposeId === 47 && !formData?.doj) {
+    extraMissingFields.push({ fieldName: 'Date Of Joining', fieldId: 'doj' });
+  }
+  if (selectedForm.purposeId === 47 && !formData?.dor) {
+    extraMissingFields.push({ fieldName: 'Date Of Retairment', fieldId: 'dor' });
+  }
+  if (selectedForm.purposeId === 47 && !formData?.remarks) {
+    extraMissingFields.push({ fieldName: 'Remarks', fieldId: 'remarks' });
   }
   const allMissing = [...missingFields.map((f) => parseInt(f.fieldId)), ...extraMissingFields.map((f) => f.fieldId)];
   const allMissingWithFiledName = [...missingFields, ...extraMissingFields];

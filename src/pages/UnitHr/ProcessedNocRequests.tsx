@@ -9,6 +9,8 @@ import { RequestDetailsDialog } from '@/components/dialogs/ViewDetailsDialog';
 import Loader from '@/components/ui/loader';
 import TableList from '@/components/ui/data-table';
 import { format } from 'date-fns';
+import { statusConfig } from '@/lib/helperFunction';
+import { Badge } from '@/components/ui/badge';
 const ProcessedNocRequests = () => {
   const userRoles = useSelector((state: RootState) => state.user.Roles);
   const [isLoading, setIsloading] = useState(true);
@@ -47,6 +49,20 @@ const ProcessedNocRequests = () => {
   const handleUnitSelection = (unitId: string) => {
     setSelectedUnit(unitId);
   };
+  const getStatusBadge = (status) => {
+    if (!status) {
+      return;
+    }
+    console.log(status);
+    const config = statusConfig(status);
+    const IconComponent = config?.icon;
+    return (
+      <Badge className={`${config?.color} hover:bg-none text-center items-center space-x-1 px-2 py-1`}>
+        <IconComponent className="h-3 w-3" />
+        <span>{config?.label}</span>
+      </Badge>
+    );
+  };
   if (isLoading) {
     return <Loader />;
   }
@@ -54,78 +70,50 @@ const ProcessedNocRequests = () => {
     {
       accessorKey: 'employeeCode',
       header: 'Employee Code',
-      cell: ({ row }) => (
-        <div className="flex items-center">
-          <span className={`rounded-full px-2 py-1`}>{row?.original?.employeeCode}</span>
-        </div>
-      ),
+      cell: ({ row }) => <div>{row?.original?.employeeCode}</div>,
     },
     {
       accessorKey: 'refId',
       header: 'Reference ID',
-      cell: ({ row }) => (
-        <div className="flex items-center">
-          <span className={`rounded-full px-2 py-1 `}>{`${
-            row.original.refId ? 'NOC-' + row.original.refId : 'NA'
-          }`}</span>
-        </div>
-      ),
+      cell: ({ row }) => <div>{`${row.original.refId ? 'NOC-' + row.original.refId : 'NA'}`}</div>,
     },
     {
       accessorKey: 'initiationDate',
       header: 'Date',
       cell: ({ row }) => (
-        <div className="flex items-center">
-          <span className={`rounded-full px-2 py-1 `}>
-            {row.original.initiationDate ? format(new Date(row.original.initiationDate), 'dd/MM/yyyy') : '-'}
-          </span>
+        <div className="flex items-center w-[90px]">
+          {row.original.initiationDate ? format(new Date(row.original.initiationDate), 'dd-MMM-yyyy') : '-'}
         </div>
       ),
     },
     {
       accessorKey: 'username',
-      header: 'Name',
+      header: 'Employee Name',
       cell: ({ row }) => (
-        <div className="flex items-center">
-          <span className={`rounded-full px-2 py-1 `}>{row.original.username}</span>
+        <div className=" w-[140px] truncate" title={row.original.username}>
+          {row.original.username}
         </div>
       ),
     },
     {
       accessorKey: 'post',
       header: 'Designation',
-      cell: ({ row }) => (
-        <div className="flex items-center">
-          <span className={`rounded-full px-2 py-1 `}>{row?.original?.post ? row?.original?.post : 'NA'}</span>
-        </div>
-      ),
+      cell: ({ row }) => <div>{row?.original?.post ? row?.original?.post : 'NA'}</div>,
     },
     {
       accessorKey: 'department',
       header: 'Department',
-      cell: ({ row }) => (
-        <div className="flex items-center">
-          <span className={`rounded-full px-2 py-1 `}>{row.original.department}</span>
-        </div>
-      ),
+      cell: ({ row }) => <div>{row.original.department}</div>,
     },
     {
       accessorKey: 'purposeName',
       header: 'Purpose',
-      cell: ({ row }) => (
-        <div className="flex items-center">
-          <span className={`rounded-full px-2 py-1 `}>{row.original.purposeName}</span>
-        </div>
-      ),
+      cell: ({ row }) => <div>{row.original.purposeName}</div>,
     },
     {
       accessorKey: 'currentStatus',
       header: 'Status',
-      cell: ({ row }) => (
-        <div className="flex items-center">
-          <span className={`rounded-full px-2 py-1 `}>{row.original.currentStatus}</span>
-        </div>
-      ),
+      cell: ({ row }) => <div>{row.original.currentStatus && getStatusBadge(row.original.currentStatus)}</div>,
     },
     {
       accessorKey: 'Action',
@@ -168,11 +156,7 @@ const ProcessedNocRequests = () => {
                     </Select>
                   </div>
 
-                  <Button
-                    variant="outline"
-                    onClick={() => getAllRequests(selectedUnit)}
-                    className="flex items-center space-x-2 ml-3"
-                  >
+                  <Button variant="outline" onClick={() => getAllRequests(selectedUnit)} className=" space-x-2 ml-3">
                     <RefreshCw className="h-4 w-4" />
                   </Button>
                 </div>

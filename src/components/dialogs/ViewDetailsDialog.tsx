@@ -1,13 +1,16 @@
-import { Building, Calendar, CheckCircle, FileText, User, XCircle } from 'lucide-react';
+import { Building, Calendar, CheckCircle, FileText, Info, User, XCircle } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Badge } from '../ui/badge';
+import { formatLabel } from '@/lib/helperFunction';
+import { Label } from '../ui/label';
 
 // Request Details Dialog Component
 export const RequestDetailsDialog = ({ request, setOpen, open }) => {
   if (!request) {
     return null;
   }
+  console.log('Request:', request);
   const formatDate = (dateString) => {
     if (!dateString) return 'NA';
     try {
@@ -42,15 +45,14 @@ export const RequestDetailsDialog = ({ request, setOpen, open }) => {
 
   return (
     <Dialog open={open} onOpenChange={() => setOpen(false)}>
-      <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+      <DialogContent className="max-w-4xl ">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <User className="h-5 w-5" />
             Request Details - {request.username}
           </DialogTitle>
         </DialogHeader>
-
-        <div className="space-y-6">
+        <div className="space-y-6 max-h-[80vh] overflow-y-auto">
           {/* Basic Information */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Card>
@@ -112,7 +114,7 @@ export const RequestDetailsDialog = ({ request, setOpen, open }) => {
                 </div>
                 <div className="flex justify-between">
                   <span className="font-medium">Reference ID:</span>
-                  <span>{request.refId}</span>
+                  <span>NOC-{request.refId}</span>
                 </div>
               </CardContent>
             </Card>
@@ -129,16 +131,16 @@ export const RequestDetailsDialog = ({ request, setOpen, open }) => {
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {request.inputs.map((input, index) => (
-                    <div key={index} className="space-y-1">
-                      <span className="text-sm font-medium text-gray-600">
-                        {input.fieldName.replace(/_/g, ' ').replace(/\*/g, '')}:
-                      </span>
-                      <div className="p-2 bg-gray-50 rounded border">
+                  {request?.inputs?.map((input, index) => (
+                    <div key={index} className="space-y-1 overflow-hidden">
+                      <span className="text-sm font-medium text-gray-600">{formatLabel(input.fieldName)}:</span>
+                      <div className="">
                         {input.fieldType === 'File' ? (
-                          <span className="text-blue-600 underline cursor-pointer">{input.value}</span>
+                          <Label title={input?.value} className="text-blue-600 w-[10px] underline cursor-pointer">
+                            {input?.value ? input.value : 'N/A'}
+                          </Label>
                         ) : (
-                          <span>{input.value}</span>
+                          <Label className="max-w-[10px]">{input?.value ? input.value : 'N/A'}</Label>
                         )}
                       </div>
                     </div>
@@ -155,15 +157,20 @@ export const RequestDetailsDialog = ({ request, setOpen, open }) => {
                 <CardTitle className="text-lg">Officer Remarks</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                {request.officerRemarksR.unitHrReamarks && (
+                {request?.officerRemarksR?.unitHrReamarks ? (
                   <div>
                     <span className="font-medium text-sm">Unit HR Remarks:</span>
                     <p className="mt-1 p-3 bg-blue-50 rounded border text-sm">
                       {request.officerRemarksR.unitHrReamarks}
                     </p>
                   </div>
+                ) : (
+                  <div className="flex items-center justify-start p-4 rounded-md border border-gray-200 bg-gray-50 text-gray-600">
+                    <Info className="w-5 h-5 mr-2 text-blue-500" />
+                    <span>Remarks not available</span>
+                  </div>
                 )}
-                {request.rejectedRemarks && (
+                {request?.rejectedRemarks && (
                   <div>
                     <span className="font-medium text-sm text-red-600">Rejection Remarks:</span>
                     <p className="mt-1 p-3 bg-red-50 rounded border text-sm text-red-700">{request.rejectedRemarks}</p>

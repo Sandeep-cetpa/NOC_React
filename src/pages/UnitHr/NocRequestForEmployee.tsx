@@ -50,7 +50,6 @@ const NocRequestForEmployee = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [tableRows, setTableRows] = useState([]);
   const [submitStatus, setSubmitStatus] = useState<{ type: string; message: string } | null>(null);
-  console.log(assiedUnits, 'assiedUnits');
   const handleFormSelect = (formId: any) => {
     const form = forms.find((f) => Number(f.purposeId) === Number(formId));
     setMisssingfields([]);
@@ -99,7 +98,6 @@ const NocRequestForEmployee = () => {
   useEffect(() => {
     getPurposeForUnitHr();
   }, []);
-  console.log(selectedEmployee, 'selected Employeeee');
   const handleInputChange = (fieldId: string, value: any, fieldType?: any) => {
     const key = fieldType === 'File' ? `File${fieldId}` : fieldId;
     const numericfieldId = Number(fieldId);
@@ -228,7 +226,12 @@ const NocRequestForEmployee = () => {
       if (response.data.success) {
         toast.success(`Your request has been submitted successfully. Reference ID: ${response.data.userId}`);
         setFormData({});
-        navigate('/unit-hr-pending-noc-requests');
+        setSelectedEmployee(null);
+        setSelectedForm(null);
+        setMisssingfields([]);
+        setSubmitStatus(null);
+        setTableRows([]);
+        navigate('/unit-hr-processed-noc-requests');
       }
     } catch (error) {
       setSubmitStatus({

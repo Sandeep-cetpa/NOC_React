@@ -14,6 +14,10 @@ import {
   hiddenFieldsForExIndiaLeaveThirdParty,
   hiddenFieldsForNewPaasport,
 } from '@/config';
+import DatePicker from 'react-datepicker';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/app/store';
+import { useLocation } from 'react-router';
 const RenderForm = ({
   selectedForm,
   handleSubmit,
@@ -29,7 +33,8 @@ const RenderForm = ({
   missingFields,
 }) => {
   if (!selectedForm) return null;
-  console.log(missingFields);
+  const location = useLocation();
+  console.log(location.pathname);
   return (
     <div className="opacity-95">
       {selectedForm && (
@@ -47,20 +52,53 @@ const RenderForm = ({
             >
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {Number(selectedForm.purposeId) === 47 && formData.isDirector && (
-                  <div className="flex flex-col ">
-                    <Label className="mb-2">Father's Name</Label>
-                    <div className="flex items-center  py-1 pl-1">
-                      <Input
-                        type="text"
-                        className="cursor-pointer"
-                        disabled={false}
-                        placeholder="Enter father name"
-                        value={formData['FatherName']}
-                        onChange={(value) => handleInputChange('FatherName', value?.target?.value)}
-                      />
+                  <>
+                    <div className="flex flex-col ">
+                      <Label className="mb-2">Father's Name</Label>
+                      <div className="flex items-center  py-1 pl-1">
+                        <Input
+                          type="text"
+                          className="cursor-pointer"
+                          disabled={false}
+                          placeholder="Enter father name"
+                          value={formData['FatherName']}
+                          onChange={(value) => handleInputChange('FatherName', value?.target?.value)}
+                        />
+                      </div>
                     </div>
-                  </div>
+                  </>
                 )}
+                {Number(selectedForm.purposeId) === 47 &&
+                  formData.isDirector &&
+                  location.pathname !== '/create-request' && (
+                    <>
+                      <div className="flex flex-col ">
+                        <Label className="mb-2">Date Of Joining</Label>
+                        <div className="py-1 ">
+                          <Input
+                            type="date"
+                            className="cursor-pointer"
+                            disabled={false}
+                            placeholder=""
+                            value={formData['doj']}
+                            onChange={(value) => handleInputChange('doj', value?.target?.value)}
+                          />
+                        </div>
+                      </div>
+
+                      <div className="flex flex-col ">
+                        <Label className="mb-2">Date Of Retairement</Label>
+                        <div className="py-1">
+                          <Input
+                            type="date"
+                            className="cursor-pointer"
+                            value={formData['dor']}
+                            onChange={(value) => handleInputChange('dor', value?.target?.value)}
+                          />
+                        </div>
+                      </div>
+                    </>
+                  )}
                 {selectedForm?.fields
                   ?.filter((item) => !item?.isInTableValue && item?.filledBy === null)
                   .filter((ele) => {
@@ -129,7 +167,7 @@ const RenderForm = ({
                         <Input
                           type="text"
                           placeholder="Enter batch year"
-                          className="cursor-pointer ml-2"
+                          className="cursor-pointer"
                           value={formData['BatchYear']}
                           onChange={(value) => handleInputChange('BatchYear', value?.target?.value)}
                         />
@@ -140,7 +178,7 @@ const RenderForm = ({
                       <div className="flex items-center  py-1 pl-1">
                         <Input
                           type="date"
-                          className="cursor-pointer ml-2"
+                          className="cursor-pointer"
                           value={formData['ServiceEntry']}
                           onChange={(value) => handleInputChange('ServiceEntry', value?.target?.value)}
                         />
@@ -176,8 +214,8 @@ const RenderForm = ({
                     <input
                       className="ml-2 cursor-pointer"
                       type="date"
-                      value={formData['iprDate1']}
-                      onChange={(value) => handleInputChange('iprDate1', value?.target?.value)}
+                      value={formData['iprDate']}
+                      onChange={(value) => handleInputChange('iprDate', value?.target?.value)}
                     />
                   </div>
                 </div>
@@ -266,15 +304,22 @@ const RenderForm = ({
                     </Button>
                   )}
               </div>
-              <div>
-                <Input
-                  value={formData.remarks}
-                  name="remarks"
-                  onChange={(event) => handleInputChange(event.target.name, event.target.value)}
-                  placeholder="Enter remarks here..."
-                  type="text"
-                />
-              </div>
+              {Number(selectedForm.purposeId) === 47 &&
+                formData.isDirector &&
+                location.pathname !== '/create-request' && (
+                  <div>
+                    <Label htmlFor="remarks">Remarks:</Label>
+                    <Input
+                      value={formData['remarks']}
+                      className="mt-1"
+                      name="remarks"
+                      onChange={(event) => handleInputChange('remarks', event.target.value)}
+                      placeholder="Enter remarks here..."
+                      type="text"
+                    />
+                  </div>
+                )}
+
               <div className="flex justify-end">
                 <Button type="submit" disabled={isSubmitting} className="bg-blue-600 hover:bg-blue-700">
                   {isSubmitting ? (

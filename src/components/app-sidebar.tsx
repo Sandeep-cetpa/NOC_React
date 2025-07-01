@@ -129,7 +129,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu>
           {hasAccess && (
             <SidebarMenuButton
-              onClick={() => navigate('/form')}
+              onClick={() => navigate('/admin-dashboard')}
               asChild
               tooltip={'Manage Organization'}
               className={`transition-all text-black cursor-pointer duration-300  active:bg-primary [&>svg]:size-7 ease-in-out hover:bg-primary hover:text-white h-full w-full active:text-white`}

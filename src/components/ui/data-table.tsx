@@ -10,7 +10,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { ListFilter, Search } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ListFilter, Search } from 'lucide-react';
 
 import { Input } from './input';
 import { Button } from './button';
@@ -176,35 +176,46 @@ export default function TableList({
       </div>
 
       {/* Pagination */}
-      <div className="flex flex-row justify-between items-center py-4">
-        <div className="text-sm text-muted-foreground w-1/2">
+      <div className="flex flex-row justify-between items-center py-4 flex-wrap gap-2">
+        <div className="text-sm text-muted-foreground w-full sm:w-1/3">
           {hasCheckboxColumn
             ? `${table.getSelectedRowModel().flatRows.length} of ${totalRows} row(s) selected.`
             : `Showing ${currentRangeStart}-${currentRangeEnd} of ${totalRows}`}
         </div>
-        <div>
-          <Pagination>
-            <PaginationContent>
-              <PaginationPrevious disabled={!table.getCanPreviousPage()} onClick={() => table.previousPage()} />
-              {paginationButtons.map((button, index) => {
-                if (button === 'ellipsis-start' || button === 'ellipsis-end') {
-                  return (
-                    <PaginationEllipsis key={index} className="text-gray-400">
-                      ...
-                    </PaginationEllipsis>
-                  );
-                }
-                return (
-                  <PaginationItem key={button}>
-                    <PaginationLink isActive={button === pageIndex} onClick={() => table.setPageIndex(button)}>
-                      {button + 1}
-                    </PaginationLink>
-                  </PaginationItem>
-                );
-              })}
-              <PaginationNext disabled={!table.getCanNextPage()} onClick={() => table.nextPage()} />
-            </PaginationContent>
-          </Pagination>
+
+        <div className="w-full sm:w-auto flex flex-wrap justify-end items-center gap-1">
+          <Button variant="outline" disabled={!table.getCanPreviousPage()} onClick={() => table.previousPage()}>
+            <ChevronLeft className="h-4 w-4" />
+            Previous
+          </Button>
+
+          {Array.from(new Set(paginationButtons)).map((button, index) => {
+            if (button === 'ellipsis-start' || button === 'ellipsis-end') {
+              return (
+                <span key={`ellipsis-${index}`} className="px-2 text-gray-400">
+                  ...
+                </span>
+              );
+            }
+
+            return (
+              <Button
+                variant="outline"
+                key={`page-${button}`}
+                className={` hover:bg-primary hover:text-white transition-colors duration-300 ease-in-out ${
+                  button === pageIndex ? 'bg-primary  text-white' : ''
+                }`}
+                onClick={() => table.setPageIndex(button)}
+              >
+                {button + 1}
+              </Button>
+            );
+          })}
+
+          <Button variant="outline" disabled={!table.getCanNextPage()} onClick={() => table.nextPage()}>
+            Next
+            <ChevronRight className="h-4 w-4" />
+          </Button>
         </div>
       </div>
     </div>

@@ -35,8 +35,8 @@ const PendingNocRequests = () => {
       setIsLoading(true);
       const response = await axiosInstance.get(`/UnitHR/NOC?UnitId=${unitId}`);
       if (response.data.success) {
-        setRequests(response.data.data);
-        setFilteredRequests(response.data.data);
+        setRequests([]);
+        setFilteredRequests([]);
       }
       console.log(response.data);
     } catch (err) {
