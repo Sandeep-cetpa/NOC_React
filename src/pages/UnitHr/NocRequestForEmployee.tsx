@@ -74,7 +74,21 @@ const NocRequestForEmployee = () => {
       setIsLoading(false);
     }
   };
+  console.log(selectedEmployee, 'selectedEmployee');
+  console.log(selectedForm, 'selectedForm');
+  useEffect(() => {
+    if (selectedForm?.purposeId === 47) {
+      setFormData((data) => ({
+        ...data,
+        dor: selectedEmployee?.doretirement
+          ? new Date(selectedEmployee.doretirement).toISOString().split('T')[0]
+          : null,
+        doj: selectedEmployee?.dojdfccil ? new Date(selectedEmployee.dojdfccil).toISOString().split('T')[0] : null,
+      }));
+    }
+  }, [selectedEmployee, selectedForm?.purposeId]);
 
+  console.log(formData, 'form data');
   useEffect(() => {
     if (selectedUnit) {
       getAllEmployees(selectedUnit?.value);
@@ -252,7 +266,7 @@ const NocRequestForEmployee = () => {
         {/* Header */}
         <div className="text-center space-y-4">
           <Heading type={2} className="text-3xl font-bold text-gray-900">
-            Create NOC Request for Employee
+            Create Request for Employee
           </Heading>
           <p className="text-gray-600 max-w-2xl mx-auto">
             Generate No Objection Certificate requests for employees with our streamlined digital process

@@ -332,14 +332,17 @@ export const validateForm = (selectedForm, formData, setSubmitStatus) => {
   if (!formData.iprDate) {
     extraMissingFields.push({ fieldName: 'IPR Date', fieldId: 'iprDate' });
   }
-  if (selectedForm.purposeId === 47 && !formData?.doj) {
+  if (selectedForm.purposeId === 47 && formData?.isDirector && !formData?.doj) {
     extraMissingFields.push({ fieldName: 'Date Of Joining', fieldId: 'doj' });
   }
-  if (selectedForm.purposeId === 47 && !formData?.dor) {
+  if (selectedForm.purposeId === 47 && formData?.isDirector && !formData?.dor) {
     extraMissingFields.push({ fieldName: 'Date Of Retairment', fieldId: 'dor' });
   }
-  if (selectedForm.purposeId === 47 && !formData?.remarks) {
+  if (selectedForm.purposeId === 47 && formData?.isDirector && !formData?.remarks) {
     extraMissingFields.push({ fieldName: 'Remarks', fieldId: 'remarks' });
+  }
+  if (selectedForm.purposeId === 47 && formData?.isDirector && !formData?.FatherName) {
+    extraMissingFields.push({ fieldName: "Father's Name", fieldId: 'FatherName' });
   }
   const allMissing = [...missingFields.map((f) => parseInt(f.fieldId)), ...extraMissingFields.map((f) => f.fieldId)];
   const allMissingWithFiledName = [...missingFields, ...extraMissingFields];

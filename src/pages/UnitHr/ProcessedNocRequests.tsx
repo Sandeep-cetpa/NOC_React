@@ -16,7 +16,7 @@ const ProcessedNocRequests = () => {
   const [isLoading, setIsloading] = useState(true);
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [open, setOpen] = useState(false);
-  const assiedUnits = userRoles.find((ele) => ele.roleId === 3);
+  const assiedUnits = userRoles?.find((ele) => ele.roleId === 3);
   const [selectedUnit, setSelectedUnit] = useState<string>(assiedUnits?.unitsAssigned?.[0]?.unitId?.toString() || '');
   const [allRequest, setAllRequest] = useState([]);
   const getAllRequests = async (unitId: string) => {
@@ -53,7 +53,6 @@ const ProcessedNocRequests = () => {
     if (!status) {
       return;
     }
-    console.log(status);
     const config = statusConfig(status);
     const IconComponent = config?.icon;
     return (
@@ -63,28 +62,17 @@ const ProcessedNocRequests = () => {
       </Badge>
     );
   };
-  if (isLoading) {
-    return <Loader />;
-  }
+
   const columns = [
-    {
-      accessorKey: 'employeeCode',
-      header: 'Employee Code',
-      cell: ({ row }) => <div>{row?.original?.employeeCode}</div>,
-    },
     {
       accessorKey: 'refId',
       header: 'Reference ID',
       cell: ({ row }) => <div>{`${row.original.refId ? 'NOC-' + row.original.refId : 'NA'}`}</div>,
     },
     {
-      accessorKey: 'initiationDate',
-      header: 'Date',
-      cell: ({ row }) => (
-        <div className="flex items-center w-[90px]">
-          {row.original.initiationDate ? format(new Date(row.original.initiationDate), 'dd-MMM-yyyy') : '-'}
-        </div>
-      ),
+      accessorKey: 'employeeCode',
+      header: 'Employee Code',
+      cell: ({ row }) => <div>{row?.original?.employeeCode}</div>,
     },
     {
       accessorKey: 'username',
@@ -96,6 +84,20 @@ const ProcessedNocRequests = () => {
       ),
     },
     {
+      accessorKey: 'initiationDate',
+      header: 'Date',
+      cell: ({ row }) => (
+        <div className="flex items-center w-[90px]">
+          {row.original.initiationDate ? format(new Date(row.original.initiationDate), 'dd MMM yyyy') : '-'}
+        </div>
+      ),
+    },
+    {
+      accessorKey: 'purposeName',
+      header: 'Purpose',
+      cell: ({ row }) => <div>{row.original.purposeName}</div>,
+    },
+    {
       accessorKey: 'post',
       header: 'Designation',
       cell: ({ row }) => <div>{row?.original?.post ? row?.original?.post : 'NA'}</div>,
@@ -105,11 +107,7 @@ const ProcessedNocRequests = () => {
       header: 'Department',
       cell: ({ row }) => <div>{row.original.department}</div>,
     },
-    {
-      accessorKey: 'purposeName',
-      header: 'Purpose',
-      cell: ({ row }) => <div>{row.original.purposeName}</div>,
-    },
+
     {
       accessorKey: 'currentStatus',
       header: 'Status',
@@ -130,13 +128,21 @@ const ProcessedNocRequests = () => {
       ),
     },
   ];
+  if (isLoading) {
+    return <Loader />;
+  }
   return (
     <div className=" p-6">
       <div>
-        <h1 className="font text-3xl mb-3">Request Received Form Vigilance</h1>
+        <h1 className="font text-3xl mb-3">Processed Requests</h1>
+
         <div className="mt-3">
           <TableList
-            data={allRequest}
+            data={allRequest?.sort((a, b) => {
+              const dateA = a?.initiationDate ? new Date(a.initiationDate).getTime() : 0;
+              const dateB = b?.initiationDate ? new Date(b.initiationDate).getTime() : 0;
+              return dateB - dateA;
+            })}
             columns={columns}
             rightElements={
               <>

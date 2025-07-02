@@ -41,7 +41,7 @@ export default function TableList({
   isInputEnd = false,
   showFilter = false,
   rightElements,
-  inputPlaceholder = 'Search by Grievance Subject',
+  inputPlaceholder = 'Search request by name..... ',
   onRowClick,
 }: TableListProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);

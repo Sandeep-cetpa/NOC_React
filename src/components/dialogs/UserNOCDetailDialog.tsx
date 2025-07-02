@@ -128,7 +128,9 @@ const UserNOCDetailsDialog = ({ nocData, isOpen, onOpenChange }) => {
                       {getFieldIcon(field.fieldType)}
                       <label className="text-sm font-medium text-gray-700">{formatLabel(field.fieldName)}</label>
                     </div>
-                    <div className="text-sm">{renderFieldValue(field)}</div>
+                    <div className="text-sm">
+                      {renderFieldValue(field) === 'true' ? 'Yes' : renderFieldValue(field)}
+                    </div>
                   </div>
                 ))}
               </div>
