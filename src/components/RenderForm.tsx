@@ -17,6 +17,7 @@ import {
 import 'react-datepicker/dist/react-datepicker.css';
 import { useLocation } from 'react-router';
 import EnhancedDatePicker from './FormBuilder/EnhancedDatePicker';
+
 const RenderForm = ({
   selectedForm,
   handleSubmit,
@@ -33,6 +34,7 @@ const RenderForm = ({
 }) => {
   if (!selectedForm) return null;
   const location = useLocation();
+
   return (
     <div className="opacity-95">
       {selectedForm && (
@@ -43,7 +45,6 @@ const RenderForm = ({
           <CardContent className="pt-6">
             <form
               onSubmit={(e) => {
-                // e.preventDefault();
                 handleSubmit(e);
               }}
               className="space-y-6"
@@ -75,7 +76,6 @@ const RenderForm = ({
                           missingField={missingFields?.includes('doj')}
                           selectedDate={formData['doj'] ? new Date(formData['doj']) : null}
                           onChange={(date: any) => {
-                            console.log(date, 'date');
                             handleInputChange('doj', date ? date.toISOString().split('T')[0] : '');
                           }}
                           dateFormat="dd MMM yyyy"
@@ -116,47 +116,78 @@ const RenderForm = ({
                     }
                     return true;
                   })
-                  .map((field) => (
-                    <div key={field.fieldId}>
-                      {field.jid !== 'checkbox' && (
-                        <Label htmlFor={field?.fieldId} className="block mb-1 text-sm font-medium">
-                          {formatLabel(field?.fieldName)}
-                          {field?.fieldName.includes('*') && <span className="text-red-500 ml-1">*</span>}
-                        </Label>
+                  .map((field, index) => (
+                    <React.Fragment key={`fragment-${field.fieldId}`}>
+                      {/* Insert Director Switch at index 3 for purposeId 47 */}
+                      {index === 2 && Number(selectedForm?.purposeId) === 47 && (
+                        <div key="director-switch" className="flex flex-col">
+                          <Label className="mb-2">Board Lavel positions</Label>
+                          <div className="flex items-center">
+                            <Switch
+                              className="cursor-pointer"
+                              disabled={false}
+                              checked={formData['isDirector']}
+                              onCheckedChange={(value) => {
+                                handleInputChange('isDirector', value);
+                              }}
+                            />
+                            <span className="ml-2">{formData.isDirector ? 'Yes' : 'No'}</span>
+                          </div>
+                        </div>
                       )}
-                      <FormField
-                        className={
-                          missingFields?.includes(Number(field?.fieldId))
-                            ? 'border-2 border-red-500'
-                            : field?.jid === 'File'
-                            ? 'border-[1px]'
-                            : ''
-                        }
-                        fileRef={fileRef}
-                        field={field}
-                        value={formData[field?.jid === 'File' ? `File${field?.fieldId}` : field?.fieldId]}
-                        onChange={(value) => handleInputChange(field?.fieldId, value, field?.jid)}
-                        purposeId={selectedForm?.purposeId}
-                      />
-                    </div>
+
+                      {/* Original field */}
+                      <div key={field.fieldId}>
+                        {field.jid !== 'checkbox' && (
+                          <Label htmlFor={field?.fieldId} className="block mb-1 text-sm font-medium">
+                            {formatLabel(field?.fieldName)}
+                            {field?.fieldName.includes('*') && <span className="text-red-500 ml-1">*</span>}
+                          </Label>
+                        )}
+                        <FormField
+                          className={
+                            missingFields?.includes(Number(field?.fieldId))
+                              ? 'border-2 border-red-500'
+                              : field?.jid === 'File'
+                              ? 'border-[1px]'
+                              : ''
+                          }
+                          fileRef={fileRef}
+                          field={field}
+                          value={formData[field?.jid === 'File' ? `File${field?.fieldId}` : field?.fieldId]}
+                          onChange={(value) => handleInputChange(field?.fieldId, value, field?.jid)}
+                          purposeId={selectedForm?.purposeId}
+                        />
+                      </div>
+                    </React.Fragment>
                   ))}
 
-                {Number(selectedForm?.purposeId) === 47 && (
-                  <div className="flex flex-col">
-                    <Label className="mb-2">Applying for Post of Director</Label>
-                    <div className="flex items-center">
-                      <Switch
-                        className="cursor-pointer"
-                        disabled={false}
-                        checked={formData['isDirector']}
-                        onCheckedChange={(value) => {
-                          handleInputChange('isDirector', value);
-                        }}
-                      />
-                      <span className="ml-2">{formData.isDirector ? 'Yes' : 'No'}</span>
+                {/* Fallback: If there are fewer than 4 fields and purposeId is 47, show the switch at the end */}
+                {Number(selectedForm?.purposeId) === 47 &&
+                  selectedForm?.fields
+                    ?.filter((item) => !item?.isInTableValue && item?.filledBy === null)
+                    .filter((ele) => {
+                      const fieldId = Number(ele?.fieldId);
+                      if (!formData['122'] && hiddenFieldsForNewPaasport?.includes(fieldId)) {
+                        return false;
+                      }
+                      return true;
+                    }).length < 4 && (
+                    <div className="flex flex-col">
+                      <Label className="mb-2">Applying for Post of Director</Label>
+                      <div className="flex items-center">
+                        <Switch
+                          className="cursor-pointer"
+                          disabled={false}
+                          checked={formData['isDirector']}
+                          onCheckedChange={(value) => {
+                            handleInputChange('isDirector', value);
+                          }}
+                        />
+                        <span className="ml-2">{formData.isDirector ? 'Yes' : 'No'}</span>
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
                 {Number(selectedForm.purposeId) === 47 && formData.isDirector && (
                   <>

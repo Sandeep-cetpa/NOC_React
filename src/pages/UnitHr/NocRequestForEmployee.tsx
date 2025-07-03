@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Heading from '@/components/ui/heading';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/app/store';
@@ -40,6 +40,7 @@ const NocRequestForEmployee = () => {
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
   const [missingfields, setMisssingfields] = useState([]);
   const userRoles = useSelector((state: RootState) => state.user.Roles);
+  const userInfo = useSelector((state: RootState) => state.user);
   const assiedUnits = userRoles.find((ele) => ele.roleId === 3);
   const [forms, setForms] = useState([]);
   const navigate = useNavigate();
@@ -50,6 +51,7 @@ const NocRequestForEmployee = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [tableRows, setTableRows] = useState([]);
   const [submitStatus, setSubmitStatus] = useState<{ type: string; message: string } | null>(null);
+
   const handleFormSelect = (formId: any) => {
     const form = forms.find((f) => Number(f.purposeId) === Number(formId));
     setMisssingfields([]);
@@ -74,8 +76,6 @@ const NocRequestForEmployee = () => {
       setIsLoading(false);
     }
   };
-  console.log(selectedEmployee, 'selectedEmployee');
-  console.log(selectedForm, 'selectedForm');
   useEffect(() => {
     if (selectedForm?.purposeId === 47) {
       setFormData((data) => ({
@@ -88,7 +88,6 @@ const NocRequestForEmployee = () => {
     }
   }, [selectedEmployee, selectedForm?.purposeId]);
 
-  console.log(formData, 'form data');
   useEffect(() => {
     if (selectedUnit) {
       getAllEmployees(selectedUnit?.value);
@@ -159,7 +158,7 @@ const NocRequestForEmployee = () => {
 
   const handleEmployeeSelect = (empCode: string) => {
     const employee = employees.find((f) => Number(f.employeeMasterAutoId) === Number(empCode));
-    setSelectedEmployee(employee || null);
+    setSelectedEmployee(empCode);
     setFormData({});
     setSubmitStatus(null);
   };
@@ -202,12 +201,25 @@ const NocRequestForEmployee = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const result = validateForm(selectedForm, formData, setSubmitStatus);
+    if (!selectedUnit) {
+      toast.error('Please select unit!');
+      return;
+    }
+    if (!selectedEmployee) {
+      toast.error('Please select employee!');
+      return;
+    }
+    const result = validateForm(
+      selectedForm,
+      formData,
+      setSubmitStatus,
+      location.pathname !== '/create-request',
+      userInfo?.Lavel
+    );
     setMisssingfields(result);
     if (result?.length > 0) {
       return;
     }
-    if (!validateForm(selectedForm, formData, setSubmitStatus)) return;
     setIsSubmitting(true);
     setSubmitStatus(null);
     try {
@@ -230,7 +242,7 @@ const NocRequestForEmployee = () => {
         }
       }
       appendFormData(payloadFormData, submission);
-      payloadFormData.append('fkAutoId', selectedEmployee?.employeeMasterAutoId);
+      payloadFormData.append('fkAutoId', selectedEmployee?.value);
       if (Object.entries(tableRows).length > 1) {
         payloadFormData.append('dynamicTable', JSON.stringify(tableRows));
       }
@@ -256,7 +268,21 @@ const NocRequestForEmployee = () => {
       setIsSubmitting(false);
     }
   };
-  console.log(selectedEmployee, '  selectedEmployee');
+  const employeeOptions = useMemo(
+    () =>
+      employees.map((emp) => ({
+        value: emp.employeeMasterAutoId ?? '',
+        label: emp.userName,
+        empName: emp.userName,
+        empCode: emp.employeeCode,
+        designation: emp.deptDfccil,
+        department: emp.post,
+        dojdfccil: emp.dojdfccil,
+        doretirement: emp.doretirement,
+      })),
+    [employees]
+  );
+  console.log(selectedEmployee, 'afsf');
   if (isLoading) {
     return <Loader />;
   }
@@ -266,7 +292,7 @@ const NocRequestForEmployee = () => {
         {/* Header */}
         <div className="text-center space-y-4">
           <Heading type={2} className="text-3xl font-bold text-gray-900">
-            Create Request for Employee
+            Raise Request On Behalf Of Employee
           </Heading>
           <p className="text-gray-600 max-w-2xl mx-auto">
             Generate No Objection Certificate requests for employees with our streamlined digital process
@@ -364,36 +390,24 @@ const NocRequestForEmployee = () => {
                     </Label>
                     <Select
                       isDisabled={!selectedUnit}
-                      options={employees?.map((emp) => ({
-                        label: `${emp?.employeeMasterAutoId} | ${emp.userName || 'Unknown'} | ${emp.post} | ${
-                          emp.deptDfccil
-                        }`,
-                        value: emp.employeeMasterAutoId,
-                      }))}
-                      onChange={(e) => handleEmployeeSelect(e?.value)}
-                      value={
-                        selectedEmployee
-                          ? {
-                              label: `${selectedEmployee?.employeeMasterAutoId} | ${selectedEmployee?.userName}|${selectedEmployee?.post}`,
-                              value: selectedEmployee?.employeeMasterAutoId,
-                            }
-                          : null
-                      }
+                      options={employeeOptions}
+                      onChange={(e) => handleEmployeeSelect(e)}
+                      value={selectedEmployee}
                       className="text-base"
                       placeholder="Choose employee..."
-                      styles={{
-                        control: (base) => ({
-                          ...base,
-                          minHeight: '40px',
-                          borderRadius: '7px',
-                          border: '2px solid #e2e8f0',
-                          '&:hover': { borderColor: '#10b981' },
-                        }),
-                        option: (base, state) => ({
-                          ...base,
-                          backgroundColor: state.isSelected ? '#10b981' : state.isFocused ? '#ecfdf5' : 'white',
-                        }),
-                      }}
+                      formatOptionLabel={(option: any) => (
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 flex items-center justify-center bg-primary text-white rounded-full font-bold uppercase">
+                            {option?.empName?.[0]}
+                          </div>
+                          <div>
+                            <div className="text-sm font-medium text-gray-800">{option?.empName}</div>
+                            <div className="text-xs text-gray-500">
+                              {option?.empCode} | {option?.designation} | {option?.department}
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     />
                   </div>
                 </div>

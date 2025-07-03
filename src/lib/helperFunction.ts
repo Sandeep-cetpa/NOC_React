@@ -1,5 +1,5 @@
 import { RootState } from '@/app/store';
-import { hiddenFieldsForExIndiaLeaveSponsored, hiddenFieldsForExIndiaLeaveThirdParty } from '@/config';
+import { gradeHierarchy, hiddenFieldsForExIndiaLeaveSponsored, hiddenFieldsForExIndiaLeaveThirdParty } from '@/config';
 import { format, parse } from 'date-fns';
 
 import {
@@ -280,17 +280,22 @@ export function formatLabel(input) {
     .toLowerCase() // Convert to lowercase
     .replace(/\b\w/g, (c) => c.toUpperCase()); // Capitalize first letter of each word
 }
-export const validateForm = (selectedForm, formData, setSubmitStatus) => {
+export const validateForm = (selectedForm, formData, setSubmitStatus, isUnitHrPage, userGrade) => {
   if (!selectedForm) {
     return false;
   }
+  // Find user grade order
+  const userGradeInfo = gradeHierarchy.find((grade) => grade.label === userGrade);
+  const userGradeOrder = userGradeInfo ? userGradeInfo.order : null;
+
+  // Check if IPR fields are mandatory (E2 and above - order <= 12)
+  const isIPRMandatory = userGradeOrder !== null && userGradeOrder <= 12;
 
   let requiredFields = selectedForm.fields.filter((field) => field.fieldName.endsWith('*'));
-
   const is122True = formData[122];
   const is142True = formData[142];
-
   let fieldsToIgnore = [];
+
   if (is122True) {
     fieldsToIgnore = [142, 122];
   } else if (is142True) {
@@ -315,45 +320,52 @@ export const validateForm = (selectedForm, formData, setSubmitStatus) => {
         return false;
       }
     }
-
     const fileKey = `File${fieldId}`;
     if (formData.hasOwnProperty(fileKey)) {
       const fileValue = formData[fileKey];
       return !fileValue || (Array.isArray(fileValue) && fileValue.length === 0);
     }
-
     const value = formData[fieldId];
     return !value;
   });
+
   const extraMissingFields = [];
-  if (!formData.iprFile) {
-    extraMissingFields.push({ fieldName: 'IPR File', fieldId: 'iprFile' });
+
+  // IPR fields validation based on user grade
+  if (isIPRMandatory) {
+    if (!formData.iprFile) {
+      extraMissingFields.push({ fieldName: 'IPR File', fieldId: 'iprFile' });
+    }
+    if (!formData.iprDate) {
+      extraMissingFields.push({ fieldName: 'IPR Date', fieldId: 'iprDate' });
+    }
   }
-  if (!formData.iprDate) {
-    extraMissingFields.push({ fieldName: 'IPR Date', fieldId: 'iprDate' });
-  }
-  if (selectedForm.purposeId === 47 && formData?.isDirector && !formData?.doj) {
+
+  // Purpose 47 specific validations
+  if (selectedForm.purposeId === 47 && isUnitHrPage && formData?.isDirector && !formData?.doj) {
     extraMissingFields.push({ fieldName: 'Date Of Joining', fieldId: 'doj' });
   }
-  if (selectedForm.purposeId === 47 && formData?.isDirector && !formData?.dor) {
-    extraMissingFields.push({ fieldName: 'Date Of Retairment', fieldId: 'dor' });
+  if (selectedForm.purposeId === 47 && isUnitHrPage && formData?.isDirector && !formData?.dor) {
+    extraMissingFields.push({ fieldName: 'Date Of Retirement', fieldId: 'dor' });
   }
-  if (selectedForm.purposeId === 47 && formData?.isDirector && !formData?.remarks) {
+  if (selectedForm.purposeId === 47 && isUnitHrPage && formData?.isDirector && !formData?.remarks) {
     extraMissingFields.push({ fieldName: 'Remarks', fieldId: 'remarks' });
   }
   if (selectedForm.purposeId === 47 && formData?.isDirector && !formData?.FatherName) {
     extraMissingFields.push({ fieldName: "Father's Name", fieldId: 'FatherName' });
   }
+
   const allMissing = [...missingFields.map((f) => parseInt(f.fieldId)), ...extraMissingFields.map((f) => f.fieldId)];
   const allMissingWithFiledName = [...missingFields, ...extraMissingFields];
+
   if (allMissing.length > 0) {
-    // Custom message logic (if you want to keep separate messages):
     const fieldNames = allMissingWithFiledName.map((f) => formatLabel(f.fieldName)).join(', ');
     setSubmitStatus({
       type: 'error',
       message: `Please fill in the required fields: ${fieldNames}`,
     });
   }
+
   return allMissing;
 };
 export function getObjectFromSessionStorage(key) {

@@ -137,10 +137,12 @@ export const RequestDetailsDialog = ({ request, setOpen, open }) => {
                       <div className="">
                         {input.fieldType === 'File' ? (
                           <Label title={input?.value} className="text-blue-600 w-[10px] underline cursor-pointer">
-                            {input?.value ? input.value : 'N/A'}
+                            {input?.value === 'true' ? 'Yes' : input?.value === 'false' ? 'No' : input?.value}
                           </Label>
                         ) : (
-                          <Label className="max-w-[10px]">{input?.value ? input.value : 'N/A'}</Label>
+                          <Label className="max-w-[10px]">
+                            {input?.value === 'true' ? 'Yes' : input?.value === 'false' ? 'No' : input?.value}
+                          </Label>
                         )}
                       </div>
                     </div>

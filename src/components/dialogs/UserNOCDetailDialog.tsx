@@ -129,7 +129,11 @@ const UserNOCDetailsDialog = ({ nocData, isOpen, onOpenChange }) => {
                       <label className="text-sm font-medium text-gray-700">{formatLabel(field.fieldName)}</label>
                     </div>
                     <div className="text-sm">
-                      {renderFieldValue(field) === 'true' ? 'Yes' : renderFieldValue(field)}
+                      {renderFieldValue(field) === 'true'
+                        ? 'Yes'
+                        : renderFieldValue(field) === 'false'
+                        ? 'No'
+                        : renderFieldValue(field)}
                     </div>
                   </div>
                 ))}

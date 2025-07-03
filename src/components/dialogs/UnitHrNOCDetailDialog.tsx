@@ -7,8 +7,10 @@ import { formatLabel } from '@/lib/helperFunction';
 import { Badge } from '../ui/badge';
 import { Textarea } from '../ui/textarea';
 import { Label } from '../ui/label';
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import EnhancedDatePicker from '../FormBuilder/EnhancedDatePicker';
 
-const UnitHrNOCDetailDialog = ({ nocData, isOpen, onOpenChange, setRemarks, handleApproveClick, remarks }) => {
+const UnitHrNOCDetailDialog = ({ nocData, isOpen, onOpenChange, setUnitHrData, handleApproveClick, unitHrData }) => {
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
     try {
@@ -67,21 +69,54 @@ const UnitHrNOCDetailDialog = ({ nocData, isOpen, onOpenChange, setRemarks, hand
         <div className="space-y-6 max-w-6xl max-h-[70vh] overflow-y-auto">
           {/* Application Details */}
           <div className="bg-blue-50 p-4 rounded-lg">
-            <h3 className="font-semibold text-lg mb-3 flex items-center gap-2">
-              <CalendarDays className="w-5 h-5" />
-              Application Details
-            </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="text-sm font-medium text-gray-600">Initiation Date</label>
-                <p className="p-2 pl-0">{formatDate(nocData.initiationDate)}</p>
-              </div>
-              <div>
-                <label className="text-sm font-medium text-gray-600">Reference ID</label>
-                <p className="font-bold text-sm p-2 pl-0 rounded">NOC-{nocData.refId || 'N/A'}</p>
-              </div>
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <User className="h-4 w-4" />
+                    Request Information
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  <div className="flex justify-between">
+                    <span className="font-medium">Initiation Date:</span>
+                    <span>{formatDate(nocData.initiationDate)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-medium">Reference ID:</span>
+                    <span>NOC-{nocData.refId || 'N/A'}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-medium">Purpose:</span>
+                    <span>{nocData.purposeName}</span>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <User className="h-4 w-4" />
+                    Employee Information
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  <div className="flex justify-between">
+                    <span className="font-medium">Employee Code:</span>
+                    <span>{nocData.employeeCode}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-medium">Name:</span>
+                    <span>{nocData.username}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-medium">Department:</span>
+                    <span>{nocData.department}</span>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           </div>
+
           {/* Other Fields */}
           {nocData.officerRemarks && (
             <div className="bg-green-50 p-4 rounded-lg">
@@ -131,7 +166,11 @@ const UnitHrNOCDetailDialog = ({ nocData, isOpen, onOpenChange, setRemarks, hand
                       <label className="text-sm font-medium text-gray-700">{formatLabel(field.fieldName)}</label>
                     </div>
                     <div className="text-sm">
-                      {renderFieldValue(field) === 'true' ? 'Yes' : renderFieldValue(field)}
+                      {renderFieldValue(field) === 'true'
+                        ? 'Yes'
+                        : renderFieldValue(field) === 'false'
+                        ? 'No'
+                        : renderFieldValue(field)}
                     </div>
                   </div>
                 ))}
@@ -206,15 +245,55 @@ const UnitHrNOCDetailDialog = ({ nocData, isOpen, onOpenChange, setRemarks, hand
               ))}
             </div>
           )}
+
           <div className="m-3 pb-4">
-            <Label>Enter Remarks</Label>
-            <Textarea
-              value={remarks}
-              onChange={(e) => setRemarks(e.target.value)}
-              rows={4}
-              placeholder="Enter remarks here..."
-              className="mt-1"
-            />
+            {nocData.purposeId === 47 && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="flex flex-col">
+                  <Label>Date Of Joining</Label>
+                  <EnhancedDatePicker
+                    dateFormat="dd MMM yyyy"
+                    selectedDate={unitHrData.doj}
+                    onChange={(e) =>
+                      setUnitHrData((pre) => ({
+                        ...pre,
+                        doj: e,
+                      }))
+                    }
+                    className="mt-2"
+                  />
+                </div>
+                <div className="flex flex-col">
+                  <Label>Date Of Retairment</Label>
+                  <EnhancedDatePicker
+                    dateFormat="dd MMM yyyy"
+                    selectedDate={unitHrData?.dor}
+                    onChange={(e) =>
+                      setUnitHrData((pre) => ({
+                        ...pre,
+                        dor: e,
+                      }))
+                    }
+                    className="mt-2"
+                  />
+                </div>
+              </div>
+            )}
+            <div>
+              <Label>Enter Remarks</Label>
+              <Textarea
+                value={unitHrData?.remarks}
+                onChange={(e) =>
+                  setUnitHrData((pre) => ({
+                    ...pre,
+                    remarks: e.target.value,
+                  }))
+                }
+                rows={4}
+                placeholder="Enter remarks here..."
+                className="mt-1"
+              />
+            </div>
           </div>
         </div>
         <div className="flex justify-end">

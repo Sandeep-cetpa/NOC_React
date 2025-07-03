@@ -4,7 +4,9 @@ export interface Employee {
   empCode: string;
   empName: string;
   designation: string;
-  department: string;
+  doretirement: string;
+  employeeMasterAutoId?: any;
+  dojdfccil?: string;
 }
 
 export interface SelectOption {

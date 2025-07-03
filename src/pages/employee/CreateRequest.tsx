@@ -147,17 +147,14 @@ const CreateRequest = () => {
       return updated;
     });
   };
-  console.log(formData, 'formData');
+  console.log(userInfo, 'user');
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const result = validateForm(selectedForm, formData, setSubmitStatus);
+    const result = validateForm(selectedForm, formData, setSubmitStatus, false, userInfo?.Lavel);
     setMisssingFields(result);
     if (result?.length > 0) {
       return;
     }
-
-    if (!validateForm(selectedForm, formData, setSubmitStatus)) return;
-
     setIsSubmitting(true);
     setSubmitStatus(null);
 
@@ -182,9 +179,9 @@ const CreateRequest = () => {
       }
       appendFormData(payloadFormData, submission);
       payloadFormData.append('fkAutoId', userInfo.EmpID.toString());
-      if (Object.entries(tableRows).length > 1) {
-        payloadFormData.append('dynamicTable', JSON.stringify(tableRows));
-      }
+
+      payloadFormData.append('dynamicTable', JSON.stringify(tableRows));
+
       const response = await axiosInstance.post('/User/NOC', payloadFormData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });

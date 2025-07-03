@@ -32,7 +32,6 @@ const EnhancedDatePicker = ({
   disabled = false,
 }: // isClearable = true,
 EnhancedDatePickerProps) => {
-  console.log(missingField, 'missingField');
   const CustomInput = forwardRef<HTMLButtonElement, { value?: string; onClick?: () => void }>(
     ({ value, onClick }, ref) => (
       <Button

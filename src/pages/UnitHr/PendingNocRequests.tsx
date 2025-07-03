@@ -18,7 +18,11 @@ const PendingNocRequests = () => {
   const user = useSelector((state: RootState) => state.user);
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [remarks, setRemarks] = useState('');
+  const [unitHrData, setUnitHrData] = useState({
+    remarks: '',
+    dor: '',
+    doj: '',
+  });
   const [selectedNoc, setSelectedNoc] = useState(null);
   const assiedUnits = userRoles?.find((ele) => ele.roleId === 3);
   const [selectedUnit, setSelectedUnit] = useState<string>(assiedUnits?.unitsAssigned?.[0]?.unitId?.toString() || '');
@@ -48,6 +52,7 @@ const PendingNocRequests = () => {
       getAllRequests(firstUnit.unitId);
     }
   }, []);
+
   const handleApproveClick = async (nocId: number) => {
     try {
       const response = await axiosInstance.put('/UnitHR/NOC', {
@@ -55,7 +60,7 @@ const PendingNocRequests = () => {
         status: 0,
         presentUnit: 'string',
         pastPosition: 'string',
-        remarks: remarks,
+        remarks: unitHrData?.remarks,
         updatedDob: '2025-06-30T05:43:59.264Z',
         updatedDor: '2025-06-30T05:43:59.264Z',
         updatedDoeis: '2025-06-30T05:43:59.264Z',
@@ -65,7 +70,11 @@ const PendingNocRequests = () => {
       if (response.data.success) {
         setIsOpen(false);
         getAllRequests(selectedUnit);
-        setRemarks('');
+        setUnitHrData({
+          remarks: '',
+          doj: '',
+          dor: '',
+        });
         toast.success('Request approved successfully');
       }
     } catch (error) {
@@ -143,6 +152,11 @@ const PendingNocRequests = () => {
         <Button
           onClick={() => {
             setSelectedNoc(row.original);
+            // setUnitHrData({
+            //   remarks: '',
+            //   doj: '',
+            //   dor: '',
+            // });
             setIsOpen(true);
           }}
         >
@@ -196,9 +210,9 @@ const PendingNocRequests = () => {
           </>
 
           <UnitHrNOCDetailDialog
-            setRemarks={setRemarks}
+            setUnitHrData={setUnitHrData}
             handleApproveClick={handleApproveClick}
-            remarks={remarks}
+            unitHrData={unitHrData}
             nocData={selectedNoc}
             isOpen={isOpen}
             onOpenChange={setIsOpen}
