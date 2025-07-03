@@ -33,6 +33,7 @@ import GmPrivateRoute from './GmPrivateRoute';
 import GmProcessedRequests from '@/pages/gm/GmProcessedRequests';
 import GmRejectedRequests from '@/pages/gm/GmRejectedRequests';
 import GmREquesteReceived from '@/pages/gm/GmREquesteReceived';
+import Dashboard from '@/pages/admin/Dashboard';
 
 const AppRoutes = () => {
   return (
@@ -45,7 +46,8 @@ const AppRoutes = () => {
         <Route path="/noc-request-for-employee" element={<NocRequestForEmployee />} />
       </Route>
       <Route element={<AdminPrivateRoute />}>
-        <Route path="/form" element={<Forms />} />
+        <Route path="/admin-dashboard" element={<Dashboard />} />
+        {/* <Route path="/form" element={<Forms />} /> */}
         <Route path="/admin-manage-role" element={<ManageRoles />} />
       </Route>
       <Route element={<CgmPrivateRoute />}>

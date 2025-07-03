@@ -53,7 +53,7 @@ const dummyData: Request[] = [
     name: 'Jane Smith',
     purpose: 'Document Update',
     description: 'Upload new documents',
-    remarksByUnitHR: 'Pending', 
+    remarksByUnitHR: 'Pending',
     remarksByCGM: 'In Review',
     remarksByCorporateHR: 'Awaiting',
     remarksByDAndAR: 'In Process',
@@ -251,7 +251,7 @@ const GmREquesteReceived = () => {
   };
 
   return (
-    <div className="container mx-auto p-6 max">
+    <div className="p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-800">Request Received</h1>
         <div className="relative w-64">
@@ -396,7 +396,7 @@ const GmREquesteReceived = () => {
                         <Briefcase className="h-4 w-4 text-gray-400" />
                         <span className="text-gray-600">Designation:</span>
                         <span className="font-medium">{selectedRequest.designation}</span>
-                      </div>   
+                      </div>
                     </div>
                   </div>
                   <div>

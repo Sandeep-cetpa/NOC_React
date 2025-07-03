@@ -50,7 +50,6 @@ const NocRequestForEmployee = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [tableRows, setTableRows] = useState([]);
   const [submitStatus, setSubmitStatus] = useState<{ type: string; message: string } | null>(null);
-  console.log(assiedUnits, 'assiedUnits');
   const handleFormSelect = (formId: any) => {
     const form = forms.find((f) => Number(f.purposeId) === Number(formId));
     setMisssingfields([]);
@@ -75,7 +74,21 @@ const NocRequestForEmployee = () => {
       setIsLoading(false);
     }
   };
+  console.log(selectedEmployee, 'selectedEmployee');
+  console.log(selectedForm, 'selectedForm');
+  useEffect(() => {
+    if (selectedForm?.purposeId === 47) {
+      setFormData((data) => ({
+        ...data,
+        dor: selectedEmployee?.doretirement
+          ? new Date(selectedEmployee.doretirement).toISOString().split('T')[0]
+          : null,
+        doj: selectedEmployee?.dojdfccil ? new Date(selectedEmployee.dojdfccil).toISOString().split('T')[0] : null,
+      }));
+    }
+  }, [selectedEmployee, selectedForm?.purposeId]);
 
+  console.log(formData, 'form data');
   useEffect(() => {
     if (selectedUnit) {
       getAllEmployees(selectedUnit?.value);
@@ -99,7 +112,6 @@ const NocRequestForEmployee = () => {
   useEffect(() => {
     getPurposeForUnitHr();
   }, []);
-
   const handleInputChange = (fieldId: string, value: any, fieldType?: any) => {
     const key = fieldType === 'File' ? `File${fieldId}` : fieldId;
     const numericfieldId = Number(fieldId);
@@ -218,17 +230,22 @@ const NocRequestForEmployee = () => {
         }
       }
       appendFormData(payloadFormData, submission);
-      payloadFormData.append('fkAutoId', '1776');
+      payloadFormData.append('fkAutoId', selectedEmployee?.employeeMasterAutoId);
       if (Object.entries(tableRows).length > 1) {
         payloadFormData.append('dynamicTable', JSON.stringify(tableRows));
       }
-      const response = await axiosInstance.post('/User/NOC', payloadFormData, {
+      const response = await axiosInstance.post('/UnitHR/NOC', payloadFormData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       if (response.data.success) {
         toast.success(`Your request has been submitted successfully. Reference ID: ${response.data.userId}`);
         setFormData({});
-        navigate('/track-noc');
+        setSelectedEmployee(null);
+        setSelectedForm(null);
+        setMisssingfields([]);
+        setSubmitStatus(null);
+        setTableRows([]);
+        navigate('/unit-hr-processed-noc-requests');
       }
     } catch (error) {
       setSubmitStatus({
@@ -249,7 +266,7 @@ const NocRequestForEmployee = () => {
         {/* Header */}
         <div className="text-center space-y-4">
           <Heading type={2} className="text-3xl font-bold text-gray-900">
-            Create NOC Request for Employee
+            Create Request for Employee
           </Heading>
           <p className="text-gray-600 max-w-2xl mx-auto">
             Generate No Objection Certificate requests for employees with our streamlined digital process

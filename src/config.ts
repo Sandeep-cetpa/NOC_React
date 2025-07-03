@@ -11,7 +11,6 @@ const DFCCIL_UAT = {
 
 const DFCCIL_PROD = {
   apiUrl: 'https://uatnocapi.dfccil.com/api',
-  //  apiUrl: 'https://localhost:5001/api',
   orgHierarchy: 'https://orgsvc.dfccil.com/api',
   logoutUrl: 'https://it.dfccil.com/Home/Home',
   authUrl: 'https://app2.dfccil.com',

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -14,6 +14,9 @@ import {
   hiddenFieldsForExIndiaLeaveThirdParty,
   hiddenFieldsForNewPaasport,
 } from '@/config';
+import 'react-datepicker/dist/react-datepicker.css';
+import { useLocation } from 'react-router';
+import EnhancedDatePicker from './FormBuilder/EnhancedDatePicker';
 const RenderForm = ({
   selectedForm,
   handleSubmit,
@@ -29,7 +32,7 @@ const RenderForm = ({
   missingFields,
 }) => {
   if (!selectedForm) return null;
-  console.log(missingFields);
+  const location = useLocation();
   return (
     <div className="opacity-95">
       {selectedForm && (
@@ -47,20 +50,54 @@ const RenderForm = ({
             >
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {Number(selectedForm.purposeId) === 47 && formData.isDirector && (
-                  <div className="flex flex-col ">
+                  <div className="flex flex-col">
                     <Label className="mb-2">Father's Name</Label>
-                    <div className="flex items-center  py-1 pl-1">
-                      <Input
-                        type="text"
-                        className="cursor-pointer"
-                        disabled={false}
-                        placeholder="Enter father name"
-                        value={formData['FatherName']}
-                        onChange={(value) => handleInputChange('FatherName', value?.target?.value)}
-                      />
-                    </div>
+                    <Input
+                      type="text"
+                      className={`flex items-center py-1 pl-3 ${
+                        missingFields?.includes('FatherName') ? 'border-2 border-red-500' : 'border-[1px]'
+                      } rounded-md`}
+                      disabled={false}
+                      placeholder="Enter father name"
+                      value={formData['FatherName']}
+                      onChange={(value) => handleInputChange('FatherName', value?.target?.value)}
+                    />
                   </div>
                 )}
+
+                {Number(selectedForm.purposeId) === 47 &&
+                  formData.isDirector &&
+                  location.pathname !== '/create-request' && (
+                    <>
+                      <div className="flex flex-col">
+                        <Label className="mb-2">Date Of Joining</Label>
+                        <EnhancedDatePicker
+                          missingField={missingFields?.includes('doj')}
+                          selectedDate={formData['doj'] ? new Date(formData['doj']) : null}
+                          onChange={(date: any) => {
+                            console.log(date, 'date');
+                            handleInputChange('doj', date ? date.toISOString().split('T')[0] : '');
+                          }}
+                          dateFormat="dd MMM yyyy"
+                          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                        />
+                      </div>
+
+                      <div className="flex flex-col">
+                        <Label className="mb-2">Date Of Retirement</Label>
+                        <EnhancedDatePicker
+                          missingField={missingFields?.includes('dor')}
+                          selectedDate={formData['dor'] ? new Date(formData['dor']) : null}
+                          onChange={(date: any) =>
+                            handleInputChange('dor', date ? date.toISOString().split('T')[0] : '')
+                          }
+                          dateFormat="dd MMM yyyy"
+                          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                        />
+                      </div>
+                    </>
+                  )}
+
                 {selectedForm?.fields
                   ?.filter((item) => !item?.isInTableValue && item?.filledBy === null)
                   .filter((ele) => {
@@ -103,8 +140,9 @@ const RenderForm = ({
                       />
                     </div>
                   ))}
+
                 {Number(selectedForm?.purposeId) === 47 && (
-                  <div className="flex flex-col ">
+                  <div className="flex flex-col">
                     <Label className="mb-2">Applying for Post of Director</Label>
                     <div className="flex items-center">
                       <Switch
@@ -119,46 +157,47 @@ const RenderForm = ({
                     </div>
                   </div>
                 )}
+
                 {Number(selectedForm.purposeId) === 47 && formData.isDirector && (
                   <>
-                    <div className="flex flex-col ">
+                    <div className="flex flex-col">
                       <Label className="mb-2">
                         Service to which officer belongs including batch/year cadre etc. wherever applicable.
                       </Label>
-                      <div className="flex items-center  py-1 pl-1">
-                        <Input
-                          type="text"
-                          placeholder="Enter batch year"
-                          className="cursor-pointer ml-2"
-                          value={formData['BatchYear']}
-                          onChange={(value) => handleInputChange('BatchYear', value?.target?.value)}
-                        />
-                      </div>
+                      <Input
+                        type="text"
+                        placeholder="Enter batch year"
+                        className="cursor-pointer"
+                        value={formData['BatchYear']}
+                        onChange={(value) => handleInputChange('BatchYear', value?.target?.value)}
+                      />
                     </div>
-                    <div className="flex flex-col ">
+
+                    <div className="flex flex-col">
                       <Label className="mb-2">Date of Entry into Service</Label>
-                      <div className="flex items-center  py-1 pl-1">
-                        <Input
-                          type="date"
-                          className="cursor-pointer ml-2"
-                          value={formData['ServiceEntry']}
-                          onChange={(value) => handleInputChange('ServiceEntry', value?.target?.value)}
-                        />
-                      </div>
+
+                      <EnhancedDatePicker
+                        selectedDate={formData['ServiceEntry'] ? new Date(formData['ServiceEntry']) : null}
+                        onChange={(date: any) =>
+                          handleInputChange('ServiceEntry', date ? date.toISOString().split('T')[0] : '')
+                        }
+                        dateFormat="dd MMM yyyy"
+                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                      />
                     </div>
                   </>
                 )}
-                <div className="flex flex-col ">
+                <div className="flex flex-col">
                   <Label className="mb-2">Upload IPR</Label>
                   <div
-                    className={`flex items-center  py-1 pl-1 ${
+                    className={`flex items-center py-1 pl-1 ${
                       missingFields?.includes('iprFile') ? 'border-2 border-red-500' : 'border-[1px]'
-                    } rounded-md `}
+                    } rounded-md`}
                   >
                     <input
                       ref={fileRef}
                       type="file"
-                      className=" cursor-pointer"
+                      className="cursor-pointer"
                       disabled={false}
                       onChange={(value) => {
                         handleInputChange('iprFile', value?.target?.files[0]);
@@ -166,22 +205,18 @@ const RenderForm = ({
                     />
                   </div>
                 </div>
-                <div className="flex flex-col ">
+                <div className={`flex flex-col `}>
                   <Label className="mb-2">IPR Date</Label>
-                  <div
-                    className={`flex items-center  py-1 pl-1 ${
-                      missingFields?.includes('iprFile') ? 'border-2 border-red-500' : 'border-[1px]'
-                    } rounded-md `}
-                  >
-                    <input
-                      className="ml-2 cursor-pointer"
-                      type="date"
-                      value={formData['iprDate1']}
-                      onChange={(value) => handleInputChange('iprDate1', value?.target?.value)}
-                    />
-                  </div>
+                  <EnhancedDatePicker
+                    missingField={missingFields?.includes('iprDate')}
+                    selectedDate={formData['iprDate'] ? new Date(formData['iprDate']) : null}
+                    onChange={(date: any) => handleInputChange('iprDate', date ? date.toISOString().split('T')[0] : '')}
+                    dateFormat="dd MMM yyyy"
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  />
                 </div>
               </div>
+
               {selectedForm &&
                 ((Number(selectedForm.purposeId) === 47 && formData.isDirector && selectedForm.isInTableValue) ||
                   (Number(selectedForm.purposeId) !== 47 && selectedForm.isInTableValue)) && (
@@ -257,6 +292,7 @@ const RenderForm = ({
                   </div>
                 </Alert>
               )}
+
               <div className="flex justify-between">
                 {selectedForm &&
                   selectedForm?.isInTableValue &&
@@ -265,6 +301,27 @@ const RenderForm = ({
                       Add Row
                     </Button>
                   )}
+              </div>
+
+              {Number(selectedForm?.purposeId) === 47 &&
+                formData?.isDirector &&
+                location?.pathname !== '/create-request' && (
+                  <div>
+                    <Label htmlFor="remarks">Remarks:</Label>
+                    <Input
+                      className={`mt-1 ${
+                        missingFields?.includes('remarks') ? 'border-2 border-red-500' : 'border-[1px]'
+                      } rounded-md`}
+                      value={formData['remarks']}
+                      name="remarks"
+                      onChange={(event) => handleInputChange('remarks', event.target.value)}
+                      placeholder="Enter remarks here..."
+                      type="text"
+                    />
+                  </div>
+                )}
+
+              <div className="flex justify-end">
                 <Button type="submit" disabled={isSubmitting} className="bg-blue-600 hover:bg-blue-700">
                   {isSubmitting ? (
                     <>

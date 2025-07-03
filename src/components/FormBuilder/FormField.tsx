@@ -13,8 +13,8 @@ interface FormFieldProps {
     dataType: String;
     fieldName: string;
     options?: string[];
-    jid: String;
-    isInTableValue: boolean;
+    jid?: String;
+    isInTableValue?: boolean;
   };
   value: any;
   onChange: (value: any) => void;
