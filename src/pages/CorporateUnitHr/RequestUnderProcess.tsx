@@ -17,9 +17,7 @@ const RequestUnderProcess = () => {
   const getRequestByUnitId = async (unitId, isUnit) => {
     try {
       setIsLoading(true);
-      const response = await axiosInstance.get(
-        `/CorporateHR/NOC/Report?UnitId=${"0"}&status=${"Parked"}`
-      );
+      const response = await axiosInstance.get(`/CorporateHR/NOC/Report?UnitId=${'0'}&status=${'Parked'}`);
       if (response.data.success) {
         setRequests(response.data.data);
       }

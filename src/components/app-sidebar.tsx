@@ -24,9 +24,12 @@ import { RootState } from '@/app/store';
 import { fetchPurpose } from '@/features/purpose/purposeSlice';
 import { fetchStatus } from '@/features/status/statusSlice';
 import { fetchApplications } from '@/features/applications/applicationsSlice';
+import { fetchMasterData } from '@/features/masterData/masterSlice';
+import { useAuth } from 'react-oidc-context';
 
 export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const { state, toggleSidebar } = useSidebar();
   const employees = useSelector((state: RootState) => state.employee.employees);
   const status = useSelector((state: RootState) => state.allStatus.allStatus);
@@ -53,8 +56,6 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
     ],
   };
   const dispatch = useDispatch();
-  // const isAuthenticated = auth.isAuthenticated;
-  const isAuthenticated = true;
 
   const fetchData = async () => {
     try {
@@ -92,6 +93,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
       fetchData();
     }
   }, [isAuthenticated, employees]);
+
   React.useEffect(() => {
     if (isAuthenticated && status.length === 0) {
       dispatch(fetchStatus());

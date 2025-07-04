@@ -34,8 +34,20 @@ import GmProcessedRequests from '@/pages/gm/GmProcessedRequests';
 import GmRejectedRequests from '@/pages/gm/GmRejectedRequests';
 import GmREquesteReceived from '@/pages/gm/GmREquesteReceived';
 import Dashboard from '@/pages/admin/Dashboard';
+import { useEffect } from 'react';
+import { useAuth } from 'react-oidc-context';
+import { useDispatch } from 'react-redux';
+import { fetchMasterData } from '@/features/masterData/masterSlice';
 
 const AppRoutes = () => {
+  const { isAuthenticated } = useAuth();
+  console.log(isAuthenticated);
+  const dispatch = useDispatch();
+  useEffect(() => {
+    if (isAuthenticated) {
+      dispatch(fetchMasterData());
+    }
+  }, [isAuthenticated]);
   return (
     <Routes>
       <Route path="/logout-notification" element={<FrontChannelLogout />} />
