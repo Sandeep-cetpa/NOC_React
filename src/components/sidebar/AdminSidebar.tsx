@@ -1,20 +1,15 @@
 import * as React from 'react';
 import {
-  User,
   LogOut,
   ChevronsRight,
   ChevronsLeft,
-  Users,
-  FileText,
   Inbox,
   CheckCircle,
   Clock,
   Shield,
   UserCheck,
   AlertTriangle,
-  FileCheck,
   XCircle,
-  Archive,
   Eye,
 } from 'lucide-react';
 import { NavMain } from '@/components/nav-main';
@@ -33,7 +28,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/app/store';
 import { Separator } from '@radix-ui/react-separator';
 import { useNavigate } from 'react-router';
-import { formatLabel, removeSessionItem } from '@/lib/helperFunction';
+import { removeSessionItem } from '@/lib/helperFunction';
 import { resetUser } from '@/features/user/userSlice';
 import { environment } from '@/config';
 import useUserRoles from '@/hooks/useUserRoles';
@@ -45,13 +40,15 @@ export function AdminSidebar(props: React.ComponentProps<typeof Sidebar>) {
   const { isSuperAdmin, isCgm, isDandAR, isGm, isVigilanceAdmin, isCorporateUnitHr, isUnitHr } = useUserRoles();
 
   const userRoles = useSelector((state: RootState) => state.user.Roles);
+
   function splitCamelCase(str) {
     return str.replace(/([a-z])([A-Z])/g, '$1 $2');
   }
   const data = {
     navMain: userRoles.map((role) => {
       const { roleName, roleId } = role;
-
+      const assinedUnit = userRoles?.find((ele) => ele?.roleId === 3)?.unitsAssigned;
+      console.log(assinedUnit, 'assined unit');
       const items = [];
 
       if (roleId === 4) {
@@ -81,7 +78,7 @@ export function AdminSidebar(props: React.ComponentProps<typeof Sidebar>) {
         );
       }
 
-      if (roleId === 3) {
+      if (roleId === 3 && assinedUnit?.find((ele) => ele?.unitId !== 1)) {
         // HrUser
         items.push(
           { title: 'Create NOC For Employee', url: '/unit-hr-request-for-employee', icon: Inbox },
@@ -89,10 +86,29 @@ export function AdminSidebar(props: React.ComponentProps<typeof Sidebar>) {
           { title: 'Unit Processed Requests ', url: '/unit-hr-processed-noc-requests', icon: Inbox }
         );
       }
+      if (roleId === 3 && assinedUnit?.find((ele) => ele?.unitId === 1)) {
+        // HrUser
+        items.push(
+          { title: 'Pending Requests', url: '/corporate-unit-hr-received-requests', icon: Inbox },
+          { title: 'Under Process', url: '/corporate-unit-hr-request-under-process', icon: Inbox },
+          { title: 'Request From Vigilance', url: '/corporate-unit-hr-noc-requests-from-vigilance', icon: Inbox },
+          { title: 'Create NOC For Employee', url: '/corporate-unit-hr-request-for-employee', icon: Inbox },
+          { title: 'Rejected Requests', url: '/corporate-unit-hr-rejected-requests', icon: Inbox },
+          { title: 'Completed Requests', url: '/corporate-unit-hr-completed-requests', icon: Inbox },
+          { title: 'Parked Request', url: '/corporate-unit-hr-parked-requests', icon: Inbox }
+        );
+      }
+      if (roleId === 6) {
+        // CGM
+        items.push(
+          { title: 'Pending Request', url: '/cgm-request-received', icon: Inbox },
+          { title: 'Processed Requests', url: '/cgm-processed-request', icon: Inbox }
+        );
+      }
       // Add other roleId-based items similarly
 
       return {
-        title: splitCamelCase(roleName), // Converts "VigilanceAdmin" → "Vigilance Admin"
+        title: roleId === 3 && assinedUnit?.find((ele) => ele?.unitId === 1) ? 'Corporate Hr' : roleName, // Converts "VigilanceAdmin" → "Vigilance Admin"
         icon: Inbox, // you can customize this per role
         url: '/create-request',
         items,

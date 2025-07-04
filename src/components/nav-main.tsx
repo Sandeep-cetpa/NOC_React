@@ -24,22 +24,16 @@ export function NavMain({
 }) {
   const { setOpenMobile } = useSidebar();
   const [openIndex, setOpenIndex] = useState<number | null>(0);
-
   const handleToggle = useCallback((index: number) => {
     setOpenIndex((prevIndex) => (prevIndex === index ? null : index));
   }, []);
-
   const handleChildClick = useCallback(
     (parentIndex: number) => {
-      console.log('child clicked, parent index:', parentIndex);
-      console.log('current openIndex before child click:', openIndex);
       setOpenIndex(parentIndex);
       setOpenMobile(false);
     },
     [setOpenMobile, openIndex]
   );
-
-  console.log('current openIndex:', openIndex);
 
   return (
     <SidebarGroup>
@@ -52,7 +46,7 @@ export function NavMain({
             const isNavigatable = item.url && item.url !== '#' && item.url !== '';
             if (isNavigatable) {
               return (
-                <SidebarMenuItem key={item.title}>
+                <SidebarMenuItem key={index}>
                   <NavLink to={item.url} onClick={() => setOpenMobile(false)}>
                     {({ isActive }) => (
                       <SidebarMenuButton

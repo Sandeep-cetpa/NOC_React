@@ -1,6 +1,6 @@
 import React from 'react';
-import { CalendarDays, User, FileText, Mail, Calendar, Download, Eye } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
+import { User, FileText, Mail, Calendar, Download, Eye } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
 import { Button } from '../ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 import { formatLabel } from '@/lib/helperFunction';
@@ -8,25 +8,46 @@ import { Badge } from '../ui/badge';
 import { Textarea } from '../ui/textarea';
 import { Label } from '../ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
-import EnhancedDatePicker from '../FormBuilder/EnhancedDatePicker';
 import { RequestStatus } from '@/constant/status';
 
-const UnitHrNOCDetailDialog = ({
+const CgmNOCDetailDialog = ({
   nocData,
   isOpen,
   onOpenChange,
-  setUnitHrData,
+  setcgmData,
   handleApproveClick,
   handleRejectClick,
-  unitHrData,
+  handleRevertClick,
+  cgmData,
   rejectButtonName,
   AccecptButtonName,
+  revertButtonName,
   isEditable = false,
 }) => {
+  console.log(nocData);
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
     try {
-      const date = new Date(dateString);
+      // Handle different date formats
+      let date;
+
+      // Check if it's in DD-MMM-YYYY format (like "26-Nov-2024")
+      if (dateString.includes('-') && dateString.split('-').length === 3) {
+        const parts = dateString.split('-');
+        if (parts[1].length === 3) {
+          // Month is abbreviated (Nov, Dec, etc.)
+          date = new Date(dateString);
+        } else {
+          date = new Date(dateString);
+        }
+      } else {
+        date = new Date(dateString);
+      }
+
+      if (isNaN(date.getTime())) {
+        return dateString; // Return original if parsing fails
+      }
+
       return date.toLocaleDateString('en-IN', {
         year: 'numeric',
         month: 'short',
@@ -36,7 +57,7 @@ const UnitHrNOCDetailDialog = ({
       return dateString;
     }
   };
-  console.log(nocData, 'nocData');
+
   const getFieldIcon = (fieldType) => {
     switch (fieldType?.toLowerCase()) {
       case 'file':
@@ -67,7 +88,9 @@ const UnitHrNOCDetailDialog = ({
     }
     return field.value;
   };
+
   if (!nocData) return null;
+
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-6xl overflow-y-auto">
@@ -102,6 +125,10 @@ const UnitHrNOCDetailDialog = ({
                     <span className="font-medium">Purpose:</span>
                     <span>{nocData.purposeName}</span>
                   </div>
+                  <div className="flex justify-between">
+                    <span className="font-medium">Current Status:</span>
+                    <Badge variant="outline">{nocData.currentStatus}</Badge>
+                  </div>
                 </CardContent>
               </Card>
               <Card>
@@ -121,15 +148,23 @@ const UnitHrNOCDetailDialog = ({
                     <span>{nocData.username}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="font-medium">Department:</span>
-                    <span>{nocData.department}</span>
+                    <span className="font-medium">Post:</span>
+                    <span>{nocData.post}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-medium">DOB:</span>
+                    <span>{formatDate(nocData.dob)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-medium">DOR:</span>
+                    <span>{formatDate(nocData.dor)}</span>
                   </div>
                 </CardContent>
               </Card>
             </div>
           </div>
 
-          {/* Other Fields */}
+          {/* Officer Remarks */}
           {(nocData?.officerRemarksR || nocData?.officerRemarks) && (
             <div className="bg-green-50 p-4 rounded-lg">
               <h3 className="font-semibold text-lg mb-3 flex items-center gap-2">
@@ -137,26 +172,24 @@ const UnitHrNOCDetailDialog = ({
                 Officer Remarks & Information
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {Object.entries(nocData?.officerRemarks || nocData?.officerRemarksR).map(([key, value]) => {
-                  // Format the key name to be user-friendly
-                  const formatKeyName = (key) => {
+                {Object.entries(nocData?.officerRemarksR || nocData?.officerRemarks).map(([key, value]) => {
+                  const formatKeyName = (key: string) => {
                     return key
-                      .replace(/([A-Z])/g, ' $1') // Add space before capital letters
-                      .replace(/^./, (str) => str.toUpperCase()) // Capitalize first letter
-                      .replace(/hr/gi, 'HR') // Replace hr with HR
-                      .replace(/ipr/gi, 'IPR') // Replace ipr with IPR
-                      .replace(/cgm/gi, 'CGM') // Replace cgm with CGM
-                      .replace(/dandar/gi, 'D&AR') // Replace dandar with D&AR
-                      .replace(/reamarks/gi, 'Remarks') // Fix typo in remarks
+                      .replace(/([A-Z])/g, ' $1')
+                      .replace(/^./, (str) => str.toUpperCase())
+                      .replace(/hr/gi, 'HR')
+                      .replace(/ipr/gi, 'IPR')
+                      .replace(/cgm/gi, 'CGM')
+                      .replace(/dandar/gi, 'D&AR')
+                      .replace(/reamarks/gi, 'Remarks')
                       .trim();
                   };
-                  // Check if the field is a date field
+
                   const isDateField = key.toLowerCase().includes('date');
-
-                  // Check if the field is a file field
                   const isFileField = key.toLowerCase().includes('file');
-
                   const formattedKey = formatKeyName(key);
+
+                  if (formattedKey === 'Service Entry') return null;
 
                   return (
                     <div key={key}>
@@ -164,11 +197,11 @@ const UnitHrNOCDetailDialog = ({
                       {isFileField ? (
                         <div className="flex items-center gap-2 bg-white p-3 rounded border">
                           {value && <Download className="w-4 h-4 text-blue-600" />}
-                          <span className="text-blue-600 cursor-pointer hover:underline">{value ? value : 'NA'}</span>
+                          <span className="text-blue-600 cursor-pointer hover:underline">{value || 'NA'}</span>
                         </div>
                       ) : (
                         <p className="bg-white p-3 rounded border">
-                          {isDateField ? (formatDate(value) ? formatDate(value) : value) : 'NA'}
+                          {isDateField ? formatDate(value) || value || 'NA' : value || 'NA'}
                         </p>
                       )}
                     </div>
@@ -187,10 +220,14 @@ const UnitHrNOCDetailDialog = ({
               </h3>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {nocData.inputs.map((field, index) => (
-                  <div key={index} className="bg-white p-2 pl-4 rounded-2xl border">
+                  <div key={index} className="bg-white p-3 rounded-lg border">
                     <div className="flex items-center gap-2 mb-2">
                       {getFieldIcon(field.fieldType)}
-                      <label className="text-sm font-medium text-gray-700">{formatLabel(field.fieldName)}</label>
+                      <label className="text-sm font-medium text-gray-700">
+                        {formatLabel
+                          ? formatLabel(field.fieldName)
+                          : field.fieldName.replace(/_/g, ' ').replace(/\*/g, '').toUpperCase()}
+                      </label>
                     </div>
                     <div className="text-sm">
                       {renderFieldValue(field) === 'true'
@@ -204,6 +241,7 @@ const UnitHrNOCDetailDialog = ({
               </div>
             </div>
           )}
+
           {/* Table Inputs */}
           {nocData.tableInputs && nocData.tableInputs.length > 0 && (
             <div className="space-y-6 rounded-lg">
@@ -220,11 +258,11 @@ const UnitHrNOCDetailDialog = ({
                       <Table>
                         <TableHeader>
                           <TableRow>
-                            <TableHead className="w-16 font-semibold text-white">SN.</TableHead>
+                            <TableHead className="w-16 font-semibold">SN.</TableHead>
                             {table.rows[0]?.inputs?.map((field, index) => (
-                              <TableHead key={index} className="font-semibold text-white">
+                              <TableHead key={index} className="font-semibold">
                                 <div className="space-y-1">
-                                  <div>{formatLabel(field.fieldName)}</div>
+                                  <div>{formatLabel ? formatLabel(field.fieldName) : field.fieldName}</div>
                                 </div>
                               </TableHead>
                             ))}
@@ -235,7 +273,6 @@ const UnitHrNOCDetailDialog = ({
                             <TableRow key={row.rowId || rowIndex}>
                               <TableCell className="font-medium">{rowIndex + 1}</TableCell>
                               {table.rows[0]?.inputs?.map((headerField, colIndex) => {
-                                // Find the corresponding value in this row
                                 const matchingInput = row.inputs?.find(
                                   (input) => input.fieldName === headerField.fieldName
                                 );
@@ -272,85 +309,56 @@ const UnitHrNOCDetailDialog = ({
               ))}
             </div>
           )}
+
+          {/* CGM Input Section */}
           {isEditable && (
             <div className="m-3 pb-4">
-              {nocData?.purposeId === 47 && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="flex flex-col">
-                    <Label>Date Of Joining</Label>
-                    <EnhancedDatePicker
-                      dateFormat="dd MMM yyyy"
-                      selectedDate={unitHrData.doj}
-                      onChange={(e) =>
-                        setUnitHrData((pre) => ({
-                          ...pre,
-                          doj: e,
-                        }))
-                      }
-                      className="mt-2"
-                    />
-                  </div>
-                  <div className="flex flex-col">
-                    <Label>Date Of Retairment</Label>
-                    <EnhancedDatePicker
-                      dateFormat="dd MMM yyyy"
-                      selectedDate={unitHrData?.dor}
-                      onChange={(e) =>
-                        setUnitHrData((pre) => ({
-                          ...pre,
-                          dor: e,
-                        }))
-                      }
-                      className="mt-2"
-                    />
-                  </div>
-                </div>
-              )}
-              {isEditable && (
-                <div>
-                  <Label>Enter Remarks</Label>
-                  <Textarea
-                    value={unitHrData?.remarks}
-                    onChange={(e) =>
-                      setUnitHrData((pre) => ({
-                        ...pre,
-                        remarks: e.target.value,
-                      }))
-                    }
-                    rows={4}
-                    placeholder="Enter remarks here..."
-                    className="mt-1"
-                  />
-                </div>
-              )}
+              <div>
+                <Label>Enter Remarks</Label>
+                <Textarea
+                  value={cgmData?.remarks || ''}
+                  onChange={(e) =>
+                    setcgmData((pre) => ({
+                      ...pre,
+                      remarks: e.target.value,
+                    }))
+                  }
+                  rows={4}
+                  placeholder="Enter remarks here..."
+                  className="mt-1"
+                />
+              </div>
             </div>
           )}
         </div>
-        <div className="flex justify-end">
+
+        {/* Action Buttons */}
+        <div className="flex justify-end space-x-2">
           {isEditable && (
             <>
               <Button
+                onClick={() => handleApproveClick(nocData?.refId, RequestStatus.UnderCorporateHR.value)}
                 className="bg-green-600 hover:bg-green-700"
-                onClick={() => handleApproveClick(nocData?.refId, RequestStatus.UnderCGM.value)}
               >
-                {AccecptButtonName}
+                {AccecptButtonName || 'Approve'}
               </Button>
               <Button
-                variant={'destructive'}
-                className="mx-4"
-                onClick={() => handleRejectClick(nocData?.refId, RequestStatus.RejectedByUnitHR.value)}
+                variant="destructive"
+                onClick={() => handleRejectClick(nocData?.refId, RequestStatus.RejectedByCGM.value)}
               >
-                {rejectButtonName}
+                {rejectButtonName || 'Reject'}
+              </Button>
+              <Button className="bg-yellow-500 hover:bg-yellow-600" onClick={() => handleRevertClick(nocData?.refId)}>
+                {revertButtonName}
               </Button>
             </>
           )}
-          <Button variant={'destructive'} onClick={() => onOpenChange(false)}>
-            Close
-          </Button>
+
+          <Button onClick={() => onOpenChange(false)}>Close</Button>
         </div>
       </DialogContent>
     </Dialog>
   );
 };
 
-export default UnitHrNOCDetailDialog;
+export default CgmNOCDetailDialog;

@@ -1,388 +1,234 @@
-import React from 'react';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import React, { useEffect, useState } from 'react';
+import { RefreshCw, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import {
-  Search,
-  FileText,
-  ExternalLink,
-  GraduationCap,
-  Briefcase,
-  X,
-  Download,
-  CheckCircle,
-  XCircle,
-  Clock,
-  Eye,
-} from 'lucide-react';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { format } from 'date-fns';
+import { statusConfig } from '@/lib/helperFunction';
 import { Badge } from '@/components/ui/badge';
-
-interface NocRequest {
-  employeeCode: string;
-  designation: string;
-  name: string;
-  purpose: string;
-  status: 'Approved' | 'Rejected' | 'Pending' | 'Under Review';
-  icon: React.ReactNode;
-  details: {
-    proofOfFund: string;
-    country: string;
-    purpose: string;
-    from: string;
-    to: string;
-    leaveType: string;
-    passportNumber: string;
-    validity: string;
-    estimatedExpenditure: string;
-    sourceOfFund: string;
-    foreignVisit: string;
-    basicPay: string;
-    iprDate: string;
-    iprFile: string;
-    unitHrRemarks: string;
-    pertainingToPresentUnit: string;
-    pertainingToPastUnit: string;
-  };
-}
+import toast from 'react-hot-toast';
+import axiosInstance from '@/services/axiosInstance';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/app/store';
+import TableList from '@/components/ui/data-table';
+import CgmNOCDetailDialog from '@/components/dialogs/CgmNOCDetailDialog';
+import Loader from '@/components/ui/loader';
 
 const ProcessedRequestByCgm = () => {
-  const [isDialogOpen, setIsDialogOpen] = React.useState(false);
-  const [selectedRequest, setSelectedRequest] = React.useState<NocRequest | null>(null);
-
-  // Sample data with status added
-  const requests: NocRequest[] = [
-    {
-      employeeCode: '101757',
-      designation: 'JR EXEC',
-      name: 'BASABA DALAI',
-      purpose: 'Tourism',
-      status: 'Approved',
-      icon: <Briefcase className="h-4 w-4" />,
-      details: {
-        proofOfFund: '1145_20241015_file2.pdf',
-        country: 'Japan',
-        purpose: 'Tourism',
-        from: '2024-10-31',
-        to: '2024-11-08',
-        leaveType: 'LAP',
-        passportNumber: '123456789',
-        validity: '2024-11-30',
-        estimatedExpenditure: '50000',
-        sourceOfFund: 'Self',
-        foreignVisit: 'test',
-        basicPay: '5000000',
-        iprDate: '10-Oct-2024',
-        iprFile: '1145_20241015_file2.pdf',
-        unitHrRemarks: 'bb',
-        pertainingToPresentUnit: 'bb',
-        pertainingToPastUnit: 'bb',
-      },
-    },
-    {
-      employeeCode: '101758',
-      designation: 'SR EXEC',
-      name: 'RAJESH KUMAR',
-      purpose: 'Business',
-      status: 'Rejected',
-      icon: <Briefcase className="h-4 w-4" />,
-      details: {
-        proofOfFund: '1146_20241015_file2.pdf',
-        country: 'Singapore',
-        purpose: 'Business',
-        from: '2024-11-01',
-        to: '2024-11-10',
-        leaveType: 'CL',
-        passportNumber: '987654321',
-        validity: '2024-12-30',
-        estimatedExpenditure: '75000',
-        sourceOfFund: 'Company',
-        foreignVisit: 'Conference',
-        basicPay: '6000000',
-        iprDate: '12-Oct-2024',
-        iprFile: '1146_20241015_file2.pdf',
-        unitHrRemarks: 'Approved by unit',
-        pertainingToPresentUnit: 'Yes',
-        pertainingToPastUnit: 'No',
-      },
-    },
-    {
-      employeeCode: '101759',
-      designation: 'MANAGER',
-      name: 'PRIYA SHARMA',
-      purpose: 'Education',
-      status: 'Under Review',
-      icon: <GraduationCap className="h-4 w-4" />,
-      details: {
-        proofOfFund: '1147_20241015_file2.pdf',
-        country: 'USA',
-        purpose: 'Education',
-        from: '2024-12-01',
-        to: '2024-12-15',
-        leaveType: 'Study Leave',
-        passportNumber: '456789123',
-        validity: '2025-01-30',
-        estimatedExpenditure: '150000',
-        sourceOfFund: 'Self',
-        foreignVisit: 'Training Program',
-        basicPay: '8000000',
-        iprDate: '15-Oct-2024',
-        iprFile: '1147_20241015_file2.pdf',
-        unitHrRemarks: 'Pending review',
-        pertainingToPresentUnit: 'Yes',
-        pertainingToPastUnit: 'Yes',
-      },
-    },
-    {
-      employeeCode: '101760',
-      designation: 'ASST MANAGER',
-      name: 'AMIT SINGH',
-      purpose: 'Tourism',
-      status: 'Pending',
-      icon: <Briefcase className="h-4 w-4" />,
-      details: {
-        proofOfFund: '1148_20241015_file2.pdf',
-        country: 'Thailand',
-        purpose: 'Tourism',
-        from: '2024-11-15',
-        to: '2024-11-25',
-        leaveType: 'LAP',
-        passportNumber: '789123456',
-        validity: '2025-02-28',
-        estimatedExpenditure: '40000',
-        sourceOfFund: 'Self',
-        foreignVisit: 'Vacation',
-        basicPay: '4500000',
-        iprDate: '18-Oct-2024',
-        iprFile: '1148_20241015_file2.pdf',
-        unitHrRemarks: 'Under process',
-        pertainingToPresentUnit: 'Yes',
-        pertainingToPastUnit: 'No',
-      },
-    },
-    {
-      employeeCode: '101761',
-      designation: 'DGM',
-      name: 'SUNITA VERMA',
-      purpose: 'Business',
-      status: 'Approved',
-      icon: <Briefcase className="h-4 w-4" />,
-      details: {
-        proofOfFund: '1149_20241015_file2.pdf',
-        country: 'Germany',
-        purpose: 'Business',
-        from: '2024-12-05',
-        to: '2024-12-20',
-        leaveType: 'Official',
-        passportNumber: '321654987',
-        validity: '2025-03-15',
-        estimatedExpenditure: '100000',
-        sourceOfFund: 'Company',
-        foreignVisit: 'Business Meeting',
-        basicPay: '12000000',
-        iprDate: '20-Oct-2024',
-        iprFile: '1149_20241015_file2.pdf',
-        unitHrRemarks: 'Approved',
-        pertainingToPresentUnit: 'Yes',
-        pertainingToPastUnit: 'Yes',
-      },
-    },
-  ];
-
-  const handleRowClick = (request: NocRequest) => {
-    setSelectedRequest(request);
-    setIsDialogOpen(true);
-  };
-
-  const handleFileClick = (fileName: string) => {
-    // Implement file download logic here
-    console.log('Downloading file:', fileName);
-  };
-
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'Approved':
-        return (
-          <Badge className="bg-green-100 text-green-800 hover:bg-green-200">
-            <CheckCircle className="h-3 w-3 mr-1" />
-            Approved
-          </Badge>
-        );
-      case 'Rejected':
-        return (
-          <Badge className="bg-red-100 text-red-800 hover:bg-red-200">
-            <XCircle className="h-3 w-3 mr-1" />
-            Rejected
-          </Badge>
-        );
-      case 'Pending':
-        return (
-          <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-200">
-            <Clock className="h-3 w-3 mr-1" />
-            Pending
-          </Badge>
-        );
-      case 'Under Review':
-        return (
-          <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200">
-            <Clock className="h-3 w-3 mr-1" />
-            Under Review
-          </Badge>
-        );
-      default:
-        return <Badge variant="secondary">{status}</Badge>;
+  const userRoles = useSelector((state: RootState) => state.user.Roles);
+  const user = useSelector((state: RootState) => state.user);
+  const [isLoading, setIsLoading] = useState(false);
+  const [selectedUnit, setSelectedUnit] = useState<string>('');
+  const [requests, setRequests] = useState([]);
+  const [selectedRequest, setSelectedRequest] = useState(null);
+  const [isOpen, setIsOpen] = React.useState(false);
+  const [cgmData, setcgmData] = useState({
+    remarks: '',
+    dor: '',
+    doj: '',
+  });
+  const getAllRequests = async (unitId: any) => {
+    try {
+      setIsLoading(true);
+      const response = await axiosInstance.get(`/CGM/NOC/Report?UnitId=${unitId}&RequestStatus=0`);
+      if (response.data.success) {
+        setRequests(response.data.data);
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setIsLoading(false);
     }
   };
+  const handleUnitSelection = (unitId: string) => {
+    setSelectedUnit(unitId);
+    getAllRequests(unitId);
+  };
+  useEffect(() => {
+    if (userRoles?.length > 0) {
+      const firstRole = userRoles[0];
+      if (firstRole.unitsAssigned?.length > 0) {
+        const firstUnit = firstRole?.unitsAssigned[0];
+        const unitIdString = firstUnit?.unitId?.toString();
+        setSelectedUnit(unitIdString);
+        getAllRequests(firstUnit.unitId);
+      }
+    }
+  }, [userRoles]); // optionally, you may want to depend on userRoles
 
+  const handleApproveClick = async (nocId: number, status) => {
+    try {
+      setIsLoading(true);
+      const response = await axiosInstance.put('/UnitHR/NOC', {
+        refId: nocId,
+        status: status,
+        remarks: cgmData.remarks,
+        cgmUnitId: 0,
+        cgmAutoId: 0,
+      });
+      if (response.data.success) {
+        setIsOpen(false);
+        getAllRequests(selectedUnit);
+        toast.success('Request approved successfully');
+      }
+    } catch (error) {
+      console.error('Error approving NOC:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  console.log(selectedRequest, 'selectedRequest');
+  const getStatusBadge = (status) => {
+    if (!status) {
+      return;
+    }
+    const config = statusConfig(status);
+    const IconComponent = config?.icon;
+    return (
+      <Badge className={`${config?.color} hover:bg-none text-center items-center space-x-1 px-2 py-1`}>
+        <IconComponent className="h-3 w-3" />
+        <span>{config?.label}</span>
+      </Badge>
+    );
+  };
+  const columns = [
+    {
+      accessorKey: 'refId',
+      header: 'Reference ID',
+      cell: ({ row }) => <div>{`${row.original.refId ? 'NOC-' + row.original.refId : 'NA'}`}</div>,
+    },
+    {
+      accessorKey: 'employeeCode',
+      header: 'Employee Code',
+      cell: ({ row }) => <div>{row?.original?.employeeCode}</div>,
+    },
+    {
+      accessorKey: 'username',
+      header: 'Employee Name',
+      cell: ({ row }) => (
+        <div className=" w-[140px] truncate" title={row.original.username}>
+          {row.original.username}
+        </div>
+      ),
+    },
+    {
+      accessorKey: 'initiationDate',
+      header: 'Date',
+      cell: ({ row }) => (
+        <div className="flex items-center w-[90px]">
+          {row.original.initiationDate ? format(new Date(row.original.initiationDate), 'dd MMM yyyy') : '-'}
+        </div>
+      ),
+    },
+    {
+      accessorKey: 'purposeName',
+      header: 'Purpose',
+      cell: ({ row }) => <div>{row.original.purposeName}</div>,
+    },
+
+    {
+      accessorKey: 'post',
+      header: 'Designation',
+      cell: ({ row }) => <div>{row?.original?.post ? row?.original?.post : 'NA'}</div>,
+    },
+    {
+      accessorKey: 'department',
+      header: 'Department',
+      cell: ({ row }) => <div>{row.original.department}</div>,
+    },
+
+    {
+      accessorKey: 'currentStatus',
+      header: 'Status',
+      cell: ({ row }) => <div>{row.original.currentStatus && getStatusBadge(row.original.currentStatus)}</div>,
+    },
+    {
+      accessorKey: 'Action',
+      header: 'Action',
+      cell: ({ row }) => (
+        <Button
+          onClick={() => {
+            setSelectedRequest(row.original);
+
+            setIsOpen(true);
+          }}
+        >
+          <Eye />
+        </Button>
+      ),
+    },
+  ];
+  if (isLoading) {
+    return <Loader />;
+  }
   return (
-    <div className="container mx-auto py-6">
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-2xl font-bold">Processed Requests</CardTitle>
-          <div className="flex items-center justify-between mt-4">
-            <div className="flex items-center space-x-2">
-              <Select defaultValue="10">
-                <SelectTrigger className="w-[100px]">
-                  <SelectValue placeholder="Show" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="10">10 entries</SelectItem>
-                  <SelectItem value="25">25 entries</SelectItem>
-                  <SelectItem value="50">50 entries</SelectItem>
-                  <SelectItem value="100">100 entries</SelectItem>
-                </SelectContent>
-              </Select>
-              <span className="text-sm text-gray-500">entries</span>
-            </div>
-            <div className="relative">
-              <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
-              <Input placeholder="Search..." className="pl-8 w-[250px]" />
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="border rounded-md">
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-blue-600">
-                  <TableHead className="text-white">Employee Code</TableHead>
-                  <TableHead className="text-white">Designation</TableHead>
-                  <TableHead className="text-white">Name</TableHead>
-                  <TableHead className="text-white">Purpose</TableHead>
-                  <TableHead className="text-white">Status</TableHead>
-                  <TableHead className="text-white">Action</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {requests.map((request, index) => (
-                  <TableRow key={index} className="cursor-pointer hover:bg-gray-100">
-                    <TableCell>{request.employeeCode}</TableCell>
-                    <TableCell>{request.designation}</TableCell>
-                    <TableCell>{request.name}</TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        {request.icon}
-                        {request.purpose}
-                      </div>
-                    </TableCell>
-                    <TableCell>{request.status}</TableCell>
-                    <TableCell>
-                      <Button onClick={() => handleRowClick(request)}>
-                        <Eye />
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-          <div className="flex items-center justify-between mt-4">
-            <div className="text-sm text-gray-500">
-              Showing 1 to {requests.length} of {requests.length} entries
-            </div>
-            <div className="flex items-center space-x-2">
-              <Button variant="outline" size="sm" disabled>
-                Previous
-              </Button>
-              <Button variant="outline" size="sm" className="bg-blue-600 text-white hover:bg-blue-700">
-                1
-              </Button>
-              <Button variant="outline" size="sm" disabled>
-                Next
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+    <div className=" p-6">
+      <div className="w-full mx-auto">
+        <h1 className="font text-3xl mb-3">Pending Requests </h1>
+        <div className="space-y-4">
+          <TableList
+            data={requests.sort((a, b) => {
+              const dateA = a?.initiationDate ? new Date(a.initiationDate).getTime() : 0;
+              const dateB = b?.initiationDate ? new Date(b.initiationDate).getTime() : 0;
+              return dateB - dateA;
+            })}
+            columns={columns}
+            rightElements={
+              <>
+                <div className="flex rounded-xl">
+                  {/* <div className="flex space-y-2">
+                    <Select value={selectedUnit} onValueChange={handleUnitSelection}>
+                      <SelectTrigger id="unit-select" className="w-[200px]">
+                        <SelectValue placeholder="Choose a unit" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {userRoles
+                          ?.flatMap((role) => role.unitsAssigned || [])
+                          .map((unit) => (
+                            <SelectItem key={unit.unitId} value={unit.unitId.toString()}>
+                              {unit.unitName}
+                            </SelectItem>
+                          ))}
+                      </SelectContent>
+                    </Select>
+                  </div> */}
+                  <div className="flex space-y-2 mx-0 md:mx-2 mr-2">
+                    <Select value={selectedUnit} onValueChange={handleUnitSelection}>
+                      <SelectTrigger id="unit-select" className="w-[200px]">
+                        <SelectValue placeholder="Choose a unit" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {userRoles
+                          ?.flatMap((role) => role.unitsAssigned || [])
+                          .map((unit) => (
+                            <SelectItem key={unit.unitId} value={unit.unitId.toString()}>
+                              {unit.unitName}
+                            </SelectItem>
+                          ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-      {/* Dialog for showing request details */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-4xl max-h-[80vh]">
-          <DialogHeader>
-            <DialogTitle className="flex items-center justify-between">Request Details</DialogTitle>
-          </DialogHeader>
-          {selectedRequest && (
-            <ScrollArea className="max-h-[60vh]">
-              <div className="space-y-4 p-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label className="font-semibold">Employee Code</Label>
-                    <p>{selectedRequest.employeeCode}</p>
-                  </div>
-                  <div>
-                    <Label className="font-semibold">Name</Label>
-                    <p>{selectedRequest.name}</p>
-                  </div>
-                  <div>
-                    <Label className="font-semibold">Designation</Label>
-                    <p>{selectedRequest.designation}</p>
-                  </div>
-                  <div>
-                    <Label className="font-semibold">Status</Label>
-                    <div className="mt-1">{selectedRequest.status}</div>
-                  </div>
-                  <div>
-                    <Label className="font-semibold">Country</Label>
-                    <p>{selectedRequest.details.country}</p>
-                  </div>
-                  <div>
-                    <Label className="font-semibold">Purpose</Label>
-                    <p>{selectedRequest.details.purpose}</p>
-                  </div>
-                  <div>
-                    <Label className="font-semibold">From Date</Label>
-                    <p>{selectedRequest.details.from}</p>
-                  </div>
-                  <div>
-                    <Label className="font-semibold">To Date</Label>
-                    <p>{selectedRequest.details.to}</p>
-                  </div>
-                  <div>
-                    <Label className="font-semibold">Leave Type</Label>
-                    <p>{selectedRequest.details.leaveType}</p>
-                  </div>
-                  <div>
-                    <Label className="font-semibold">Passport Number</Label>
-                    <p>{selectedRequest.details.passportNumber}</p>
-                  </div>
-                  <div>
-                    <Label className="font-semibold">Estimated Expenditure</Label>
-                    <p>₹{selectedRequest.details.estimatedExpenditure}</p>
-                  </div>
-                  <div>
-                    <Label className="font-semibold">Source of Fund</Label>
-                    <p>{selectedRequest.details.sourceOfFund}</p>
-                  </div>
+                  <Button variant="outline" onClick={() => getAllRequests(selectedUnit)} className=" space-x-2">
+                    <RefreshCw className="h-4 w-4" />
+                  </Button>
                 </div>
-              </div>
-            </ScrollArea>
-          )}
-        </DialogContent>
-      </Dialog>
+              </>
+            }
+            showFilter={false}
+          />
+        </div>
+        <CgmNOCDetailDialog
+          setcgmData={setcgmData}
+          handleApproveClick={handleApproveClick}
+          handleRejectClick={handleApproveClick}
+          cgmData={cgmData}
+          isOpen={isOpen}
+          onOpenChange={setIsOpen}
+          nocData={selectedRequest}
+          AccecptButtonName={'Forward to Corporate HR'}
+          rejectButtonName={'Reject'}
+        />
+      </div>
     </div>
   );
 };

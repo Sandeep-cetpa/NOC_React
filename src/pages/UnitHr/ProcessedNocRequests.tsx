@@ -11,6 +11,7 @@ import TableList from '@/components/ui/data-table';
 import { format } from 'date-fns';
 import { statusConfig } from '@/lib/helperFunction';
 import { Badge } from '@/components/ui/badge';
+import UnitHrNOCDetailDialog from '@/components/dialogs/UnitHrNOCDetailDialog';
 const ProcessedNocRequests = () => {
   const userRoles = useSelector((state: RootState) => state.user.Roles);
   const [isLoading, setIsloading] = useState(true);
@@ -171,7 +172,16 @@ const ProcessedNocRequests = () => {
             showFilter={false}
           />
         </div>
-        <RequestDetailsDialog open={open} setOpen={setOpen} request={selectedRequest} />
+        <UnitHrNOCDetailDialog
+          setUnitHrData={{}}
+          AccecptButtonName={'Forward to CGM'}
+          rejectButtonName={'Reject'}
+          nocData={selectedRequest}
+          isOpen={open}
+          onOpenChange={setOpen}
+          isEditable={false}
+        />
+        {/* <RequestDetailsDialog open={open} setOpen={setOpen} request={selectedRequest} /> */}
       </div>
     </div>
   );

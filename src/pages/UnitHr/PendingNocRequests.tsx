@@ -12,7 +12,6 @@ import toast from 'react-hot-toast';
 import { statusConfig } from '@/lib/helperFunction';
 import { format } from 'date-fns';
 import TableList from '@/components/ui/data-table';
-
 const PendingNocRequests = () => {
   const userRoles = useSelector((state: RootState) => state.user.Roles);
   const user = useSelector((state: RootState) => state.user);
@@ -24,8 +23,7 @@ const PendingNocRequests = () => {
     doj: '',
   });
   const [selectedNoc, setSelectedNoc] = useState(null);
-  const assiedUnits = userRoles?.find((ele) => ele.roleId === 3);
-  const [selectedUnit, setSelectedUnit] = useState<string>(assiedUnits?.unitsAssigned?.[0]?.unitId?.toString() || '');
+  const [selectedUnit, setSelectedUnit] = useState<string>('');
   const [requests, setRequests] = useState([]);
   const getAllRequests = async (unitId) => {
     try {
@@ -45,19 +43,22 @@ const PendingNocRequests = () => {
     getAllRequests(unitId);
   };
   useEffect(() => {
-    if (assiedUnits?.unitsAssigned?.length > 0) {
-      const firstUnit = assiedUnits.unitsAssigned[0];
-      const unitIdString = firstUnit.unitId.toString();
-      setSelectedUnit(unitIdString);
-      getAllRequests(firstUnit.unitId);
+    if (userRoles?.length > 0) {
+      const firstRole = userRoles[0];
+      if (firstRole.unitsAssigned?.length > 0) {
+        const firstUnit = firstRole.unitsAssigned[0];
+        const unitIdString = firstUnit.unitId.toString();
+        setSelectedUnit(unitIdString);
+        getAllRequests(firstUnit.unitId);
+      }
     }
-  }, []);
+  }, [userRoles]); // optionally, you may want to depend on userRoles
 
-  const handleApproveClick = async (nocId: number) => {
+  const handleApproveClick = async (nocId: number, status) => {
     try {
       const response = await axiosInstance.put('/UnitHR/NOC', {
         refId: nocId,
-        status: 0,
+        status: status,
         presentUnit: 'string',
         pastPosition: 'string',
         remarks: unitHrData?.remarks,
@@ -190,11 +191,13 @@ const PendingNocRequests = () => {
                           <SelectValue placeholder="Choose a unit" />
                         </SelectTrigger>
                         <SelectContent>
-                          {assiedUnits?.unitsAssigned?.map((unit) => (
-                            <SelectItem key={unit.unitId} value={unit.unitId.toString()}>
-                              {unit?.unitName}
-                            </SelectItem>
-                          ))}
+                          {userRoles
+                            ?.flatMap((role) => role.unitsAssigned || [])
+                            .map((unit) => (
+                              <SelectItem key={unit.unitId} value={unit.unitId.toString()}>
+                                {unit.unitName}
+                              </SelectItem>
+                            ))}
                         </SelectContent>
                       </Select>
                     </div>
@@ -208,14 +211,17 @@ const PendingNocRequests = () => {
               showFilter={false}
             />
           </>
-
           <UnitHrNOCDetailDialog
             setUnitHrData={setUnitHrData}
+            AccecptButtonName={'Forward to CGM'}
+            rejectButtonName={'Reject'}
+            handleRejectClick={handleApproveClick}
             handleApproveClick={handleApproveClick}
             unitHrData={unitHrData}
             nocData={selectedNoc}
             isOpen={isOpen}
             onOpenChange={setIsOpen}
+            isEditable={true}
           />
         </div>
       </div>

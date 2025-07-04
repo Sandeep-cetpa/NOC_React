@@ -1,529 +1,145 @@
-import React, { useState } from 'react';
-import { Search, RefreshCw, ArrowUpDown, ChevronLeft, ChevronRight, Eye, ArrowRight, Send } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { RefreshCw, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { format } from 'date-fns';
+import axiosInstance from '@/services/axiosInstance';
+import { Badge } from '@/components/ui/badge';
+import { statusConfig } from '@/lib/helperFunction';
+import Loader from '@/components/ui/loader';
+import TableList from '@/components/ui/data-table';
 
 const RequestUnderProcess = () => {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
-  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
-
-  const nocData = [
-    {
-      id: 1,
-      referenceId: '001044',
-      positionGrade: 'NS',
-      currentStatus: 'Under Process',
-      employeeId: '100649',
-      designation: 'Junior',
-      location: 'Mumbai(N)',
-      emp_purpose: 'External Employment',
-      emp_name: 'Kamlesh Kumar',
-      date: '2025-03-03',
-      department: 'Electrical',
-    },
-    {
-      id: 2,
-      referenceId: '001055',
-      positionGrade: 'E1',
-      currentStatus: 'Under Process',
-      employeeId: '100650',
-      designation: 'Sr Exec',
-      location: 'Corporate Office',
-      date: '2025-03-03',
-      emp_purpose: 'passport',
-      emp_name: 'Deependra Kumar Maurya',
-      department: 'Transport Authority',
-    },
-    {
-      id: 3,
-      referenceId: '001056',
-      positionGrade: 'NS',
-      currentStatus: 'Under Process',
-      employeeId: '100651',
-      designation: 'GM',
-      location: 'Corporate Office',
-      date: '2025-03-03',
-      emp_purpose: 'passport',
-      emp_name: 'Amit Kumar',
-      department: 'Municipal Corporation',
-    },
-    {
-      id: 4,
-      referenceId: '001063',
-      positionGrade: 'NS',
-      currentStatus: 'Under Process',
-      employeeId: '100652',
-      designation: 'GM',
-      location: 'Corporate Office',
-      date: '2025-03-03',
-      emp_purpose: 'passport',
-      emp_name: 'Amit Kumar',
-      department: 'Education Department',
-    },
-    {
-      id: 5,
-      referenceId: '001072',
-      positionGrade: 'NS',
-      currentStatus: 'Under Process',
-      employeeId: '100653',
-      designation: 'GM',
-      location: 'Corporate Office',
-      date: '2025-03-03',
-      emp_purpose: 'passport',
-      emp_name: 'Amit Kumar',
-      department: 'Industrial Development',
-    },
-    {
-      id: 6,
-      referenceId: '001085',
-      positionGrade: 'NS',
-      currentStatus: 'Under Process',
-      employeeId: '100654',
-      designation: 'GM',
-      location: 'Corporate Office',
-      date: '2025-03-03',
-      emp_purpose: 'passport',
-      emp_name: 'Amit Kumar',
-      department: 'Parks & Recreation',
-    },
-    {
-      id: 7,
-      referenceId: '001132',
-      positionGrade: 'NS',
-      currentStatus: 'Under Process',
-      employeeId: '100655',
-      designation: 'GM',
-      location: 'Corporate Office',
-      date: '2025-03-03',
-      emp_purpose: 'passport',
-      emp_name: 'Amit Kumar',
-      department: 'Health Department',
-    },
-    {
-      id: 8,
-      referenceId: '001136',
-      positionGrade: 'NS',
-      currentStatus: 'Under Process',
-      employeeId: '100656',
-      designation: 'GM',
-      location: 'Corporate Office',
-      date: '2025-03-03',
-      emp_purpose: 'passport',
-      emp_name: 'Amit Kumar',
-      department: 'Urban Development',
-    },
-    {
-      id: 9,
-      referenceId: '001148',
-      positionGrade: 'NS',
-      currentStatus: 'Under Process',
-      employeeId: '100657',
-      designation: 'GM',
-      location: 'Corporate Office',
-      date: '2025-03-03',
-      emp_purpose: 'passport',
-      emp_name: 'Amit Kumar',
-      department: 'Municipal Corporation',
-    },
-    {
-      id: 10,
-      referenceId: '001151',
-      positionGrade: 'NS',
-      currentStatus: 'Under Process',
-      employeeId: '100658',
-      designation: 'GM',
-      location: 'Corporate Office',
-      date: '2025-03-03',
-      emp_purpose: 'passport',
-      emp_name: 'Amit Kumar',
-      department: 'Water Authority',
-    },
-    {
-      id: 11,
-      referenceId: '001152',
-      positionGrade: 'NS',
-      currentStatus: 'Under Process',
-      employeeId: '100659',
-      designation: 'GM',
-      location: 'Corporate Office',
-      date: '2025-03-03',
-      emp_purpose: 'passport',
-      emp_name: 'Amit Kumar',
-      department: 'Public Works',
-    },
-    {
-      id: 12,
-      referenceId: '001153',
-      positionGrade: 'NS',
-      currentStatus: 'Under Process',
-      employeeId: '100660',
-      designation: 'GM',
-      location: 'Corporate Office',
-      date: '2025-03-03',
-      emp_purpose: 'passport',
-      emp_name: 'Amit Kumar',
-      department: 'Telecom Authority',
-    },
-  ];
-
-  const filteredData = nocData.filter((item) => {
-    const matchesSearch =
-      item.employeeId.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.emp_purpose.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.designation.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.department.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.emp_name.toLowerCase().includes(searchQuery.toLowerCase());
-
-    const matchesStatus = statusFilter === 'all';
-
-    return matchesSearch && matchesStatus;
-  });
-
-  // Sorting logic
-  const sortedData = [...filteredData].sort((a, b) => {
-    if (!sortConfig.key) return 0;
-
-    const aVal = a[sortConfig.key];
-    const bVal = b[sortConfig.key];
-
-    if (sortConfig.direction === 'asc') {
-      return aVal > bVal ? 1 : -1;
-    } else {
-      return aVal < bVal ? 1 : -1;
+  const [activetab, setActiveTab] = useState('corporate');
+  const [request, setRequests] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [selectedUnit, setSelectedUnit] = useState(1);
+  const getRequestByUnitId = async (unitId, isUnit) => {
+    try {
+      setIsLoading(true);
+      const response = await axiosInstance.get(
+        `/CorporateHR/NOC/Report?UnitId=${"0"}&status=${"Parked"}`
+      );
+      if (response.data.success) {
+        setRequests(response.data.data);
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setIsLoading(false);
     }
-  });
-
-  // Pagination
-  const totalPages = Math.ceil(sortedData.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedData = sortedData.slice(startIndex, startIndex + itemsPerPage);
-
-  const handleSort = (key) => {
-    setSortConfig((prev) => ({
-      key,
-      direction: prev.key === key && prev.direction === 'asc' ? 'desc' : 'asc',
-    }));
   };
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [isOpen, setIsOpen] = React.useState(false);
-
-  const handleSubmit = () => {
-    // Perform form submission or data processing logic here
-
-    setIsOpen(false);
+  const getStatusBadge = (status) => {
+    if (!status) {
+      return;
+    }
+    const config = statusConfig(status);
+    const IconComponent = config?.icon;
+    return (
+      <Badge className={`${config?.color} hover:bg-none text-center items-center space-x-1 px-2 py-1`}>
+        <IconComponent className="h-3 w-3" />
+        <span>{config?.label}</span>
+      </Badge>
+    );
   };
+  useEffect(() => {
+    getRequestByUnitId(selectedUnit, activetab);
+  }, [activetab]);
+  const columns = [
+    {
+      accessorKey: 'refId',
+      header: 'Reference ID',
+      cell: ({ row }) => <div>{`${row.original.refId ? 'NOC-' + row.original.refId : 'NA'}`}</div>,
+    },
+    {
+      accessorKey: 'employeeCode',
+      header: 'Employee Code',
+      cell: ({ row }) => <div>{row?.original?.employeeCode}</div>,
+    },
+    {
+      accessorKey: 'username',
+      header: 'Employee Name',
+      cell: ({ row }) => (
+        <div className=" w-[140px] truncate" title={row.original.username}>
+          {row.original.username}
+        </div>
+      ),
+    },
+    {
+      accessorKey: 'initiationDate',
+      header: 'Date',
+      cell: ({ row }) => (
+        <div className="flex items-center w-[90px]">
+          {row.original.initiationDate ? format(new Date(row.original.initiationDate), 'dd MMM yyyy') : '-'}
+        </div>
+      ),
+    },
+    {
+      accessorKey: 'purposeName',
+      header: 'Purpose',
+      cell: ({ row }) => <div>{row.original.purposeName}</div>,
+    },
 
+    {
+      accessorKey: 'post',
+      header: 'Designation',
+      cell: ({ row }) => <div>{row?.original?.post ? row?.original?.post : 'NA'}</div>,
+    },
+    {
+      accessorKey: 'department',
+      header: 'Department',
+      cell: ({ row }) => <div>{row.original.department}</div>,
+    },
+
+    {
+      accessorKey: 'currentStatus',
+      header: 'Status',
+      cell: ({ row }) => <div>{row.original.currentStatus && getStatusBadge(row.original.currentStatus)}</div>,
+    },
+    {
+      accessorKey: 'Action',
+      header: 'Action',
+      cell: ({ row }) => (
+        <Button
+          onClick={() => {
+            setSelectedRequest(row.original);
+            setIsOpen(true);
+          }}
+        >
+          <Eye />
+        </Button>
+      ),
+    },
+  ];
+  if (isLoading) {
+    return <Loader />;
+  }
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-6">
-      <div >
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <span>Under Process Requests </span>
-            </CardTitle>
-          </CardHeader>
-          <div className="mb-2">
-            <div className="px-6 py-2 ">
-              <div className="flex flex-col   md:justify-between space-y-4 md:space-y-0 gap-4">
-                <div className="flex flex-col md:flex-row space-x-4 flex-1 bg-gray-200  p-2 rounded-xl">
-                  <Select>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select unit" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Corporate">Corporate</SelectItem>
-                      <SelectItem value="noida">Noida</SelectItem>
-                      <SelectItem value="gurugram">Gurugram</SelectItem>
-                      <SelectItem value="delhi">Delhi</SelectItem>
-                      <SelectItem value="mumbai">Mumbai</SelectItem>
-                      <SelectItem value="chennai">Chennai</SelectItem>
-                      <SelectItem value="kolkata">Kolkata</SelectItem>
-                      <SelectItem value="bengaluru">Bengaluru</SelectItem>
-                      <SelectItem value="hyderabad">Hyderabad</SelectItem>
-                      <SelectItem value="pune">Pune</SelectItem>
-                      <SelectItem value="jaipur">Jaipur</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <Select>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select Location" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="frontdesk">Front Desk</SelectItem>
-                      <SelectItem value="office">Office</SelectItem>
-                      <SelectItem value="other">Other</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <Select>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select Position Grade" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="NS">NS</SelectItem>
-                      <SelectItem value="E1">E1</SelectItem>
-                      <SelectItem value="E2">E2</SelectItem>
-                      <SelectItem value="E3">E3</SelectItem>
-                      <SelectItem value="E4">E4</SelectItem>
-                      <SelectItem value="E5">E5</SelectItem>
-                      <SelectItem value="E6">E6</SelectItem>
-                      <SelectItem value="E7">E7</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <Select>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select Department" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Department">Department</SelectItem>
-                      <SelectItem value="Location">Location</SelectItem>
-                      <SelectItem value="Purpose">Purpose</SelectItem>
-                      <SelectItem value="Employee Code">Employee Code</SelectItem>
-                      <SelectItem value="Employee Name">Employee Name</SelectItem>
-                      <SelectItem value="Designation">Designation</SelectItem>
-                      <SelectItem value="Date">Date</SelectItem>
-                      <SelectItem value="Time">Time</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <Select>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select Designation" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="GM">GM</SelectItem>
-                      <SelectItem value="HR">HR</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <Button variant="outline" className="flex items-center space-x-2">
-                    <RefreshCw className="h-4 w-4" />
-                  </Button>
-                </div>
-                <div className="flex  justify-between space-x-4">
-                  <div className="flex items-center space-x-2 text-sm text-gray-600">
-                    <span>
-                      Showing {startIndex + 1}-{Math.min(startIndex + itemsPerPage, filteredData.length)} of{' '}
-                      {filteredData.length}
-                    </span>
-                  </div>
-                  <div className="relative  max-w-md">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                    <Input
-                      placeholder="Search "
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-10 focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <CardContent>
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-16">
-                      <span className="text-white">SN.</span>
-                    </TableHead>
-                    <TableHead>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleSort('referenceId')}
-                        className="flex items-center space-x-1 p-0 h-auto font-semibold text-white"
-                      >
-                        <span>Reference Id</span>
-                        <ArrowUpDown className="h-3 w-3" />
-                      </Button>
-                    </TableHead>
-                    <TableHead>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleSort('employeeId')}
-                        className="flex items-center space-x-1 p-0 h-auto font-semibold text-white"
-                      >
-                        <span>Employee Code</span>
-                        <ArrowUpDown className="h-3 w-3" />
-                      </Button>
-                    </TableHead>
-                    <TableHead className=" text-white">Name/Department</TableHead>
-                    <TableHead className=" text-white">Disignation/Grade</TableHead>
-                    <TableHead className="text-white">Date</TableHead>
-                    <TableHead className="text-white">Unit</TableHead>
-                    <TableHead className="text-white">Status</TableHead>
-                    <TableHead className="text-white">Purpose</TableHead>
-                    <TableHead className="text-white">Action</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {paginatedData.map((noc, index) => (
-                    <TableRow key={noc.id} className="hover:bg-gray-50 transition-colors">
-                      <TableCell className="font-medium">{startIndex + index + 1}</TableCell>
-                      <TableCell>
-                        <div className="font-medium ">{noc.referenceId}</div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="font-medium ">{noc.employeeId}</div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center space-x-2">
-                          <div className="w-[130px]">
-                            <p className="w-[120px] truncate" title={noc.emp_name}>
-                              {' '}
-                              {noc.emp_name}
-                            </p>
-                            <p className="w-[120px] truncate" title={noc.department}>
-                              {' '}
-                              {noc.department}
-                            </p>
-                          </div>
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-sm text-gray-500 mt-1">
-                        <div className="w-[120px]" title={noc.designation}>
-                          <p className="w-[120px] truncate"> {noc.designation}</p>
-                          <p className="w-[120px] truncate"> {noc.positionGrade}</p>
-                        </div>
-                      </TableCell>
-
-                      <TableCell>
-                        <div className="text-sm text-gray-500 mt-1 w-[100px]">
-                          {format(new Date(noc.date), 'dd MMM yyyy')}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="text-sm text-gray-500 mt-1 w-[120px]">{noc.location}</div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="text-sm text-gray-500 mt-1 w-[120px]">{noc.currentStatus}</div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="text-sm text-blue-500 mt-1">{noc.emp_purpose}</div>
-                      </TableCell>
-                      <TableCell>
-                        <Button
-                          onClick={() => {
-                            setIsOpen(true);
-                            setSelectedRequest(noc);
-                          }}
-                        >
-                          <Eye />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="flex items-center justify-between mt-6">
-                <div className="text-sm text-gray-600">
-                  Page {currentPage} of {totalPages}
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                    disabled={currentPage === 1}
-                  >
-                    <ChevronLeft className="h-4 w-4" />
-                    Previous
-                  </Button>
-
-                  <div className="flex items-center space-x-1">
-                    {[...Array(Math.min(5, totalPages))].map((_, i) => {
-                      const pageNum = i + 1;
-                      return (
-                        <Button
-                          key={pageNum}
-                          variant={currentPage === pageNum ? 'default' : 'outline'}
-                          size="sm"
-                          onClick={() => setCurrentPage(pageNum)}
-                          className="w-8 h-8 p-0"
-                        >
-                          {pageNum}
-                        </Button>
-                      );
-                    })}
-                  </div>
-
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                    disabled={currentPage === totalPages}
-                  >
-                    Next
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-        <Dialog open={isOpen} onOpenChange={setIsOpen}>
-          {selectedRequest && (
-            <DialogContent className="w-[90%] md:max-w-3xl">
-              <DialogHeader>
-                <DialogTitle>Remarks</DialogTitle>
-              </DialogHeader>
-              <div className="grid gap-6 py-6 pt-0 h-full max-h-[calc(100vh-20rem)] overflow-y-scroll">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                  <div>
-                    <Label>Employee Id</Label>
-                    <p className="text-sm text-muted-foreground">{selectedRequest.employeeId}</p>
-                  </div>
-                  <div>
-                    <Label>Name</Label>
-                    <p className="text-sm text-muted-foreground">{selectedRequest.emp_name}</p>
-                  </div>
-                  <div>
-                    <Label>Designation</Label>
-                    <p className="text-sm text-muted-foreground">{selectedRequest.designation}</p>
-                  </div>
-                  <div>
-                    <Label>Location</Label>
-                    <p className="text-sm text-muted-foreground">{selectedRequest.location}</p>
-                  </div>
-                  <div>
-                    <Label>Purpose</Label>
-                    <p className="text-sm text-muted-foreground">{selectedRequest.emp_purpose}</p>
-                  </div>
-                  <div>
-                    <Label>Department</Label>
-                    <p className="text-sm text-muted-foreground">{selectedRequest.department}</p>
-                  </div>
-                </div>
-              </div>
-              <DialogFooter>
-                <Button variant="outline" onClick={() => setIsOpen(false)}>
-                  Get Tctl
-                </Button>
-                <Button className="mt-2 md:mt-0 mb-2" variant="outline" onClick={() => setIsOpen(false)}>
-                  <ArrowRight className="mr-2 h-4 w-4" />
-                  Revert Vigilance User
-                </Button>
-                <Button onClick={handleSubmit}>
-                  <Send className="mr-2 h-4 w-4" />
-                  Send To Corporate HR
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          )}
-        </Dialog>
+    <div className="p-6">
+      <div>
+        <h1 className="text-3xl my-4">Request Under Process</h1>
+        <div className="overflow-x-auto">
+          <TableList
+            data={request.sort((a, b) => {
+              const dateA = a?.initiationDate ? new Date(a.initiationDate).getTime() : 0;
+              const dateB = b?.initiationDate ? new Date(b.initiationDate).getTime() : 0;
+              return dateB - dateA;
+            })}
+            columns={columns}
+            rightElements={
+              <Button
+                variant="outline"
+                onClick={() => getRequestByUnitId(selectedUnit, activetab)}
+                className=" space-x-2 ml-3"
+              >
+                <RefreshCw className="h-4 w-4" />
+              </Button>
+            }
+            showFilter={false}
+          />
+        </div>
       </div>
     </div>
   );
