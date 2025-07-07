@@ -1,7 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router';
 import PrivateRoute from './PrivateRoute';
 import NotFound from '@/pages/notFound/NotFound';
-import Forms from '@/pages/admin/Forms';
 import AdminPrivateRoute from './AdminPrivateRoute';
 import ManageRoles from '@/pages/admin/ManageRoles';
 import CreateRequest from '@/pages/employee/CreateRequest';
@@ -38,11 +37,11 @@ import { useEffect } from 'react';
 import { useAuth } from 'react-oidc-context';
 import { useDispatch } from 'react-redux';
 import { fetchMasterData } from '@/features/masterData/masterSlice';
+import { AppDispatch } from '@/app/store';
 
 const AppRoutes = () => {
   const { isAuthenticated } = useAuth();
-  console.log(isAuthenticated);
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   useEffect(() => {
     if (isAuthenticated) {
       dispatch(fetchMasterData());

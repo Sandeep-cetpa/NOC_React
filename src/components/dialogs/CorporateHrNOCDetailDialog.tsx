@@ -10,15 +10,15 @@ import { Label } from '../ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { RequestStatus } from '@/constant/status';
 
-const CgmNOCDetailDialog = ({
+const CorporateHrNOCDetailDialog = ({
   nocData,
   isOpen,
   onOpenChange,
-  setcgmData,
+  setcorporateHrData,
   handleApproveClick,
   handleRejectClick,
   handleRevertClick,
-  cgmData,
+  corporateHrData,
   rejectButtonName,
   AccecptButtonName,
   revertButtonName,
@@ -151,14 +151,18 @@ const CgmNOCDetailDialog = ({
                     <span className="font-medium">Post:</span>
                     <span>{nocData.post}</span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="font-medium">DOB:</span>
-                    <span>{formatDate(nocData.dob)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="font-medium">DOR:</span>
-                    <span>{formatDate(nocData.dor)}</span>
-                  </div>
+                  {nocData.dob && (
+                    <div className="flex justify-between">
+                      <span className="font-medium">DOB:</span>
+                      <span>{formatDate(nocData.dob)}</span>
+                    </div>
+                  )}
+                  {nocData.dor && (
+                    <div className="flex justify-between">
+                      <span className="font-medium">DOR:</span>
+                      <span>{formatDate(nocData.dor)}</span>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </div>
@@ -262,7 +266,9 @@ const CgmNOCDetailDialog = ({
                             {table.rows[0]?.inputs?.map((field, index) => (
                               <TableHead key={index} className="font-semibold">
                                 <div className="space-y-1">
-                                  <div className='text-white'>{formatLabel ? formatLabel(field.fieldName) : field.fieldName}</div>
+                                  <div className="text-white">
+                                    {formatLabel ? formatLabel(field.fieldName) : field.fieldName}
+                                  </div>
                                 </div>
                               </TableHead>
                             ))}
@@ -316,11 +322,11 @@ const CgmNOCDetailDialog = ({
               <div>
                 <Label>Enter Remarks</Label>
                 <Textarea
-                  value={cgmData?.remarks || ''}
+                  value={corporateHrData?.remark || ''}
                   onChange={(e) =>
-                    setcgmData((pre) => ({
+                    setcorporateHrData((pre) => ({
                       ...pre,
-                      remarks: e.target.value,
+                      remark: e.target.value,
                     }))
                   }
                   rows={4}
@@ -337,18 +343,21 @@ const CgmNOCDetailDialog = ({
           {isEditable && (
             <>
               <Button
-                onClick={() => handleApproveClick(nocData?.refId, RequestStatus.UnderCorporateHR.value)}
+                onClick={() => handleApproveClick(nocData?.refId, RequestStatus.UnderDandAR.value)}
                 className="bg-green-600 hover:bg-green-700"
               >
                 {AccecptButtonName || 'Approve'}
               </Button>
               <Button
                 variant="destructive"
-                onClick={() => handleRejectClick(nocData?.refId, RequestStatus.RejectedByCGM.value)}
+                onClick={() => handleRejectClick(nocData?.refId, RequestStatus.RejectedByCorporateHR.value)}
               >
                 {rejectButtonName || 'Reject'}
               </Button>
-              <Button className="bg-yellow-500 hover:bg-yellow-600" onClick={() => handleRevertClick(nocData?.refId)}>
+              <Button
+                className="bg-yellow-500 hover:bg-yellow-600"
+                onClick={() => handleRevertClick(nocData?.refId, RequestStatus.ParkedFile)}
+              >
                 {revertButtonName}
               </Button>
             </>
@@ -361,4 +370,4 @@ const CgmNOCDetailDialog = ({
   );
 };
 
-export default CgmNOCDetailDialog;
+export default CorporateHrNOCDetailDialog;

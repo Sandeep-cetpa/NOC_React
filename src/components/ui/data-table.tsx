@@ -158,7 +158,7 @@ export default function TableList({
                   className="cursor-pointer hover:bg-gray-300 "
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className="p-3">
+                    <TableCell key={cell.id} className="p-1">
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}

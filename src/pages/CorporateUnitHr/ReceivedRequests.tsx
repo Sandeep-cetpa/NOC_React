@@ -10,11 +10,23 @@ import { statusConfig } from '@/lib/helperFunction';
 import { Badge } from '@/components/ui/badge';
 import TableList from '@/components/ui/data-table';
 import Loader from '@/components/ui/loader';
+import CorporateHrNOCDetailDialog from '@/components/dialogs/CorporateHrNOCDetailDialog';
+import toast from 'react-hot-toast';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/app/store';
 
 const ReceivedRequests = () => {
   const [activetab, setActiveTab] = useState('corporate');
   const [request, setRequests] = useState([]);
+  const user = useSelector((state: RootState) => state.user);
   const [isLoading, setIsLoading] = useState(false);
+  const [corporateHrRemarks, setCorporateHdRemarks] = useState({
+    remark: '',
+    // dob: '',
+    // dor: '',
+    // doe: '',
+  });
+  console.log(corporateHrRemarks);
   const [selectedUnit, setSelectedUnit] = useState(1);
   const getRequestByUnitId = async (unitId, isUnit) => {
     try {
@@ -49,6 +61,37 @@ const ReceivedRequests = () => {
   useEffect(() => {
     getRequestByUnitId(selectedUnit, activetab);
   }, [activetab]);
+  console.log(selectedRequest);
+  const handleApproveClick = async (nocId: any, status: any) => {
+    try {
+      const response = await axiosInstance.put('/CorporateHR/NOC', {
+        refId: nocId,
+        status: status,
+        remarks: corporateHrRemarks.remark,
+        updatedDob: corporateHrRemarks?.dob,
+        updatedDor: corporateHrRemarks?.dor,
+        updatedDoeis: corporateHrRemarks?.doe,
+        corpHRUnitId: selectedRequest.unitId,
+        corpHRAutoId: user.EmpID,
+      });
+      if (response.data?.success) {
+        toast.success('Request Approved Successfully');
+        setIsOpen(false);
+        setSelectedRequest(null);
+        setCorporateHdRemarks({
+          remark: '',
+        });
+        getRequestByUnitId(selectedUnit, activetab);
+      } else {
+        toast.error(response?.data?.message);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  const handleRejectClick = () => {};
+  const handleRevertClick = () => {};
+  const hanldeParkedClick = () => {};
   const columns = [
     {
       accessorKey: 'refId',
@@ -187,6 +230,20 @@ const ReceivedRequests = () => {
           </div>
         </TabsContent>
       </Tabs>
+      <CorporateHrNOCDetailDialog
+        isOpen={isOpen}
+        onOpenChange={setIsOpen}
+        nocData={selectedRequest}
+        handleApproveClick={handleApproveClick}
+        handleRejectClick={handleApproveClick}
+        handleRevertClick={handleApproveClick}
+        setcorporateHrData={setCorporateHdRemarks}
+        corporateHrData={corporateHrRemarks}
+        AccecptButtonName={'Forword To D & AR'}
+        rejectButtonName={'Reject Request'}
+        revertButtonName={'Get Trail'}
+        isEditable={true}
+      />
     </div>
   );
 };

@@ -90,12 +90,12 @@ export function AdminSidebar(props: React.ComponentProps<typeof Sidebar>) {
         // HrUser
         items.push(
           { title: 'Pending Requests', url: '/corporate-unit-hr-received-requests', icon: Inbox },
-          { title: 'Under Process', url: '/corporate-unit-hr-request-under-process', icon: Inbox },
+          { title: 'Under Process/Report', url: '/corporate-unit-hr-request-under-process', icon: Inbox },
           { title: 'Request From Vigilance', url: '/corporate-unit-hr-noc-requests-from-vigilance', icon: Inbox },
-          { title: 'Create NOC For Employee', url: '/corporate-unit-hr-request-for-employee', icon: Inbox },
-          { title: 'Rejected Requests', url: '/corporate-unit-hr-rejected-requests', icon: Inbox },
-          { title: 'Completed Requests', url: '/corporate-unit-hr-completed-requests', icon: Inbox },
-          { title: 'Parked Request', url: '/corporate-unit-hr-parked-requests', icon: Inbox }
+          { title: 'Create NOC For Employee', url: '/corporate-unit-hr-request-for-employee', icon: Inbox }
+          // { title: 'Rejected Requests', url: '/corporate-unit-hr-rejected-requests', icon: Inbox },
+          // { title: 'Completed Requests', url: '/corporate-unit-hr-completed-requests', icon: Inbox },
+          // { title: 'Parked Request', url: '/corporate-unit-hr-parked-requests', icon: Inbox }
         );
       }
       if (roleId === 6) {

@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/sidebar';
 import { NavLink } from 'react-router';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from './ui/collapsible';
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 
 export function NavMain({
   items,
@@ -22,19 +22,175 @@ export function NavMain({
     items?: any[];
   }[];
 }) {
-  const { setOpenMobile } = useSidebar();
+  const { setOpenMobile, state } = useSidebar();
   const [openIndex, setOpenIndex] = useState<number | null>(0);
-  const handleToggle = useCallback((index: number) => {
-    setOpenIndex((prevIndex) => (prevIndex === index ? null : index));
+  const [mobileDropdownOpen, setMobileDropdownOpen] = useState<number | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
+  
+  // Check if sidebar is collapsed
+  const isCollapsed = state === 'collapsed';
+  
+  // Detect mobile device
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
   }, []);
+  
+  const handleToggle = useCallback((index: number) => {
+    // Don't allow toggling when collapsed
+    if (isCollapsed) return;
+    setOpenIndex((prevIndex) => (prevIndex === index ? null : index));
+  }, [isCollapsed]);
+  
   const handleChildClick = useCallback(
     (parentIndex: number) => {
-      setOpenIndex(parentIndex);
+      if (!isCollapsed) {
+        setOpenIndex(parentIndex);
+      }
       setOpenMobile(false);
+      setMobileDropdownOpen(null); // Close mobile dropdown
     },
-    [setOpenMobile, openIndex]
+    [setOpenMobile, isCollapsed]
   );
 
+  const handleMobileDropdownToggle = useCallback((index: number) => {
+    setMobileDropdownOpen(prev => prev === index ? null : index);
+  }, []);
+
+  // Close mobile dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (mobileDropdownOpen !== null && !event.target?.closest?.('.mobile-dropdown-container')) {
+        setMobileDropdownOpen(null);
+      }
+    };
+
+    if (isMobile && mobileDropdownOpen !== null) {
+      document.addEventListener('click', handleClickOutside);
+      return () => document.removeEventListener('click', handleClickOutside);
+    }
+  }, [isMobile, mobileDropdownOpen]);
+
+  // Render collapsed version (icons only)
+  if (isCollapsed) {
+    return (
+      <SidebarGroup>
+        <SidebarMenu>
+          {items?.map((item, index) => {
+            const hasChildren = item?.items && item.items.length > 0;
+
+            // For items with children, show parent icon with dropdown
+            if (hasChildren) {
+              return (
+                <SidebarMenuItem key={index}>
+                  <div className="mobile-dropdown-container group/dropdown relative">
+                    <div 
+                      className="flex items-center justify-center w-12 h-10 mx-auto my-1 rounded-md hover:bg-gray-100 transition-colors cursor-pointer"
+                      title={item.title}
+                      onClick={() => isMobile ? handleMobileDropdownToggle(index) : undefined}
+                    >
+                      {item.icon && <item.icon className="w-5 h-5 text-gray-700" />}
+                    </div>
+                    
+                    {/* Dropdown Menu for Children */}
+                    <div className={`absolute left-full top-0 ml-2 z-[60] transition-all duration-200 ${
+                      isMobile 
+                        ? (mobileDropdownOpen === index ? 'opacity-100 visible' : 'opacity-0 invisible')
+                        : 'opacity-0 invisible group-hover/dropdown:opacity-100 group-hover/dropdown:visible'
+                    }`}>
+                      <div className="bg-white border border-gray-200 rounded-lg shadow-lg py-2 min-w-[200px] max-w-[250px]">
+                        {/* Parent Title */}
+                        <div className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase border-b border-gray-100">
+                          {item.title}
+                        </div>
+                        
+                        {/* Children Items */}
+                        <div className="py-1">
+                          {item.items.map((subItem) => (
+                            <NavLink 
+                              key={subItem.title}
+                              to={subItem.url} 
+                              onClick={() => handleChildClick(index)}
+                              className="block"
+                            >
+                              {({ isActive }) => (
+                                <div className={`flex items-center gap-3 px-3 py-2 text-sm transition-colors hover:bg-gray-100 cursor-pointer ${
+                                  isActive ? 'bg-primary text-white hover:bg-primary/90' : 'text-gray-700 hover:text-gray-900'
+                                }`}>
+                                  {subItem.icon && <subItem.icon className="w-4 h-4 flex-shrink-0" />}
+                                  <span className="truncate">{subItem.title}</span>
+                                </div>
+                              )}
+                            </NavLink>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </SidebarMenuItem>
+              );
+            }
+
+            // For items without children
+            const isNavigatable = item.url && item.url !== '#' && item.url !== '';
+            if (isNavigatable) {
+              return (
+                <SidebarMenuItem key={index}>
+                  <NavLink to={item.url} onClick={() => setOpenMobile(false)}>
+                    {({ isActive }) => (
+                      <div 
+                        className={`flex items-center justify-center w-12 h-10 mx-auto my-1 rounded-md transition-colors cursor-pointer group relative ${
+                          isActive
+                            ? 'bg-primary text-white'
+                            : 'text-gray-700 hover:bg-gray-100'
+                        }`}
+                        title={item.title}
+                      >
+                        {item.icon && <item.icon className="w-5 h-5" />}
+                        
+                        {/* Tooltip (only show on desktop when not mobile dropdown) */}
+                        {!isMobile && (
+                          <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
+                            {item.title}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </NavLink>
+                </SidebarMenuItem>
+              );
+            } else {
+              // Non-navigatable item
+              return (
+                <SidebarMenuItem key={index}>
+                  <div 
+                    className="flex items-center justify-center w-12 h-10 mx-auto my-1 rounded-md text-gray-400 cursor-default group relative"
+                    title={item.title}
+                  >
+                    {item.icon && <item.icon className="w-5 h-5" />}
+                    
+                    {/* Tooltip (only show on desktop) */}
+                    {!isMobile && (
+                      <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
+                        {item.title}
+                      </div>
+                    )}
+                  </div>
+                </SidebarMenuItem>
+              );
+            }
+          })}
+        </SidebarMenu>
+      </SidebarGroup>
+    );
+  }
+
+  // Render expanded version (original layout)
   return (
     <SidebarGroup>
       <SidebarMenu>

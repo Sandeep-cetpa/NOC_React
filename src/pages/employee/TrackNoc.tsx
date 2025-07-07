@@ -20,6 +20,8 @@ const TrackNoc = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [nocData, setNocData] = useState([]);
+  const masterData = useSelector((state:RootState)=>state.masterData.data)
+  console.log(masterData,"masterData")
   const getAllUserNoc = async (userId) => {
     try {
       setIsLoading(true);
