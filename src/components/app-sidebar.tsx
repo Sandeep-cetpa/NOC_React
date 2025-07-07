@@ -115,7 +115,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
     }
   }, [applications]);
   return (
-    <Sidebar collapsible="icon" {...props} className="">
+    <Sidebar collapsible="icon" {...props} className={state === 'collapsed' ? 'sidebar-collapsed' : ''}>
       <div className="flex justify-end md:pt-[90px] ">
         {state === 'collapsed' ? (
           <ChevronsRight onClick={toggleSidebar} className="w-8 h-8 cursor-pointer" />

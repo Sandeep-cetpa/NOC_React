@@ -48,21 +48,25 @@ export function AdminSidebar(props: React.ComponentProps<typeof Sidebar>) {
     navMain: userRoles.map((role) => {
       const { roleName, roleId } = role;
       const assinedUnit = userRoles?.find((ele) => ele?.roleId === 3)?.unitsAssigned;
-      console.log(assinedUnit, 'assined unit');
       const items = [];
+
+      // Assign appropriate icons for each role type
+      let roleIcon = Inbox; // Default icon
 
       if (roleId === 4) {
         // VigilanceAdmin
+        roleIcon = Shield;
         items.push(
           { title: 'Employee Mapping', url: '/vigilance-admin-role-management', icon: UserCheck },
           { title: 'Manage Grey List', url: '/vigilance-admin-manage-grey-list', icon: AlertTriangle },
           { title: 'Request Received', url: '/vigilance-admin-request-received', icon: Inbox },
-          { title: 'Processed Request', url: '/vigilance-admin-processed-request', icon: Shield }
+          { title: 'Processed Request', url: '/vigilance-admin-processed-request', icon: CheckCircle }
         );
       }
 
       if (roleId === 7) {
         // DandAR
+        roleIcon = Clock;
         items.push(
           { title: 'Pending Requests', url: '/d-and-ar-pending-requests', icon: Clock },
           { title: 'Processed Requests', url: '/d-and-ar-processed-requests', icon: CheckCircle }
@@ -71,6 +75,7 @@ export function AdminSidebar(props: React.ComponentProps<typeof Sidebar>) {
 
       if (roleId === 9) {
         // GM
+        roleIcon = UserCheck;
         items.push(
           { title: 'Request Received', url: '/gm-request-received', icon: Inbox },
           { title: 'Processed Requests', url: '/gm-processed-requests', icon: CheckCircle },
@@ -79,41 +84,51 @@ export function AdminSidebar(props: React.ComponentProps<typeof Sidebar>) {
       }
 
       if (roleId === 3 && assinedUnit?.find((ele) => ele?.unitId !== 1)) {
-        // HrUser
+        // Unit HR
+        roleIcon = UserCheck;
         items.push(
           { title: 'Create NOC For Employee', url: '/unit-hr-request-for-employee', icon: Inbox },
-          { title: 'Unit Pending Requests', url: '/unit-hr-pending-noc-requests', icon: Inbox },
-          { title: 'Unit Processed Requests ', url: '/unit-hr-processed-noc-requests', icon: Inbox }
+          { title: 'Unit Pending Requests', url: '/unit-hr-pending-noc-requests', icon: Clock },
+          { title: 'Unit Processed Requests', url: '/unit-hr-processed-noc-requests', icon: CheckCircle }
         );
       }
+      
       if (roleId === 3 && assinedUnit?.find((ele) => ele?.unitId === 1)) {
-        // HrUser
+        // Corporate HR
+        roleIcon = UserCheck;
         items.push(
           { title: 'Pending Requests', url: '/corporate-unit-hr-received-requests', icon: Inbox },
-          { title: 'Under Process/Report', url: '/corporate-unit-hr-request-under-process', icon: Inbox },
-          { title: 'Request From Vigilance', url: '/corporate-unit-hr-noc-requests-from-vigilance', icon: Inbox },
+          { title: 'Under Process/Report', url: '/corporate-unit-hr-request-under-process', icon: Clock },
+          { title: 'Request From Vigilance', url: '/corporate-unit-hr-noc-requests-from-vigilance', icon: Shield },
           { title: 'Create NOC For Employee', url: '/corporate-unit-hr-request-for-employee', icon: Inbox }
-          // { title: 'Rejected Requests', url: '/corporate-unit-hr-rejected-requests', icon: Inbox },
-          // { title: 'Completed Requests', url: '/corporate-unit-hr-completed-requests', icon: Inbox },
-          // { title: 'Parked Request', url: '/corporate-unit-hr-parked-requests', icon: Inbox }
+          // { title: 'Rejected Requests', url: '/corporate-unit-hr-rejected-requests', icon: XCircle },
+          // { title: 'Completed Requests', url: '/corporate-unit-hr-completed-requests', icon: CheckCircle },
+          // { title: 'Parked Request', url: '/corporate-unit-hr-parked-requests', icon: Clock }
         );
       }
+      
       if (roleId === 6) {
         // CGM
+        roleIcon = UserCheck;
         items.push(
-          { title: 'Pending Request', url: '/cgm-request-received', icon: Inbox },
-          { title: 'Processed Requests', url: '/cgm-processed-request', icon: Inbox }
+          { title: 'Pending Request', url: '/cgm-request-received', icon: Clock },
+          { title: 'Processed Requests', url: '/cgm-processed-request', icon: CheckCircle }
         );
       }
       // Add other roleId-based items similarly
 
+      // Format the role name for display (e.g., "VigilanceAdmin" → "Vigilance Admin")
+      const displayTitle = roleId === 3 && assinedUnit?.find((ele) => ele?.unitId === 1) 
+        ? 'Corporate Hr' 
+        : roleName.replace(/([a-z])([A-Z])/g, '$1 $2');
+
       return {
-        title: roleId === 3 && assinedUnit?.find((ele) => ele?.unitId === 1) ? 'Corporate Hr' : roleName, // Converts "VigilanceAdmin" → "Vigilance Admin"
-        icon: Inbox, // you can customize this per role
-        url: '/create-request',
+        title: displayTitle,
+        icon: roleIcon, // Use the role-specific icon
+        url: '', // Empty string to indicate this is a parent menu item
         items,
       };
-    }),
+    }).filter(role => role.items.length > 0), // Only include roles with menu items
   };
   const handleLogout = () => {
     removeSessionItem('token');
@@ -122,7 +137,7 @@ export function AdminSidebar(props: React.ComponentProps<typeof Sidebar>) {
   };
 
   return (
-    <Sidebar collapsible="icon" {...props} className="">
+    <Sidebar collapsible="icon" {...props} className={state === 'collapsed' ? 'sidebar-collapsed' : ''}>
       <div className="flex justify-end md:pt-[90px] ">
         {state === 'collapsed' ? (
           <ChevronsRight onClick={toggleSidebar} className="w-8 h-8 cursor-pointer" />

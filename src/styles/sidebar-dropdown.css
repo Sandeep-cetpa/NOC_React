@@ -1,0 +1,72 @@
+/* Sidebar dropdown styles */
+
+/* Ensure the dropdown is visible on hover in desktop mode */
+@media (min-width: 769px) {
+  .group:hover .group-hover\:opacity-100 {
+    opacity: 1 !important;
+  }
+  
+  .group:hover .group-hover\:visible {
+    visibility: visible !important;
+  }
+  
+  .group:hover .group-hover\:pointer-events-auto {
+    pointer-events: auto !important;
+  }
+  
+  /* Force visibility for sidebar dropdowns */
+  .sidebar-collapsed .group:hover > div[class*="absolute"] {
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+  }
+}
+
+/* Ensure proper z-index for dropdowns */
+.z-50 {
+  z-index: 50;
+}
+
+/* Ensure dropdowns are properly positioned */
+.absolute {
+  position: absolute;
+}
+
+/* Ensure transitions are smooth */
+.transition-opacity {
+  transition-property: opacity;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+/* Ensure dropdowns have proper shadow */
+.shadow-lg {
+  --tw-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --tw-shadow-colored: 0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -2px var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+
+/* Collapsed sidebar specific styles */
+.sidebar-collapsed .group {
+  position: relative;
+}
+
+/* Mobile-specific styles */
+@media (max-width: 768px) {
+  /* Ensure dropdowns are properly positioned on mobile */
+  .absolute.left-full {
+    left: 100%;
+  }
+  
+  /* Ensure dropdowns have proper width on mobile */
+  .min-w-\[220px\] {
+    min-width: 220px;
+  }
+  
+  /* Force visibility for active dropdowns on mobile */
+  .sidebar-collapsed [aria-expanded="true"] + div[class*="absolute"] {
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+  }
+}
