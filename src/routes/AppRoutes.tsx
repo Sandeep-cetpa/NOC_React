@@ -19,9 +19,6 @@ import VigilanceAdminPrivateRoute from './VigilanceAdminPrivateRoute';
 import ReceivedRequests from '@/pages/CorporateUnitHr/ReceivedRequests';
 import RequestUnderProcess from '@/pages/CorporateUnitHr/RequestUnderProcess';
 import NocRequestsFromVigilance from '@/pages/CorporateUnitHr/NocRequestsFromVigilance';
-import RejectedRequests from '@/pages/CorporateUnitHr/RejectedRequests';
-import CompletedRequests from '@/pages/CorporateUnitHr/CompletedRequests';
-import ParkedRequests from '@/pages/CorporateUnitHr/ParkedRequests';
 import RoleManagement from '@/pages/VigilanceAdmin/RoleManagement';
 import ManageGreyList from '@/pages/VigilanceAdmin/ManageGreyList';
 import VigilanceRequestReceived from '@/pages/VigilanceAdmin/VigilanceRequestReceived';
@@ -38,6 +35,7 @@ import { useAuth } from 'react-oidc-context';
 import { useDispatch } from 'react-redux';
 import { fetchMasterData } from '@/features/masterData/masterSlice';
 import { AppDispatch } from '@/app/store';
+import NocRequestForEmployeeByCorporateHr from '@/pages/CorporateUnitHr/NocRequestForEmployeeByCorporateHr';
 
 const AppRoutes = () => {
   const { isAuthenticated } = useAuth();
@@ -74,10 +72,7 @@ const AppRoutes = () => {
         <Route path="/corporate-unit-hr-received-requests" element={<ReceivedRequests />} />
         <Route path="/corporate-unit-hr-request-under-process" element={<RequestUnderProcess />} />
         <Route path="/corporate-unit-hr-noc-requests-from-vigilance" element={<NocRequestsFromVigilance />} />
-        <Route path="/corporate-unit-hr-rejected-requests" element={<RejectedRequests />} />
-        <Route path="/corporate-unit-hr-request-for-employee" element={<NocRequestForEmployee />} />
-        <Route path="/corporate-unit-hr-completed-requests" element={<CompletedRequests />} />
-        <Route path="/corporate-unit-hr-parked-requests" element={<ParkedRequests />} />
+        <Route path="/corporate-unit-hr-request-for-employee" element={<NocRequestForEmployeeByCorporateHr />} />
       </Route>
       <Route element={<VigilanceAdminPrivateRoute />}>
         <Route path="/vigilance-admin-role-management" element={<RoleManagement />} />
