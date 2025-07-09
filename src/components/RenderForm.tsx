@@ -101,6 +101,7 @@ const RenderForm = ({
 
                 {selectedForm?.fields
                   ?.filter((item) => !item?.isInTableValue && item?.filledBy === null)
+                  ?.filter((item) => !(selectedForm?.purposeId === 53 && item?.fieldId === 153))
                   .filter((ele) => {
                     const fieldId = Number(ele?.fieldId);
                     if (!formData['122'] && hiddenFieldsForNewPaasport?.includes(fieldId)) {
@@ -167,6 +168,7 @@ const RenderForm = ({
                 {Number(selectedForm?.purposeId) === 47 &&
                   selectedForm?.fields
                     ?.filter((item) => !item?.isInTableValue && item?.filledBy === null)
+
                     .filter((ele) => {
                       const fieldId = Number(ele?.fieldId);
                       if (!formData['122'] && hiddenFieldsForNewPaasport?.includes(fieldId)) {

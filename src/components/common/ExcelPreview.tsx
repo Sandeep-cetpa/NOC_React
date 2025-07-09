@@ -55,7 +55,7 @@ const DataTable = ({ data, columns, errorRowIndexes = [], errorMessages = {} }) 
           </TableHeader>
           <TableBody>
             {data.map((row, rowIndex) => {
-              const hasError = errorRowIndexes.includes(rowIndex+1);
+              const hasError = errorRowIndexes.includes(rowIndex+2);
 
               return (
                 <TableRow
@@ -88,7 +88,7 @@ const DataTable = ({ data, columns, errorRowIndexes = [], errorMessages = {} }) 
             <div className="space-y-1">
               {Object.entries(errorMessages).map(([rowIndex, message]) => (
                 <div key={rowIndex} className="text-sm text-red-700">
-                  <span className="font-medium">Row {parseInt(rowIndex) + 1}:</span> {message}
+                  <span className="font-medium">Row {parseInt(rowIndex) - 1}:</span> {message}
                 </div>
               ))}
             </div>

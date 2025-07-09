@@ -296,12 +296,23 @@ export const validateForm = (selectedForm, formData, setSubmitStatus, isUnitHrPa
   const is142True = formData[142];
   let fieldsToIgnore = [];
 
+  // if (is122True) {
+  //   fieldsToIgnore = [142, 122];
+  // } else if (is142True) {
+  //   fieldsToIgnore = [123, 122, 124, 125, 126, 142];
+  // }
   if (is122True) {
-    fieldsToIgnore = [142, 122];
-  } else if (is142True) {
-    fieldsToIgnore = [123, 122, 124, 125, 126, 142];
+    fieldsToIgnore.push(142, 122);
   }
 
+  if (is142True) {
+    fieldsToIgnore.push(123, 122, 124, 125, 126, 142);
+  }
+
+  // Add fieldId 153 if purposeId is 53
+  if (selectedForm?.purposeId === 53) {
+    fieldsToIgnore.push(153);
+  }
   requiredFields = requiredFields.filter((field) => {
     const fieldId = parseInt(field.fieldId);
     return !fieldsToIgnore.includes(fieldId);
