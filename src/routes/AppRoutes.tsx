@@ -32,19 +32,20 @@ import GmREquesteReceived from '@/pages/gm/GmREquesteReceived';
 import Dashboard from '@/pages/admin/Dashboard';
 import { useEffect } from 'react';
 import { useAuth } from 'react-oidc-context';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { fetchMasterData } from '@/features/masterData/masterSlice';
-import { AppDispatch } from '@/app/store';
+import { AppDispatch, RootState } from '@/app/store';
 import NocRequestForEmployeeByCorporateHr from '@/pages/CorporateUnitHr/NocRequestForEmployeeByCorporateHr';
 
 const AppRoutes = () => {
   const { isAuthenticated } = useAuth();
   const dispatch = useDispatch<AppDispatch>();
+  const masterData = useSelector((state: RootState) => state.masterData.data);
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && !masterData.departments.length) {
       dispatch(fetchMasterData());
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, masterData]);
   return (
     <Routes>
       <Route path="/logout-notification" element={<FrontChannelLogout />} />

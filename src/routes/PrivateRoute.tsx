@@ -34,7 +34,7 @@ const PrivateRoute: React.FC = () => {
       dispatch(fetchUserProfile());
 
       const returnUrl = auth.user?.state?.returnUrl;
-      navigate(returnUrl, { replace: true });
+      // navigate(returnUrl, { replace: true });
     }
   }, [isAuthenticated, auth.user, dispatch, navigate]);
 

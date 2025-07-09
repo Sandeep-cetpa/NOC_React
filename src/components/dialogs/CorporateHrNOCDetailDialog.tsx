@@ -151,17 +151,21 @@ const CorporateHrNOCDetailDialog = ({
                     <span className="font-medium">Post:</span>
                     <span>{nocData.post}</span>
                   </div>
-                  {nocData.dob && (
-                    <div className="flex justify-between">
-                      <span className="font-medium">DOB:</span>
-                      <span>{formatDate(nocData.dob)}</span>
-                    </div>
-                  )}
-                  {nocData.dor && (
-                    <div className="flex justify-between">
-                      <span className="font-medium">DOR:</span>
-                      <span>{formatDate(nocData.dor)}</span>
-                    </div>
+                  {nocData?.purposeId === 47 && (
+                    <>
+                      {nocData.dob && (
+                        <div className="flex justify-between">
+                          <span className="font-medium">DOB:</span>
+                          <span>{formatDate(nocData.dob)}</span>
+                        </div>
+                      )}
+                      {nocData.dor && (
+                        <div className="flex justify-between">
+                          <span className="font-medium">DOR:</span>
+                          <span>{formatDate(nocData.dor)}</span>
+                        </div>
+                      )}
+                    </>
                   )}
                 </CardContent>
               </Card>

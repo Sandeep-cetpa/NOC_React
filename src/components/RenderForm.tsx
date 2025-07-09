@@ -15,7 +15,7 @@ import {
   hiddenFieldsForNewPaasport,
 } from '@/config';
 import 'react-datepicker/dist/react-datepicker.css';
-import { useLocation } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
 import EnhancedDatePicker from './FormBuilder/EnhancedDatePicker';
 
 const RenderForm = ({
@@ -31,14 +31,15 @@ const RenderForm = ({
   isSubmitting,
   fileRef,
   missingFields,
+  handleExcelPreview,
 }) => {
   if (!selectedForm) return null;
   const location = useLocation();
-
+  const navigate = useNavigate();
   return (
     <div className="opacity-95">
       {selectedForm && (
-        <div className="bg-white rounded-2xl shadow-2xl border border-gray-100">
+        <div className="bg-white rounded-2xl shadow-md border border-gray-100">
           <CardHeader className="border-b">
             <CardTitle>{selectedForm.purposeName}</CardTitle>
           </CardHeader>
@@ -218,34 +219,63 @@ const RenderForm = ({
                     </div>
                   </>
                 )}
-                <div className="flex flex-col">
-                  <Label className="mb-2">Upload IPR</Label>
-                  <div
-                    className={`flex items-center py-1 pl-1 ${
-                      missingFields?.includes('iprFile') ? 'border-2 border-red-500' : 'border-[1px]'
-                    } rounded-md`}
-                  >
-                    <input
-                      ref={fileRef}
-                      type="file"
-                      className="cursor-pointer"
-                      disabled={false}
-                      onChange={(value) => {
-                        handleInputChange('iprFile', value?.target?.files[0]);
-                      }}
-                    />
-                  </div>
-                </div>
-                <div className={`flex flex-col `}>
-                  <Label className="mb-2">IPR Date</Label>
-                  <EnhancedDatePicker
-                    missingField={missingFields?.includes('iprDate')}
-                    selectedDate={formData['iprDate'] ? new Date(formData['iprDate']) : null}
-                    onChange={(date: any) => handleInputChange('iprDate', date ? date.toISOString().split('T')[0] : '')}
-                    dateFormat="dd MMM yyyy"
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                  />
-                </div>
+                {selectedForm.purposeId !== 53 && (
+                  <>
+                    <div className="flex flex-col">
+                      <Label className="mb-2">Upload IPR</Label>
+                      <div
+                        className={`flex items-center py-1 pl-1 ${
+                          missingFields?.includes('iprFile') ? 'border-2 border-red-500' : 'border-[1px]'
+                        } rounded-md`}
+                      >
+                        <input
+                          ref={fileRef}
+                          type="file"
+                          className="cursor-pointer"
+                          disabled={false}
+                          onChange={(value) => {
+                            handleInputChange('iprFile', value?.target?.files[0]);
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <div className={`flex flex-col `}>
+                      <Label className="mb-2">IPR Date</Label>
+                      <EnhancedDatePicker
+                        missingField={missingFields?.includes('iprDate')}
+                        selectedDate={formData['iprDate'] ? new Date(formData['iprDate']) : null}
+                        onChange={(date: any) =>
+                          handleInputChange('iprDate', date ? date.toISOString().split('T')[0] : '')
+                        }
+                        dateFormat="dd MMM yyyy"
+                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                      />
+                    </div>
+                  </>
+                )}
+                {selectedForm.purposeId === 53 && location.pathname === '/corporate-unit-hr-request-for-employee' && (
+                  <>
+                    <div>
+                      <div className="flex flex-col">
+                        <Label className="mb-2">Upload Excel</Label>
+                        <div
+                          className={`flex items-center py-1 pl-1 ${
+                            missingFields?.includes('BulkExcel') ? 'border-2 border-red-500' : 'border-[1px]'
+                          } rounded-md`}
+                        >
+                          <input
+                            type="file"
+                            className="cursor-pointer"
+                            disabled={false}
+                            onChange={(value) => {
+                              handleInputChange('BulkExcel', value?.target?.files[0]);
+                            }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
 
               {selectedForm &&
@@ -351,7 +381,23 @@ const RenderForm = ({
                     />
                   </div>
                 )}
-
+              {selectedForm.purposeId === 53 && location.pathname === '/corporate-unit-hr-request-for-employee' && (
+                <>
+                  <Button type="button" onClick={handleExcelPreview}>
+                    Preview File
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="ml-3"
+                    type="button"
+                    onClick={() => {
+                      window.location.href = 'https://uat.dfccil.com/DocUpload/ProbationTemplate.xlsx';
+                    }}
+                  >
+                    Download Excel Sample
+                  </Button>
+                </>
+              )}
               <div className="flex justify-end">
                 <Button type="submit" disabled={isSubmitting} className="bg-blue-600 hover:bg-blue-700">
                   {isSubmitting ? (

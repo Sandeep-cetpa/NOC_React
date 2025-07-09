@@ -14,7 +14,7 @@ import { RootState } from '@/app/store';
 import CorporateHrNOCDetailDialog from '@/components/dialogs/CorporateHrNOCDetailDialog';
 
 const RequestUnderProcess = () => {
-  const [activetab, setActiveTab] = useState('None');
+  const [activetab, setActiveTab] = useState('UnderProcess');
   const [request, setRequests] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedUnit, setSelectedUnit] = useState(1);
@@ -22,10 +22,6 @@ const RequestUnderProcess = () => {
   const [selectedDepartment, setSelectedDepartment] = useState('all');
   const { departments, units, grades } = useSelector((state: RootState) => state.masterData.data);
   const reportStatus = [
-    {
-      label: 'All',
-      value: 'None',
-    },
     {
       label: 'Under Process',
       value: 'UnderProcess',

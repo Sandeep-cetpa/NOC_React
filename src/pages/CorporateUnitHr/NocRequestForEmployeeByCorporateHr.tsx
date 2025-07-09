@@ -16,6 +16,7 @@ import { useNavigate } from 'react-router';
 import RenderForm from '@/components/RenderForm';
 import EmptyFormStateForEmployeeNoc from '@/components/EmptyFormStateForEmployeeNoc';
 import Loader from '@/components/ui/loader';
+import ExcelDataPreview from '@/components/common/ExcelPreview';
 
 interface FormField {
   fieldId: string;
@@ -36,17 +37,17 @@ interface Form {
 
 const NocRequestForEmployeeByCorporateHr = () => {
   const [selectedForm, setSelectedForm] = useState<Form | null>(null);
-  const [selectedUnit, setSelectedUnit] = useState(null);
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
   const [missingfields, setMisssingfields] = useState([]);
-  const userRoles = useSelector((state: RootState) => state.user.Roles);
+  const [excelPreviewData, setExcelPreviewData] = useState([]);
   const userInfo = useSelector((state: RootState) => state.user);
-  const assiedUnits = userRoles.find((ele) => ele.roleId === 3);
   const [forms, setForms] = useState([]);
   const navigate = useNavigate();
   const fileRef = useRef();
   const [isLoading, setIsLoading] = useState(true);
   const [employees, setEmployees] = useState([]);
+  const [errorRows, setErrorRows] = useState({});
+  const [errorRowsIndexs, setErrorRowsIndexs] = useState([]);
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [tableRows, setTableRows] = useState([]);
@@ -63,10 +64,10 @@ const NocRequestForEmployeeByCorporateHr = () => {
     }
     setSubmitStatus(null);
   };
-  const getAllEmployees = async (unitId: number) => {
+  const getAllEmployees = async () => {
     try {
       setIsLoading(true);
-      const response = await axiosInstance.get(`/Util/eligible-employees?unitId=${unitId}`);
+      const response = await axiosInstance.get(`/Util/eligible-employees?unitId=${'1'}`);
       if (response.data.success) {
         setEmployees(response.data.data);
       }
@@ -87,13 +88,9 @@ const NocRequestForEmployeeByCorporateHr = () => {
       }));
     }
   }, [selectedEmployee, selectedForm?.purposeId]);
-
   useEffect(() => {
-    if (selectedUnit) {
-      getAllEmployees(selectedUnit?.value);
-    }
-  }, [selectedUnit?.value]);
-
+    getAllEmployees();
+  }, []);
   const getPurposeForUnitHr = async () => {
     try {
       setIsLoading(true);
@@ -107,7 +104,6 @@ const NocRequestForEmployeeByCorporateHr = () => {
       setIsLoading(false);
     }
   };
-
   useEffect(() => {
     getPurposeForUnitHr();
   }, []);
@@ -201,14 +197,13 @@ const NocRequestForEmployeeByCorporateHr = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedUnit) {
-      toast.error('Please select unit!');
-      return;
+    if (selectedForm.purposeId !== 53) {
+      if (!selectedEmployee) {
+        toast.error('Please select employee!');
+        return;
+      }
     }
-    if (!selectedEmployee) {
-      toast.error('Please select employee!');
-      return;
-    }
+
     const result = validateForm(
       selectedForm,
       formData,
@@ -242,11 +237,14 @@ const NocRequestForEmployeeByCorporateHr = () => {
         }
       }
       appendFormData(payloadFormData, submission);
-      payloadFormData.append('fkAutoId', selectedEmployee?.value);
+      if (selectedForm.purposeId !== 53) {
+        payloadFormData.append('fkAutoId', selectedEmployee?.value);
+      }
+
       if (Object.entries(tableRows).length > 1) {
         payloadFormData.append('dynamicTable', JSON.stringify(tableRows));
       }
-      const response = await axiosInstance.post('/UnitHR/NOC', payloadFormData, {
+      const response = await axiosInstance.post('/CorporateHR/NOC', payloadFormData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       if (response.data.success) {
@@ -258,6 +256,16 @@ const NocRequestForEmployeeByCorporateHr = () => {
         setSubmitStatus(null);
         setTableRows([]);
         navigate('/unit-hr-processed-noc-requests');
+      } else {
+        setErrorRowsIndexs(response?.data?.erorrRowsIfBulk);
+        setErrorRows((prev) => {
+          const updatedErrors = { ...prev };
+          response?.data?.erorrRowsIfBulk?.forEach((rowIndex) => {
+            updatedErrors[rowIndex] = response?.data?.errorMessageIfBulk;
+          });
+
+          return updatedErrors;
+        });
       }
     } catch (error) {
       setSubmitStatus({
@@ -266,6 +274,25 @@ const NocRequestForEmployeeByCorporateHr = () => {
       });
     } finally {
       setIsSubmitting(false);
+    }
+  };
+  const handleExcelPreview = async () => {
+    if (!formData.BulkExcel) {
+      toast.error('Please upload the excel to get the preview');
+      return;
+    }
+    const payloadFormData = new FormData();
+    payloadFormData.append('file', formData.BulkExcel);
+    try {
+      const response = await axiosInstance.post('/Util/preview-excel', payloadFormData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      if (response.data.success) {
+        setExcelPreviewData(response.data.data);
+      }
+      console.log(response.data, 'response');
+    } catch (err) {
+      console.log(err);
     }
   };
   const employeeOptions = useMemo(
@@ -282,7 +309,7 @@ const NocRequestForEmployeeByCorporateHr = () => {
       })),
     [employees]
   );
-  console.log(selectedEmployee, 'afsf');
+  console.log(selectedForm, 'afsf');
   if (isLoading) {
     return <Loader />;
   }
@@ -312,7 +339,7 @@ const NocRequestForEmployeeByCorporateHr = () => {
             ) : (
               <div className="space-y-8">
                 {/* Selection Form */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div className="space-y-3">
                     <Label
                       htmlFor="purpose-select"
@@ -343,75 +370,40 @@ const NocRequestForEmployeeByCorporateHr = () => {
                       }}
                     />
                   </div>
-                  <div className="space-y-3">
-                    <Label
-                      htmlFor="unit-select"
-                      className="text-lg font-semibold text-gray-900 flex items-center gap-2"
-                    >
-                      <FileText className="w-5 h-5 text-blue-600" />
-                      Select Unit
-                      <span className="text-red-500">*</span>
-                    </Label>
-                    <Select
-                      isDisabled={!selectedForm}
-                      options={assiedUnits.unitsAssigned.map((form) => ({ label: form.unitName, value: form.unitId }))}
-                      onChange={(e) => setSelectedUnit(e)}
-                      value={
-                        selectedUnit
-                          ? { label: selectedUnit?.label, value: selectedForm?.value }
-                          : { label: 'Please select the unit' }
-                      }
-                      className="text-base"
-                      placeholder="Select the unit..."
-                      styles={{
-                        control: (base) => ({
-                          ...base,
-                          minHeight: '40px',
-                          borderRadius: '7px',
-                          border: '2px solid #e2e8f0',
-                          '&:hover': { borderColor: '#3b82f6' },
-                        }),
-                        option: (base, state) => ({
-                          ...base,
-                          backgroundColor: state.isSelected ? '#3b82f6' : state.isFocused ? '#eff6ff' : 'white',
-                        }),
-                      }}
-                    />
-                  </div>
-
-                  <div className="space-y-3">
-                    <Label
-                      htmlFor="employee-select"
-                      className="text-lg font-semibold text-gray-900 flex items-center gap-2"
-                    >
-                      <Users className="w-5 h-5 text-green-600" />
-                      Select Employee
-                      <span className="text-red-500">*</span>
-                    </Label>
-                    <Select
-                      isDisabled={!selectedUnit}
-                      options={employeeOptions}
-                      onChange={(e) => handleEmployeeSelect(e)}
-                      value={selectedEmployee}
-                      className="text-base"
-                      placeholder="Choose employee..."
-                      formatOptionLabel={(option: any) => (
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 flex items-center justify-center bg-primary text-white rounded-full font-bold uppercase">
-                            {option?.empName?.[0]}
-                          </div>
-                          <div>
-                            <div className="text-sm font-medium text-gray-800">{option?.empName}</div>
-                            <div className="text-xs text-gray-500">
-                              {option?.empCode} | {option?.designation} | {option?.department}
+                  {selectedForm?.purposeId !== 53 && (
+                    <div className="space-y-3">
+                      <Label
+                        htmlFor="employee-select"
+                        className="text-lg font-semibold text-gray-900 flex items-center gap-2"
+                      >
+                        <Users className="w-5 h-5 text-green-600" />
+                        Select Employee
+                        <span className="text-red-500">*</span>
+                      </Label>
+                      <Select
+                        isDisabled={!selectedForm}
+                        options={employeeOptions}
+                        onChange={(e) => handleEmployeeSelect(e)}
+                        value={selectedEmployee}
+                        className="text-base"
+                        placeholder="Choose employee..."
+                        formatOptionLabel={(option: any) => (
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 flex items-center justify-center bg-primary text-white rounded-full font-bold uppercase">
+                              {option?.empName?.[0]}
+                            </div>
+                            <div>
+                              <div className="text-sm font-medium text-gray-800">{option?.empName}</div>
+                              <div className="text-xs text-gray-500">
+                                {option?.empCode} | {option?.designation} | {option?.department}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      )}
-                    />
-                  </div>
+                        )}
+                      />
+                    </div>
+                  )}
                 </div>
-
                 {/* Process Steps */}
                 <RenderForm
                   fileRef={fileRef}
@@ -426,7 +418,9 @@ const NocRequestForEmployeeByCorporateHr = () => {
                   addNewRow={addNewRow}
                   removeRow={removeRow}
                   selectedForm={selectedForm}
+                  handleExcelPreview={handleExcelPreview}
                 />
+                <ExcelDataPreview errorRowIndexes={errorRowsIndexs} data={excelPreviewData} errorMessages={errorRows} />
               </div>
             )}
           </CardContent>

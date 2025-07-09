@@ -332,12 +332,17 @@ export const validateForm = (selectedForm, formData, setSubmitStatus, isUnitHrPa
   const extraMissingFields = [];
 
   // IPR fields validation based on user grade
-  if (isIPRMandatory) {
+  if (isIPRMandatory && selectedForm.purposeId !== 53) {
     if (!formData.iprFile) {
       extraMissingFields.push({ fieldName: 'IPR File', fieldId: 'iprFile' });
     }
     if (!formData.iprDate) {
       extraMissingFields.push({ fieldName: 'IPR Date', fieldId: 'iprDate' });
+    }
+  }
+  if (selectedForm?.purposeId === 53) {
+    if (!formData.BulkExcel) {
+      extraMissingFields.push({ fieldName: 'Upload Excel', fieldId: 'BulkExcel' });
     }
   }
 
