@@ -24,7 +24,7 @@ import ManageGreyList from '@/pages/VigilanceAdmin/ManageGreyList';
 import VigilanceRequestReceived from '@/pages/VigilanceAdmin/VigilanceRequestReceived';
 import ProcessedRequest from '@/pages/VigilanceAdmin/ProcessedRequest';
 import DandArPendingRequests from '@/pages/DandAR/DandArPendingRequests';
-import DandArProcessedRequests from '@/pages/DandAR/DandArProcessedRequests';
+import DandArProcessedRequests from '@/pages/DandAR/NocRequestForEmployeeByDandAR';
 import GmPrivateRoute from './GmPrivateRoute';
 import GmProcessedRequests from '@/pages/gm/GmProcessedRequests';
 import GmRejectedRequests from '@/pages/gm/GmRejectedRequests';
@@ -36,6 +36,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchMasterData } from '@/features/masterData/masterSlice';
 import { AppDispatch, RootState } from '@/app/store';
 import NocRequestForEmployeeByCorporateHr from '@/pages/CorporateUnitHr/NocRequestForEmployeeByCorporateHr';
+import NocRequestForEmployeeByDandAR from '@/pages/DandAR/NocRequestForEmployeeByDandAR';
 
 const AppRoutes = () => {
   const { isAuthenticated } = useAuth();
@@ -83,7 +84,7 @@ const AppRoutes = () => {
       </Route>
       <Route element={<DAndARPrivateRoute />}>
         <Route path="/d-and-ar-pending-requests" element={<DandArPendingRequests />} />
-        <Route path="/d-and-ar-processed-requests" element={<DandArProcessedRequests />} />
+        <Route path="/d-and-ar-raise-requests" element={<NocRequestForEmployeeByDandAR />} />
       </Route>
       <Route element={<GmPrivateRoute />}>
         <Route path="/gm-request-received" element={<GmREquesteReceived />} />

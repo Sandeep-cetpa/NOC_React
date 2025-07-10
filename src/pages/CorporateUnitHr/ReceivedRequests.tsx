@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { ArrowUpDown, Eye, RefreshCw } from 'lucide-react';
+import { Eye, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { format } from 'date-fns';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import axiosInstance from '@/services/axiosInstance';
 import { statusConfig } from '@/lib/helperFunction';
 import { Badge } from '@/components/ui/badge';
@@ -22,11 +20,7 @@ const ReceivedRequests = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [corporateHrRemarks, setCorporateHdRemarks] = useState({
     remark: '',
-    // dob: '',
-    // dor: '',
-    // doe: '',
   });
-  console.log(corporateHrRemarks);
   const [selectedUnit, setSelectedUnit] = useState(1);
   const getRequestByUnitId = async (unitId, isUnit) => {
     try {
@@ -61,7 +55,6 @@ const ReceivedRequests = () => {
   useEffect(() => {
     getRequestByUnitId(selectedUnit, activetab);
   }, [activetab]);
-  console.log(selectedRequest);
   const handleApproveClick = async (nocId: any, status: any) => {
     try {
       const response = await axiosInstance.put('/CorporateHR/NOC', {
@@ -89,9 +82,7 @@ const ReceivedRequests = () => {
       console.log(err);
     }
   };
-  const handleRejectClick = () => {};
-  const handleRevertClick = () => {};
-  const hanldeParkedClick = () => {};
+
   const columns = [
     {
       accessorKey: 'refId',

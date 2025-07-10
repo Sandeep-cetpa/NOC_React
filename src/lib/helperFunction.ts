@@ -162,6 +162,14 @@ export const findEmployeeDetails = (employees: any, empCode: string) => {
     return null;
   }
 };
+export const findUnitNameByUnitId = (units: any, unitId: any) => {
+  const unit = units.find((emp) => Number(emp?.unitid) === Number(unitId));
+  if (unit) {
+    return unit;
+  } else {
+    return null;
+  }
+};
 
 export const formatTaskStatus = (status: string) => {
   const statusMapping = {

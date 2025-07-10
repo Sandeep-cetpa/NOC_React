@@ -55,8 +55,8 @@ const DataTable = ({ data, columns, errorRowIndexes = [], errorMessages = {} }) 
           </TableHeader>
           <TableBody>
             {data.map((row, rowIndex) => {
-              const hasError = errorRowIndexes.includes(rowIndex+2);
-
+              const rowNumber = rowIndex + 2; // because errorRowIndexes are 1-based
+              const hasError = errorRowIndexes.includes(rowNumber);
               return (
                 <TableRow
                   key={rowIndex}
@@ -67,7 +67,7 @@ const DataTable = ({ data, columns, errorRowIndexes = [], errorMessages = {} }) 
                       key={colIndex}
                       className={`${hasError ? 'text-red-900' : ''} ${column.cellClassName || ''}`}
                     >
-                      {column.cell ? column.cell(row, rowIndex) : row[column.accessorKey]}
+                      {column.cell ? column.cell(row, rowNumber) : row[column.accessorKey]}
                     </TableCell>
                   ))}
                 </TableRow>
@@ -88,7 +88,7 @@ const DataTable = ({ data, columns, errorRowIndexes = [], errorMessages = {} }) 
             <div className="space-y-1">
               {Object.entries(errorMessages).map(([rowIndex, message]) => (
                 <div key={rowIndex} className="text-sm text-red-700">
-                  <span className="font-medium">Row {parseInt(rowIndex) - 1}:</span> {message}
+                  <span className="font-medium">Row {Number(rowIndex) - 1}:</span> {message}
                 </div>
               ))}
             </div>
@@ -104,36 +104,16 @@ const ExcelDataPreview = ({ data = [], errorRowIndexes = [], errorMessages = {} 
   if (!data || data.length === 0) {
     return <div className="flex items-center justify-center p-8 text-muted-foreground">No data to display</div>;
   }
-console.log(errorMessages,"errorMessages")
+
   const headers = data[0] || [];
   const rows = data.slice(1) || [];
 
-  // Create columns configuration for DataTable
   const columns = [
-    {
-      header: 'Status',
-      accessorKey: 'status',
-      className: 'w-[100px] rounded-tl-lg bg-primary text-white',
-      cell: (row, rowIndex) => {
-        const hasError = errorRowIndexes.includes(rowIndex+1);
-        return hasError ? (
-          <div className="flex items-center gap-2">
-            <AlertTriangle className="h-4 w-4 text-red-500" />
-            <span className="text-xs font-medium text-red-600">Error</span>
-          </div>
-        ) : (
-          <div className="flex items-center gap-2">
-            <div className="h-2 w-2 rounded-full bg-green-500"></div>
-            <span className="text-xs font-medium text-green-600">OK</span>
-          </div>
-        );
-      },
-    },
     ...headers.map((header, index) => ({
       header: header,
       accessorKey: `col_${index}`,
       className: `min-w-[150px] bg-primary text-white ${index === headers.length - 1 ? 'rounded-tr-lg' : ''}`,
-      cell: (row, rowIndex) => {
+      cell: (row) => {
         const cellValue = row[index];
         return cellValue || <span className="text-gray-400 italic text-xs">Empty</span>;
       },

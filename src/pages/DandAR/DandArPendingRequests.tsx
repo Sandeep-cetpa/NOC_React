@@ -1,385 +1,285 @@
-import React, { useState } from 'react';
-import { Search, RefreshCw, ArrowUpDown, ChevronLeft, ChevronRight, ArrowRight, Send, Eye } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Eye, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { format } from 'date-fns';
+import axiosInstance from '@/services/axiosInstance';
+import { findUnitNameByUnitId, statusConfig } from '@/lib/helperFunction';
+import { Badge } from '@/components/ui/badge';
+import TableList from '@/components/ui/data-table';
+import Loader from '@/components/ui/loader';
+import CorporateHrNOCDetailDialog from '@/components/dialogs/CorporateHrNOCDetailDialog';
+import toast from 'react-hot-toast';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/app/store';
+import DAndArNOCDetailDialog from '@/components/dialogs/DAndArNOCDetailDialog';
 
-const DandArPendingRequests = () => {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
-  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
-
-  const nocData = [
-    {
-      id: 1,
-      employeeId: '100649',
-      designation: 'GM',
-      location: 'Corporate Office',
-      status: 'pending',
-      emp_purpose: 'passport',
-      emp_name: 'Amit Kumar',
-      department: 'Urban Development',
-      date: '2025-06-13',
-    },
-    {
-      id: 2,
-      employeeId: '100650',
-      designation: 'GM',
-      location: 'Corporate Office',
-      status: 'pending',
-      emp_purpose: 'passport',
-      emp_name: 'Amit Kumar',
-      department: 'Transport Authority',
-      date: '2025-06-13',
-    },
-    {
-      id: 3,
-      employeeId: '100651',
-      designation: 'GM',
-      location: 'Corporate Office',
-      status: 'pending',
-      emp_purpose: 'passport',
-      emp_name: 'Amit Kumar',
-      department: 'Municipal Corporation',
-      date: '2025-06-13',
-    },
-    {
-      id: 4,
-      employeeId: '100652',
-      designation: 'GM',
-      location: 'Corporate Office',
-      status: 'pending',
-      emp_purpose: 'passport',
-      emp_name: 'Amit Kumar',
-      department: 'Education Department',
-      date: '2025-06-13',
-    },
-    {
-      id: 5,
-      employeeId: '100653',
-      designation: 'GM',
-      location: 'Corporate Office',
-      status: 'pending',
-      emp_purpose: 'passport',
-      emp_name: 'Amit Kumar',
-      department: 'Industrial Development',
-      date: '2025-06-13',
-    },
-  ];
-
-  const filteredData = nocData.filter((item) => {
-    const matchesSearch =
-      item.employeeId.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.emp_purpose.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.designation.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.department.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.emp_name.toLowerCase().includes(searchQuery.toLowerCase());
-
-    const matchesStatus = statusFilter === 'all';
-
-    return matchesSearch && matchesStatus;
+const ReceivedRequests = () => {
+  const [activetab, setActiveTab] = useState('pending');
+  const [request, setRequests] = useState([]);
+  const user = useSelector((state: RootState) => state.user);
+  const [isLoading, setIsLoading] = useState(false);
+  const units = useSelector((state: RootState) => state.masterData.data.units);
+  const [dAndARRemarks, setdAndARRemarksRemarks] = useState({
+    remarks: '',
   });
-
-  // Sorting logic
-  const sortedData = [...filteredData].sort((a, b) => {
-    if (!sortConfig.key) return 0;
-
-    const aVal = a[sortConfig.key];
-    const bVal = b[sortConfig.key];
-
-    if (sortConfig.direction === 'asc') {
-      return aVal > bVal ? 1 : -1;
-    } else {
-      return aVal < bVal ? 1 : -1;
+  const [selectedUnit, setSelectedUnit] = useState(1);
+  const getRequestByUnitId = async (unitId, isUnit) => {
+    try {
+      setIsLoading(true);
+      const response = await axiosInstance.get(`/DandR/NOC?UnitId=${unitId}&isUnit=true`);
+      if (response.data.success) {
+        const allRequests = [
+          ...response?.data?.data?.nonBulkRecord,
+          ...response?.data?.data?.probationRecords,
+          ...response?.data?.data?.awardRecords,
+        ];
+        setRequests(allRequests);
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setIsLoading(false);
     }
-  });
-
-  // Pagination
-  const totalPages = Math.ceil(sortedData.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedData = sortedData.slice(startIndex, startIndex + itemsPerPage);
-
-  const handleSort = (key) => {
-    setSortConfig((prev) => ({
-      key,
-      direction: prev.key === key && prev.direction === 'asc' ? 'desc' : 'asc',
-    }));
   };
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [isOpen, setIsOpen] = React.useState(false);
-  const handleSubmit = () => {
-    // Perform form submission or data processing logic here
-    // console.log(remarks);
-    setIsOpen(false);
+  const getStatusBadge = (status) => {
+    if (!status) {
+      return;
+    }
+    const config = statusConfig(status);
+    const IconComponent = config?.icon;
+    return (
+      <Badge className={`${config?.color} hover:bg-none text-center items-center space-x-1 px-2 py-1`}>
+        <IconComponent className="h-3 w-3" />
+        <span>{config?.label}</span>
+      </Badge>
+    );
   };
+  console.log(findUnitNameByUnitId(units, 2), 'requests');
+  console.log(units, 'requests');
+  useEffect(() => {
+    getRequestByUnitId(selectedUnit, activetab);
+  }, [activetab]);
+  console.log(selectedRequest, 'selected request');
+  const handleApproveClick = async (nocId: any, status: any) => {
+    const payloadFormData = new FormData();
+
+    for (const key in dAndARRemarks) {
+      if (dAndARRemarks[key] !== undefined && dAndARRemarks[key] !== null) {
+        payloadFormData.append(key, dAndARRemarks[key]);
+      }
+    }
+    payloadFormData.append('status', status);
+    if (!selectedRequest.data) {
+      payloadFormData.append('refId', nocId);
+    }
+    payloadFormData.append('dandRAutoId', user.EmpID.toString());
+    if (selectedRequest?.data) {
+      payloadFormData.append('whichBatch', selectedRequest?.batchId);
+    }
+    try {
+      const response = await axiosInstance.put('/DandR/NOC', payloadFormData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      if (response.data?.success) {
+        toast.success('Request Approved Successfully');
+        setIsOpen(false);
+        setSelectedRequest(null);
+        setdAndARRemarksRemarks({} as any);
+        getRequestByUnitId(selectedUnit, activetab);
+      } else {
+        toast.error(response?.data?.message);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  const handleExcelDownload = async (purposeId, batchId) => {
+    try {
+      setIsLoading(true);
+      const response = await axiosInstance.post(`/DandR/NOC/download-excel?PurposeId=${purposeId}`, batchId, {
+        responseType: 'blob', // this is crucial
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'DandR_Report.xlsx'); // file name
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  const columns = [
+    {
+      accessorKey: 'refId',
+      header: 'Reference ID',
+      cell: ({ row }) => <div>{`${row.original.refId ? 'NOC-' + row.original.refId : 'NA'}`}</div>,
+    },
+    {
+      accessorKey: 'displayBatchId',
+      header: 'Batch ID',
+      cell: ({ row }) => <div>{`${row.original.displayBatchId ? 'Batch-' + row.original.displayBatchId : 'NA'}`}</div>,
+    },
+    {
+      accessorKey: 'employeeCode',
+      header: 'Employee Code',
+      cell: ({ row }) => <div>{row?.original?.employeeCode}</div>,
+    },
+    {
+      accessorKey: 'username',
+      header: 'Employee Name',
+      cell: ({ row }) => (
+        <div className=" w-[140px] truncate" title={row.original.username}>
+          {row.original.username}
+        </div>
+      ),
+    },
+    {
+      accessorKey: 'initiationDate',
+      header: 'Date',
+      cell: ({ row }) => (
+        <div className="flex items-center w-[120px]">
+          {row.original.initiationDate ? format(new Date(row.original.initiationDate), 'dd MMM yyyy') : '-'}
+        </div>
+      ),
+    },
+    {
+      accessorKey: 'purposeName',
+      header: 'Purpose',
+      cell: ({ row }) => <div>{row.original.purposeName}</div>,
+    },
+    {
+      accessorKey: 'unitId',
+      header: 'Location',
+      cell: ({ row }) => (
+        <div className="w-[170px]">{findUnitNameByUnitId(units, row.original.unitId)?.unitName ?? 'NA'}</div>
+      ),
+    },
+
+    {
+      accessorKey: 'post',
+      header: 'Designation',
+      cell: ({ row }) => <div>{row?.original?.post ? row?.original?.post : 'NA'}</div>,
+    },
+    {
+      accessorKey: 'department',
+      header: 'Department',
+      cell: ({ row }) => <div>{row.original.department}</div>,
+    },
+
+    {
+      accessorKey: 'currentStatus',
+      header: 'Status',
+      cell: ({ row }) => <div>{row.original.currentStatus && getStatusBadge(row.original.currentStatus)}</div>,
+    },
+    {
+      accessorKey: 'Action',
+      header: 'Action',
+      cell: ({ row }) => (
+        <Button
+          onClick={() => {
+            setSelectedRequest(row.original);
+            setIsOpen(true);
+          }}
+        >
+          <Eye />
+        </Button>
+      ),
+    },
+  ];
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-6">
-      <div className="w-full mx-auto">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <span>Pending Requests </span>
-            </CardTitle>
-          </CardHeader>
-          <div className="mb-2">
-            <div className="px-6 py-2 ">
-              <div className="flex flex-col   md:justify-between space-y-4 md:space-y-0 gap-4">
-                <div className="flex flex-col md:flex-row space-x-4 flex-1 bg-gray-200 max-w-2xl  p-2 rounded-xl">
-                  <Select>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select Department" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Department">Department</SelectItem>
-                      <SelectItem value="Location">Location</SelectItem>
-                      <SelectItem value="Purpose">Purpose</SelectItem>
-                      <SelectItem value="Employee Code">Employee Code</SelectItem>
-                      <SelectItem value="Employee Name">Employee Name</SelectItem>
-                      <SelectItem value="Designation">Designation</SelectItem>
-                      <SelectItem value="Date">Date</SelectItem>
-                      <SelectItem value="Time">Time</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <Select>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select Location" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Location">Location</SelectItem>
-                      <SelectItem value="Purpose">Purpose</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <Select>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select Purpose" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Purpose">Passport</SelectItem>
-                      <SelectItem value="Purpose">Visa</SelectItem>
-                      <SelectItem value="Purpose">Other</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <Button variant="outline" className="flex items-center space-x-2">
+    <div className=" p-6">
+      {isLoading && <Loader />}
+      <Tabs
+        onValueChange={(e) => {
+          setActiveTab(e);
+        }}
+        defaultValue="unit"
+        value={activetab}
+      >
+        <TabsList>
+          <TabsTrigger value="pending">Pending Requests</TabsTrigger>
+          <TabsTrigger value="processed">Processed Requests</TabsTrigger>
+        </TabsList>
+        <TabsContent value="processed">
+          <div>
+            <div className="overflow-x-auto">
+              <TableList
+                data={request.sort((a, b) => {
+                  const dateA = a?.initiationDate ? new Date(a.initiationDate).getTime() : 0;
+                  const dateB = b?.initiationDate ? new Date(b.initiationDate).getTime() : 0;
+                  return dateB - dateA;
+                })}
+                columns={columns}
+                rowClassName={(row) => {
+                  if (row.purposeName === 'Award') {
+                    return `bg-yellow-100`;
+                  }
+                  if (row.purposeName === 'Probation Confirmation') {
+                    return `bg-blue-50`;
+                  }
+                }}
+                rightElements={
+                  <Button
+                    variant="outline"
+                    onClick={() => getRequestByUnitId(selectedUnit, activetab)}
+                    className=" space-x-2 ml-3"
+                  >
                     <RefreshCw className="h-4 w-4" />
                   </Button>
-                </div>
-
-                <div className="flex  justify-between space-x-4">
-                  <div className="flex items-center space-x-2 text-sm text-gray-600">
-                    <span>
-                      Showing {startIndex + 1}-{Math.min(startIndex + itemsPerPage, filteredData.length)} of{' '}
-                      {filteredData.length}
-                    </span>
-                  </div>
-                  <div className="relative  max-w-md">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                    <Input
-                      placeholder="Search "
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-10 focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-                </div>
-              </div>
+                }
+                showFilter={false}
+              />
             </div>
           </div>
-          <CardContent>
+        </TabsContent>
+        <TabsContent value="pending">
+          <div>
             <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-16">
-                      <span className="text-white">SN.</span>
-                    </TableHead>
-                    <TableHead>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleSort('employeeId')}
-                        className="flex items-center space-x-1 p-0 h-auto font-semibold text-white"
-                      >
-                        <span>Reference Id</span>
-                        <ArrowUpDown className="h-3 w-3" />
-                      </Button>
-                    </TableHead>
-                    <TableHead>
-                      <span className="text-white">Employee Code</span>
-                    </TableHead>
-                    <TableHead className=" text-white">Name</TableHead>
-                    <TableHead className=" text-white">Designation</TableHead>
-                    <TableHead className=" text-white">Date</TableHead>
-                    <TableHead className=" text-white">Status</TableHead>
-                    <TableHead className="text-white">Location</TableHead>
-                    <TableHead className="text-white">Purpose</TableHead>
-                    <TableHead className="text-white">Action</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {paginatedData.map((noc, index) => (
-                    <TableRow key={noc.id} className="hover:bg-gray-50 transition-colors">
-                      <TableCell className="font-medium">{startIndex + index + 1}</TableCell>
-                      <TableCell>
-                        <div className="font-medium ">{noc.employeeId + index}</div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="font-medium w-[110px] truncate ">{noc.employeeId}</div>
-                      </TableCell>
-
-                      <TableCell>
-                        <div className="flex items-center space-x-2">
-                          <div className="w-[130px]">
-                            <p className="text-sm text-gray-500 w-[130px] truncate">{noc.emp_name}</p>
-                            <p className="text-sm text-gray-500 w-[130px] truncate ">{noc.department}</p>
-                          </div>
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-sm text-gray-500 mt-1">
-                        <div className="truncate" title={noc.designation}>
-                          {noc.designation}
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-sm text-gray-500 mt-1">
-                        <div className="truncate w-[100px]" title={noc.designation}>
-                          <p>{format(new Date(noc.date), 'dd MMM yyyy')}</p>
-                        </div>
-                      </TableCell>
-
-                      <TableCell>
-                        <div className="text-sm text-gray-500 mt-1">{noc.status}</div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="text-sm text-gray-500 mt-1 w-[120px] truncate" title={noc.location}>
-                          {noc.location}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="text-sm text-blue-500 mt-1">{noc.emp_purpose}</div>
-                      </TableCell>
-                      <TableCell>
-                        <Button
-                          onClick={() => {
-                            setIsOpen(true);
-                            setSelectedRequest(noc);
-                          }}
-                        >
-                          <Eye />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+              <TableList
+                data={request.sort((a, b) => {
+                  const dateA = a?.initiationDate ? new Date(a.initiationDate).getTime() : 0;
+                  const dateB = b?.initiationDate ? new Date(b.initiationDate).getTime() : 0;
+                  return dateB - dateA;
+                })}
+                columns={columns}
+                rightElements={
+                  <Button
+                    variant="outline"
+                    onClick={() => getRequestByUnitId(selectedUnit, activetab)}
+                    className=" space-x-2 ml-3"
+                  >
+                    <RefreshCw className="h-4 w-4" />
+                  </Button>
+                }
+                showFilter={false}
+              />
             </div>
-
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="flex items-center justify-between mt-6">
-                <div className="text-sm text-gray-600">
-                  Page {currentPage} of {totalPages}
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                    disabled={currentPage === 1}
-                  >
-                    <ChevronLeft className="h-4 w-4" />
-                    Previous
-                  </Button>
-
-                  <div className="flex items-center space-x-1">
-                    {[...Array(Math.min(5, totalPages))].map((_, i) => {
-                      const pageNum = i + 1;
-                      return (
-                        <Button
-                          key={pageNum}
-                          variant={currentPage === pageNum ? 'default' : 'outline'}
-                          size="sm"
-                          onClick={() => setCurrentPage(pageNum)}
-                          className="w-8 h-8 p-0"
-                        >
-                          {pageNum}
-                        </Button>
-                      );
-                    })}
-                  </div>
-
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                    disabled={currentPage === totalPages}
-                  >
-                    Next
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-         <Dialog open={isOpen} onOpenChange={setIsOpen}>
-                  {selectedRequest && (
-                    <DialogContent className="w-[90%] md:max-w-3xl">
-                      <DialogHeader>
-                        <DialogTitle>Remarks</DialogTitle>
-                      </DialogHeader>
-                      <div className="grid gap-6 py-6 pt-0 h-full max-h-[calc(100vh-20rem)] overflow-y-scroll">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                          <div>
-                            <Label>Employee Id</Label>
-                            <p className="text-sm text-muted-foreground">{selectedRequest.employeeId}</p>
-                          </div>
-                          <div>
-                            <Label>Name</Label>
-                            <p className="text-sm text-muted-foreground">{selectedRequest.emp_name}</p>
-                          </div>
-                          <div>
-                            <Label>Designation</Label>
-                            <p className="text-sm text-muted-foreground">{selectedRequest.designation}</p>
-                          </div>
-                          <div>
-                            <Label>Location</Label>
-                            <p className="text-sm text-muted-foreground">{selectedRequest.location}</p>
-                          </div>
-                          <div>
-                            <Label>Purpose</Label>
-                            <p className="text-sm text-muted-foreground">{selectedRequest.emp_purpose}</p>
-                          </div>
-                          <div>
-                            <Label>Department</Label>
-                            <p className="text-sm text-muted-foreground">{selectedRequest.department}</p>
-                          </div>
-                        </div>
-                      </div>
-                      <DialogFooter>
-                        <Button variant="outline" onClick={() => setIsOpen(false)}>
-                          Get Tctl
-                        </Button>
-                        <Button className="mt-2 md:mt-0 mb-2" variant="outline" onClick={() => setIsOpen(false)}>
-                          <ArrowRight className="mr-2 h-4 w-4" />
-                          Revert Vigilance User
-                        </Button>
-                        <Button onClick={handleSubmit}>
-                          <Send className="mr-2 h-4 w-4" />
-                          Send To Corporate HR
-                        </Button>
-                      </DialogFooter>
-                    </DialogContent>
-                  )}
-                </Dialog>
-      </div>
+          </div>
+        </TabsContent>
+      </Tabs>
+      <DAndArNOCDetailDialog
+        isOpen={isOpen}
+        onOpenChange={setIsOpen}
+        nocData={selectedRequest}
+        handleApproveClick={handleApproveClick}
+        handleGetTrailClick={handleApproveClick}
+        setdAndARRemarksRemarks={setdAndARRemarksRemarks}
+        corporateHrData={dAndARRemarks}
+        AccecptButtonName={'Forward To Vigilance'}
+        revertButtonName={'Revert To Corporate HR'}
+        handleExcelDownload={handleExcelDownload}
+        isEditable={true}
+      />
     </div>
   );
 };
 
-export default DandArPendingRequests;
+export default ReceivedRequests;

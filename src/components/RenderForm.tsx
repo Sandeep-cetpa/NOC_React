@@ -396,7 +396,7 @@ const RenderForm = ({
                       window.location.href = 'https://uat.dfccil.com/DocUpload/ProbationTemplate.xlsx';
                     }}
                   >
-                    Download Excel Sample
+                    Download Excel Template
                   </Button>
                 </>
               )}

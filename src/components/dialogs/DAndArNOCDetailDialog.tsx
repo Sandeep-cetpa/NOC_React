@@ -9,28 +9,28 @@ import { Textarea } from '../ui/textarea';
 import { Label } from '../ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { RequestStatus } from '@/constant/status';
+import ExcelDataPreview from '../common/ExcelPreview';
+import { environment } from '@/config';
 
-const CorporateHrNOCDetailDialog = ({
+const DAndArNOCDetailDialog = ({
   nocData,
   isOpen,
   onOpenChange,
-  setcorporateHrData,
+  setdAndARRemarksRemarks,
   handleApproveClick,
-  handleRejectClick,
+  handleGetTrailClick,
   handleRevertClick,
   corporateHrData,
-  rejectButtonName,
   AccecptButtonName,
   revertButtonName,
   isEditable = false,
+  handleExcelDownload,
 }) => {
   console.log(nocData);
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
     try {
-      // Handle different date formats
       let date;
-
       // Check if it's in DD-MMM-YYYY format (like "26-Nov-2024")
       if (dateString.includes('-') && dateString.split('-').length === 3) {
         const parts = dateString.split('-');
@@ -104,72 +104,98 @@ const CorporateHrNOCDetailDialog = ({
         <div className="space-y-6 max-w-6xl max-h-[70vh] overflow-y-auto">
           {/* Application Details */}
           <div className="bg-blue-50 p-4 rounded-lg">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <User className="h-4 w-4" />
-                    Request Information
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="font-medium">Initiation Date:</span>
-                    <span>{formatDate(nocData.initiationDate)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="font-medium">Reference ID:</span>
-                    <span>NOC-{nocData.refId || 'N/A'}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="font-medium">Purpose:</span>
-                    <span>{nocData.purposeName}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="font-medium">Current Status:</span>
-                    <Badge variant="outline">{nocData.currentStatus}</Badge>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <User className="h-4 w-4" />
-                    Employee Information
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="font-medium">Employee Code:</span>
-                    <span>{nocData.employeeCode}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="font-medium">Name:</span>
-                    <span>{nocData.username}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="font-medium">Post:</span>
-                    <span>{nocData.post}</span>
-                  </div>
-                  {nocData?.purposeId === 47 && (
-                    <>
-                      {nocData.dob && (
-                        <div className="flex justify-between">
-                          <span className="font-medium">DOB:</span>
-                          <span>{formatDate(nocData.dob)}</span>
-                        </div>
-                      )}
-                      {nocData.dor && (
-                        <div className="flex justify-between">
-                          <span className="font-medium">DOR:</span>
-                          <span>{formatDate(nocData.dor)}</span>
-                        </div>
-                      )}
-                    </>
-                  )}
-                </CardContent>
-              </Card>
-            </div>
+            {!nocData?.data ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <User className="h-4 w-4" />
+                      Request Information
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-2">
+                    {nocData.initiationDate && (
+                      <div className="flex justify-between">
+                        <span className="font-medium">Initiation Date:</span>
+                        <span>{formatDate(nocData.initiationDate)}</span>
+                      </div>
+                    )}
+
+                    {nocData.displayBatchId ? (
+                      <div className="flex justify-between">
+                        <span className="font-medium">Batch ID:</span>
+                        <span>NOC-{nocData.displayBatchId || 'N/A'}</span>
+                      </div>
+                    ) : (
+                      <div className="flex justify-between">
+                        <span className="font-medium">Reference ID:</span>
+                        <span>NOC-{nocData.refId || 'N/A'}</span>
+                      </div>
+                    )}
+
+                    <div className="flex justify-between">
+                      <span className="font-medium">Purpose:</span>
+                      <span>{nocData.purposeName}</span>
+                    </div>
+                    {nocData.currentStatus && (
+                      <div className="flex justify-between">
+                        <span className="font-medium">Current Status:</span>
+                        <Badge variant="outline">{nocData.currentStatus}</Badge>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <User className="h-4 w-4" />
+                      Employee Information
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="font-medium">Employee Code:</span>
+                      <span>{nocData.employeeCode}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="font-medium">Name:</span>
+                      <span>{nocData.username}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="font-medium">Post:</span>
+                      <span>{nocData.post}</span>
+                    </div>
+                    {nocData?.purposeId === 47 && (
+                      <>
+                        {nocData.dob && (
+                          <div className="flex justify-between">
+                            <span className="font-medium">DOB:</span>
+                            <span>{formatDate(nocData.dob)}</span>
+                          </div>
+                        )}
+                        {nocData.dor && (
+                          <div className="flex justify-between">
+                            <span className="font-medium">DOR:</span>
+                            <span>{formatDate(nocData.dor)}</span>
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="">
+                  <span className="font-medium">Batch ID : </span>
+                  <span> Batch-{nocData.displayBatchId || 'N/A'}</span>
+                </div>
+                <div className="">
+                  <span className="font-medium">Purpose : </span>
+                  <span>{nocData.purposeName}</span>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Officer Remarks */}
@@ -198,9 +224,6 @@ const CorporateHrNOCDetailDialog = ({
                   const formattedKey = formatKeyName(key);
 
                   if (formattedKey === 'Service Entry') return null;
-                  if (formattedKey.toLocaleLowerCase().includes('unit')) {
-                    return null;
-                  }
 
                   return (
                     <div key={key}>
@@ -322,18 +345,52 @@ const CorporateHrNOCDetailDialog = ({
               ))}
             </div>
           )}
-
-          {/* CGM Input Section */}
-          {isEditable && (
-            <div className="m-3 pb-4">
+          {(nocData?.fkPurposeId === 54 || nocData?.fkPurposeId === 53) && <ExcelDataPreview data={nocData?.data} />}
+          {isEditable && nocData?.unitId === 1 && (
+            <div className="m-2">
               <div>
-                <Label>Enter Remarks</Label>
+                <Label>Pertaining to Present Unit:</Label>
                 <Textarea
-                  value={corporateHrData?.remark || ''}
+                  value={corporateHrData?.presentUnit || ''}
                   onChange={(e) =>
-                    setcorporateHrData((pre) => ({
+                    setdAndARRemarksRemarks((pre) => ({
                       ...pre,
-                      remark: e.target.value,
+                      presentUnit: e.target.value,
+                    }))
+                  }
+                  rows={4}
+                  placeholder="Enter present unit here..."
+                  className="mt-1"
+                />
+              </div>
+              <div className="mt-3">
+                <Label>Pertaining to Past Unit:</Label>
+                <Textarea
+                  value={corporateHrData?.pastPosition || ''}
+                  onChange={(e) =>
+                    setdAndARRemarksRemarks((pre) => ({
+                      ...pre,
+                      pastPosition: e.target.value,
+                    }))
+                  }
+                  rows={4}
+                  placeholder="Enter past unit here..."
+                  className="mt-1"
+                />
+              </div>
+            </div>
+          )}
+          {/* CGM Input Section */}
+          {isEditable && !nocData.data && (
+            <div className="m-2 pb-1">
+              <div>
+                <Label>Any Other Remarks</Label>
+                <Textarea
+                  value={corporateHrData?.remarks || ''}
+                  onChange={(e) =>
+                    setdAndARRemarksRemarks((pre) => ({
+                      ...pre,
+                      remarks: e.target.value,
                     }))
                   }
                   rows={4}
@@ -344,32 +401,97 @@ const CorporateHrNOCDetailDialog = ({
             </div>
           )}
         </div>
-
-        {/* Action Buttons */}
+        {nocData?.data && (
+          <div className="flex flex-wrap">
+            <div className="flex flex-col">
+              <Label className="mb-2">Upload Excel</Label>
+              <div className="py-1 pl-1 border rounded-md">
+                <input
+                  type="file"
+                  accept=".xlsx, .xls"
+                  className="cursor-pointer"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      setdAndARRemarksRemarks((prev) => ({
+                        ...prev,
+                        bulkExcel: file,
+                      }));
+                    }
+                  }}
+                />
+              </div>
+            </div>
+            {nocData?.fkPurposeId === 54 && (
+              <div className="flex flex-col ml-0 md:ml-5">
+                <Label className="mb-2">Upload IPR</Label>
+                <div className="py-1 pl-1 border rounded-md">
+                  <input
+                    type="file"
+                    accept=".xlsx, .xls"
+                    className="cursor-pointer"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        setdAndARRemarksRemarks((prev) => ({
+                          ...prev,
+                          iprFile: file,
+                        }));
+                      }
+                    }}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+        )}
         <div className="flex justify-end space-x-2">
-          {isEditable && (
+          {isEditable && !nocData.data && (
             <>
               <Button
-                onClick={() => handleApproveClick(nocData?.refId, RequestStatus.UnderDandAR.value)}
+                variant="destructive"
+                // onClick={() => handleGetTrailClick(nocData?.refId, RequestStatus.RejectedByCorporateHR.value)}
+              >
+                Get Trail
+              </Button>
+              <Button
+                className="bg-yellow-500 hover:bg-yellow-600"
+                onClick={() => handleRevertClick(nocData?.refId, RequestStatus.RevertBackToHR.value)}
+              >
+                {revertButtonName}
+              </Button>
+              <Button
+                onClick={() => handleApproveClick(nocData?.refId, RequestStatus.SentToVigilanceUser.value)}
                 className="bg-green-600 hover:bg-green-700"
               >
                 {AccecptButtonName || 'Approve'}
               </Button>
-              <Button
-                variant="destructive"
-                onClick={() => handleRejectClick(nocData?.refId, RequestStatus.RejectedByCorporateHR.value)}
-              >
-                {rejectButtonName || 'Reject'}
+            </>
+          )}
+          {isEditable && nocData.data && (
+            <>
+              {nocData?.fkPurposeId === 54 && (
+                <Button
+                  variant="destructive"
+                  onClick={() => {
+                    const cleanedUrl = environment.apiUrl.replace('/api', '');
+                    window.open(`${cleanedUrl}/upload/vigilance/grid.xlsx`);
+                  }}
+                >
+                  Download Citation
+                </Button>
+              )}
+              <Button variant="destructive" onClick={() => handleExcelDownload(nocData?.fkPurposeId, nocData.batchId)}>
+                Download Excel
               </Button>
               <Button
-                className="bg-yellow-500 hover:bg-yellow-600"
-                onClick={() => handleRevertClick(nocData?.refId, RequestStatus.ParkedFile)}
+                onClick={() => handleApproveClick(nocData?.refId, RequestStatus.SentToVigilanceUser.value)}
+                className="bg-green-600 hover:bg-green-700"
               >
-                {revertButtonName}
+                Submit
               </Button>
             </>
           )}
-
           <Button onClick={() => onOpenChange(false)}>Close</Button>
         </div>
       </DialogContent>
@@ -377,4 +499,4 @@ const CorporateHrNOCDetailDialog = ({
   );
 };
 
-export default CorporateHrNOCDetailDialog;
+export default DAndArNOCDetailDialog;

@@ -149,11 +149,10 @@ const RequestUnderProcess = () => {
       ),
     },
   ];
-  if (isLoading) {
-    return <Loader />;
-  }
+
   return (
     <div className="p-6">
+      {isLoading && <Loader />}
       <Tabs
         onValueChange={(e) => {
           setActiveTab(e);

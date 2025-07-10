@@ -35,7 +35,7 @@ interface Form {
   isInTableValue: boolean;
 }
 
-const NocRequestForEmployeeByCorporateHr = () => {
+const NocRequestForEmployeeByDandAR = () => {
   const [selectedForm, setSelectedForm] = useState<Form | null>(null);
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
   const [missingfields, setMisssingfields] = useState([]);
@@ -435,4 +435,4 @@ const NocRequestForEmployeeByCorporateHr = () => {
   );
 };
 
-export default NocRequestForEmployeeByCorporateHr;
+export default NocRequestForEmployeeByDandAR;

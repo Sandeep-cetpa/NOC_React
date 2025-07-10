@@ -33,6 +33,7 @@ interface TableListProps {
   inputPlaceholder?: string;
   rightElements?: React.ReactNode;
   onRowClick?: (rowData: any) => void;
+  rowClassName?: (rowData: any) => void;
 }
 
 export default function TableList({
@@ -42,6 +43,7 @@ export default function TableList({
   showFilter = false,
   rightElements,
   inputPlaceholder = 'Search request by name..... ',
+  rowClassName,
   onRowClick,
 }: TableListProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -155,7 +157,7 @@ export default function TableList({
                   key={row.id}
                   data-state={row.getIsSelected() && 'selected'}
                   onClick={() => onRowClick && onRowClick(row.original)} // <-- Trigger onRowClick here
-                  className="cursor-pointer hover:bg-gray-300 "
+                  className={`cursor-pointer ${rowClassName ? rowClassName(row.original) : 'hover:bg-gray-300'}  `}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id} className="p-1">
