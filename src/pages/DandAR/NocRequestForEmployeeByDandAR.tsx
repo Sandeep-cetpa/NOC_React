@@ -1,16 +1,15 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Heading from '@/components/ui/heading';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/app/store';
 import { Card, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { FileText, Users } from 'lucide-react';
+import { FileText } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { v4 as uuidv4 } from 'uuid';
 import { FormField } from '@/components/FormBuilder/FormField';
 import { validateForm } from '@/lib/helperFunction';
 import Select from 'react-select';
-import { Employee } from '@/types/Employee';
 import axiosInstance from '@/services/axiosInstance';
 import { useNavigate } from 'react-router';
 import RenderForm from '@/components/RenderForm';
@@ -27,7 +26,6 @@ interface FormField {
   isInTableValue: boolean;
   filledBy: any;
 }
-
 interface Form {
   purposeId: number;
   purposeName: string;
@@ -37,7 +35,6 @@ interface Form {
 
 const NocRequestForEmployeeByDandAR = () => {
   const [selectedForm, setSelectedForm] = useState<Form | null>(null);
-  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
   const [missingfields, setMisssingfields] = useState([]);
   const [excelPreviewData, setExcelPreviewData] = useState([]);
   const userInfo = useSelector((state: RootState) => state.user);
@@ -45,7 +42,6 @@ const NocRequestForEmployeeByDandAR = () => {
   const navigate = useNavigate();
   const fileRef = useRef();
   const [isLoading, setIsLoading] = useState(true);
-  const [employees, setEmployees] = useState([]);
   const [errorRows, setErrorRows] = useState({});
   const [errorRowsIndexs, setErrorRowsIndexs] = useState([]);
   const [formData, setFormData] = useState<Record<string, any>>({});
@@ -64,37 +60,11 @@ const NocRequestForEmployeeByDandAR = () => {
     }
     setSubmitStatus(null);
   };
-  const getAllEmployees = async () => {
+
+  const getPurposeForDandAR = async () => {
     try {
       setIsLoading(true);
-      const response = await axiosInstance.get(`/Util/eligible-employees?unitId=${'1'}`);
-      if (response.data.success) {
-        setEmployees(response.data.data);
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-  useEffect(() => {
-    if (selectedForm?.purposeId === 47) {
-      setFormData((data) => ({
-        ...data,
-        dor: selectedEmployee?.doretirement
-          ? new Date(selectedEmployee.doretirement).toISOString().split('T')[0]
-          : null,
-        doj: selectedEmployee?.dojdfccil ? new Date(selectedEmployee.dojdfccil).toISOString().split('T')[0] : null,
-      }));
-    }
-  }, [selectedEmployee, selectedForm?.purposeId]);
-  useEffect(() => {
-    getAllEmployees();
-  }, []);
-  const getPurposeForUnitHr = async () => {
-    try {
-      setIsLoading(true);
-      const response = await axiosInstance.get('/CorporateHR/NOC/Purposes');
+      const response = await axiosInstance.get('/DandR/NOC/Purposes');
       if (response.data.success) {
         setForms(response.data.data);
       }
@@ -105,7 +75,7 @@ const NocRequestForEmployeeByDandAR = () => {
     }
   };
   useEffect(() => {
-    getPurposeForUnitHr();
+    getPurposeForDandAR();
   }, []);
   const handleInputChange = (fieldId: string, value: any, fieldType?: any) => {
     const key = fieldType === 'File' ? `File${fieldId}` : fieldId;
@@ -152,13 +122,6 @@ const NocRequestForEmployeeByDandAR = () => {
     }
   }, [selectedForm]);
 
-  const handleEmployeeSelect = (empCode: string) => {
-    const employee = employees.find((f) => Number(f.employeeMasterAutoId) === Number(empCode));
-    setSelectedEmployee(empCode);
-    setFormData({});
-    setSubmitStatus(null);
-  };
-
   const handleFieldChange = (uuid, fieldId, value) => {
     setTableRows((prevData) => ({
       ...prevData,
@@ -197,12 +160,6 @@ const NocRequestForEmployeeByDandAR = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (selectedForm.purposeId !== 53) {
-      if (!selectedEmployee) {
-        toast.error('Please select employee!');
-        return;
-      }
-    }
 
     const result = validateForm(
       selectedForm,
@@ -238,10 +195,6 @@ const NocRequestForEmployeeByDandAR = () => {
         }
       }
       appendFormData(payloadFormData, submission);
-      if (selectedForm.purposeId !== 53) {
-        payloadFormData.append('fkAutoId', selectedEmployee?.value);
-      }
-
       if (Object.entries(tableRows).length > 1) {
         payloadFormData.append('dynamicTable', JSON.stringify(tableRows));
       }
@@ -251,7 +204,6 @@ const NocRequestForEmployeeByDandAR = () => {
       if (response.data.success) {
         toast.success(`Your request has been submitted successfully. Reference ID: ${response.data.userId}`);
         setFormData({});
-        setSelectedEmployee(null);
         setSelectedForm(null);
         setMisssingfields([]);
         setSubmitStatus(null);
@@ -301,20 +253,6 @@ const NocRequestForEmployeeByDandAR = () => {
       setIsLoading(false);
     }
   };
-  const employeeOptions = useMemo(
-    () =>
-      employees.map((emp) => ({
-        value: emp.employeeMasterAutoId ?? '',
-        label: emp.userName,
-        empName: emp.userName,
-        empCode: emp.employeeCode,
-        designation: emp.deptDfccil,
-        department: emp.post,
-        dojdfccil: emp.dojdfccil,
-        doretirement: emp.doretirement,
-      })),
-    [employees]
-  );
 
   return (
     <div className="bg-white">
@@ -374,39 +312,6 @@ const NocRequestForEmployeeByDandAR = () => {
                       }}
                     />
                   </div>
-                  {selectedForm?.purposeId !== 53 && (
-                    <div className="space-y-3">
-                      <Label
-                        htmlFor="employee-select"
-                        className="text-lg font-semibold text-gray-900 flex items-center gap-2"
-                      >
-                        <Users className="w-5 h-5 text-green-600" />
-                        Select Employee
-                        <span className="text-red-500">*</span>
-                      </Label>
-                      <Select
-                        isDisabled={!selectedForm}
-                        options={employeeOptions}
-                        onChange={(e) => handleEmployeeSelect(e)}
-                        value={selectedEmployee}
-                        className="text-base"
-                        placeholder="Choose employee..."
-                        formatOptionLabel={(option: any) => (
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 flex items-center justify-center bg-primary text-white rounded-full font-bold uppercase">
-                              {option?.empName?.[0]}
-                            </div>
-                            <div>
-                              <div className="text-sm font-medium text-gray-800">{option?.empName}</div>
-                              <div className="text-xs text-gray-500">
-                                {option?.empCode} | {option?.designation} | {option?.department}
-                              </div>
-                            </div>
-                          </div>
-                        )}
-                      />
-                    </div>
-                  )}
                 </div>
                 {/* Process Steps */}
                 <RenderForm
@@ -424,7 +329,13 @@ const NocRequestForEmployeeByDandAR = () => {
                   selectedForm={selectedForm}
                   handleExcelPreview={handleExcelPreview}
                 />
-                <ExcelDataPreview errorRowIndexes={errorRowsIndexs} data={excelPreviewData} errorMessages={errorRows} />
+                {excelPreviewData.length > 0 && (
+                  <ExcelDataPreview
+                    errorRowIndexes={errorRowsIndexs}
+                    data={excelPreviewData}
+                    errorMessages={errorRows}
+                  />
+                )}
               </div>
             )}
           </CardContent>

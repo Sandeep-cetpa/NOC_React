@@ -102,6 +102,7 @@ const RenderForm = ({
                 {selectedForm?.fields
                   ?.filter((item) => !item?.isInTableValue && item?.filledBy === null)
                   ?.filter((item) => !(selectedForm?.purposeId === 53 && item?.fieldId === 153))
+                  ?.filter((item) => !(selectedForm?.purposeId === 58 && item?.fieldId === 168))
                   .filter((ele) => {
                     const fieldId = Number(ele?.fieldId);
                     if (!formData['122'] && hiddenFieldsForNewPaasport?.includes(fieldId)) {
@@ -221,41 +222,43 @@ const RenderForm = ({
                     </div>
                   </>
                 )}
-                {selectedForm.purposeId !== 53 && (
-                  <>
-                    <div className="flex flex-col">
-                      <Label className="mb-2">Upload IPR</Label>
-                      <div
-                        className={`flex items-center py-1 pl-1 ${
-                          missingFields?.includes('iprFile') ? 'border-2 border-red-500' : 'border-[1px]'
-                        } rounded-md`}
-                      >
-                        <input
-                          ref={fileRef}
-                          type="file"
-                          className="cursor-pointer"
-                          disabled={false}
-                          onChange={(value) => {
-                            handleInputChange('iprFile', value?.target?.files[0]);
-                          }}
+                {selectedForm.purposeId !== 53 ||
+                  (selectedForm.purposeId !== 53 && (
+                    <>
+                      <div className="flex flex-col">
+                        <Label className="mb-2">Upload IPR</Label>
+                        <div
+                          className={`flex items-center py-1 pl-1 ${
+                            missingFields?.includes('iprFile') ? 'border-2 border-red-500' : 'border-[1px]'
+                          } rounded-md`}
+                        >
+                          <input
+                            ref={fileRef}
+                            type="file"
+                            className="cursor-pointer"
+                            disabled={false}
+                            onChange={(value) => {
+                              handleInputChange('iprFile', value?.target?.files[0]);
+                            }}
+                          />
+                        </div>
+                      </div>
+                      <div className={`flex flex-col `}>
+                        <Label className="mb-2">IPR Date</Label>
+                        <EnhancedDatePicker
+                          missingField={missingFields?.includes('iprDate')}
+                          selectedDate={formData['iprDate'] ? new Date(formData['iprDate']) : null}
+                          onChange={(date: any) =>
+                            handleInputChange('iprDate', date ? date.toISOString().split('T')[0] : '')
+                          }
+                          dateFormat="dd MMM yyyy"
+                          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                         />
                       </div>
-                    </div>
-                    <div className={`flex flex-col `}>
-                      <Label className="mb-2">IPR Date</Label>
-                      <EnhancedDatePicker
-                        missingField={missingFields?.includes('iprDate')}
-                        selectedDate={formData['iprDate'] ? new Date(formData['iprDate']) : null}
-                        onChange={(date: any) =>
-                          handleInputChange('iprDate', date ? date.toISOString().split('T')[0] : '')
-                        }
-                        dateFormat="dd MMM yyyy"
-                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                      />
-                    </div>
-                  </>
-                )}
-                {selectedForm.purposeId === 53 && location.pathname === '/corporate-unit-hr-request-for-employee' && (
+                    </>
+                  ))}
+                {((selectedForm.purposeId === 53 && location.pathname === '/corporate-unit-hr-request-for-employee') ||
+                  (selectedForm.purposeId === 58 && location.pathname === '/d-and-ar-raise-requests')) && (
                   <>
                     <div>
                       <div className="flex flex-col">

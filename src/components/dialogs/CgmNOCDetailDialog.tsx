@@ -93,7 +93,11 @@ const CgmNOCDetailDialog = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-6xl overflow-y-auto">
+      <DialogContent
+        onPointerDownOutside={(e) => e.preventDefault()} // Prevents closing on outside click
+        onEscapeKeyDown={(e) => e.preventDefault()}
+        className="max-w-6xl overflow-y-auto"
+      >
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <User className="w-5 h-5" />
@@ -262,7 +266,9 @@ const CgmNOCDetailDialog = ({
                             {table.rows[0]?.inputs?.map((field, index) => (
                               <TableHead key={index} className="font-semibold">
                                 <div className="space-y-1">
-                                  <div className='text-white'>{formatLabel ? formatLabel(field.fieldName) : field.fieldName}</div>
+                                  <div className="text-white">
+                                    {formatLabel ? formatLabel(field.fieldName) : field.fieldName}
+                                  </div>
                                 </div>
                               </TableHead>
                             ))}

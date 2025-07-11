@@ -87,7 +87,7 @@ const RequestUnderProcess = () => {
     {
       accessorKey: 'refId',
       header: 'Reference ID',
-      cell: ({ row }) => <div>{`${row.original.refId ? 'NOC-' + row.original.refId : 'NA'}`}</div>,
+      cell: ({ row }) => <div className="pl-2">{`${row.original.refId ? 'NOC-' + row.original.refId : 'NA'}`}</div>,
     },
     {
       accessorKey: 'employeeCode',

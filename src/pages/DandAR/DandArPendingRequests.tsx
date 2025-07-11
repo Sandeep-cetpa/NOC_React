@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Eye, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -8,26 +8,40 @@ import { findUnitNameByUnitId, statusConfig } from '@/lib/helperFunction';
 import { Badge } from '@/components/ui/badge';
 import TableList from '@/components/ui/data-table';
 import Loader from '@/components/ui/loader';
-import CorporateHrNOCDetailDialog from '@/components/dialogs/CorporateHrNOCDetailDialog';
 import toast from 'react-hot-toast';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/app/store';
 import DAndArNOCDetailDialog from '@/components/dialogs/DAndArNOCDetailDialog';
-
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+const reportStatus = [
+  {
+    label: 'Pending Request',
+    value: 'pending',
+  },
+  {
+    label: 'Processed Requests',
+    value: 'processed',
+  },
+];
 const ReceivedRequests = () => {
   const [activetab, setActiveTab] = useState('pending');
   const [request, setRequests] = useState([]);
   const user = useSelector((state: RootState) => state.user);
   const [isLoading, setIsLoading] = useState(false);
-  const units = useSelector((state: RootState) => state.masterData.data.units);
-  const [dAndARRemarks, setdAndARRemarksRemarks] = useState({
-    remarks: '',
-  });
+  const [dAndARRemarks, setdAndARRemarksRemarks] = useState({});
+  const [selectedRequest, setSelectedRequest] = useState(null);
+  const [isOpen, setIsOpen] = React.useState(false);
   const [selectedUnit, setSelectedUnit] = useState(1);
-  const getRequestByUnitId = async (unitId, isUnit) => {
+  const [selectedGrade, setSelectedGrade] = useState('all');
+  const [selectedDepartment, setSelectedDepartment] = useState('all');
+  const [errorRows, setErrorRows] = useState({});
+  const [errorRowsIndexs, setErrorRowsIndexs] = useState([]);
+  const [excelPreviewData, setExcelPreviewData] = useState([]);
+  const { departments, units, grades } = useSelector((state: RootState) => state.masterData.data);
+  const getRequestByUnitId = async (unitId) => {
     try {
       setIsLoading(true);
-      const response = await axiosInstance.get(`/DandR/NOC?UnitId=${unitId}&isUnit=true`);
+      const response = await axiosInstance.get(`/DandR/NOC?UnitId=${unitId}&isUnit=false`);
       if (response.data.success) {
         const allRequests = [
           ...response?.data?.data?.nonBulkRecord,
@@ -42,8 +56,6 @@ const ReceivedRequests = () => {
       setIsLoading(false);
     }
   };
-  const [selectedRequest, setSelectedRequest] = useState(null);
-  const [isOpen, setIsOpen] = React.useState(false);
   const getStatusBadge = (status) => {
     if (!status) {
       return;
@@ -57,10 +69,9 @@ const ReceivedRequests = () => {
       </Badge>
     );
   };
-
   useEffect(() => {
-    getRequestByUnitId(selectedUnit, activetab);
-  }, [activetab]);
+    getRequestByUnitId(selectedUnit);
+  }, [activetab, selectedUnit]);
 
   const handleApproveClick = async (nocId: any, status: any) => {
     const payloadFormData = new FormData();
@@ -70,13 +81,15 @@ const ReceivedRequests = () => {
         payloadFormData.append(key, dAndARRemarks[key]);
       }
     }
-    payloadFormData.append('status', status);
+    payloadFormData.append('Status', status);
     if (!selectedRequest.data) {
-      payloadFormData.append('refId', nocId);
+      payloadFormData.append('RefId', nocId);
+      payloadFormData.append('PurposeId', selectedRequest?.purposeId);
     }
-    payloadFormData.append('dandRAutoId', user.EmpID.toString());
+    payloadFormData.append('DandRAutoId', user.EmpID.toString());
     if (selectedRequest?.data) {
       payloadFormData.append('whichBatch', selectedRequest?.batchId);
+      payloadFormData.append('PurposeId', selectedRequest?.fkPurposeId);
     }
     try {
       const response = await axiosInstance.put('/DandR/NOC', payloadFormData, {
@@ -87,9 +100,20 @@ const ReceivedRequests = () => {
         setIsOpen(false);
         setSelectedRequest(null);
         setdAndARRemarksRemarks({} as any);
-        getRequestByUnitId(selectedUnit, activetab);
+        getRequestByUnitId(selectedUnit);
+        setErrorRowsIndexs([]);
+        setErrorRows({});
+        setExcelPreviewData([]);
       } else {
-        toast.error(response?.data?.message);
+        setErrorRowsIndexs(response?.data?.erorrRowsIfBulk);
+        setErrorRows(() => {
+          const updatedErrors = {};
+          response?.data?.erorrRowsIfBulk?.forEach((rowIndex) => {
+            updatedErrors[rowIndex] = response?.data?.errorMessageIfBulk;
+          });
+          return updatedErrors;
+        });
+        toast.error(response?.data?.errorMessage);
       }
     } catch (err) {
       console.log(err);
@@ -192,6 +216,34 @@ const ReceivedRequests = () => {
       ),
     },
   ];
+  const handleExcelPreview = async () => {
+    try {
+      if (!dAndARRemarks?.BulkExcel) {
+        return null;
+      }
+      const payloadFormData = new FormData();
+      payloadFormData.append('file', dAndARRemarks?.BulkExcel);
+      const response = await axiosInstance.post('/Util/preview-excel', payloadFormData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      if (response.data.success) {
+        setExcelPreviewData(response.data.data);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  useEffect(() => {
+    handleExcelPreview();
+  }, [dAndARRemarks?.BulkExcel]);
+  const filteredData = useMemo(() => {
+    return request.filter((item) => {
+      // const postMatch = selectedGrade === 'all' || item.post === selectedGrade;
+      const departmentMatch = selectedDepartment === 'all' || item.department === selectedDepartment;
+      // return postMatch && departmentMatch;
+      return departmentMatch;
+    });
+  }, [selectedDepartment, selectedGrade, request]);
 
   return (
     <div className=" p-6">
@@ -204,67 +256,87 @@ const ReceivedRequests = () => {
         value={activetab}
       >
         <TabsList>
-          <TabsTrigger value="pending">Pending Requests</TabsTrigger>
-          <TabsTrigger value="processed">Processed Requests</TabsTrigger>
+          {reportStatus.map((ele) => {
+            return <TabsTrigger value={ele.value}>{ele.label}</TabsTrigger>;
+          })}
         </TabsList>
-        <TabsContent value="processed">
-          <div>
-            <div className="overflow-x-auto">
-              <TableList
-                data={request.sort((a, b) => {
-                  const dateA = a?.initiationDate ? new Date(a.initiationDate).getTime() : 0;
-                  const dateB = b?.initiationDate ? new Date(b.initiationDate).getTime() : 0;
-                  return dateB - dateA;
-                })}
-                columns={columns}
-                rowClassName={(row) => {
-                  if (row.purposeName === 'Award') {
-                    return `bg-yellow-100`;
-                  }
-                  if (row.purposeName === 'Probation Confirmation') {
-                    return `bg-blue-50`;
-                  }
-                }}
-                rightElements={
-                  <Button
-                    variant="outline"
-                    onClick={() => getRequestByUnitId(selectedUnit, activetab)}
-                    className=" space-x-2 ml-3"
-                  >
-                    <RefreshCw className="h-4 w-4" />
-                  </Button>
-                }
-                showFilter={false}
-              />
-            </div>
-          </div>
-        </TabsContent>
-        <TabsContent value="pending">
-          <div>
-            <div className="overflow-x-auto">
-              <TableList
-                data={request.sort((a, b) => {
-                  const dateA = a?.initiationDate ? new Date(a.initiationDate).getTime() : 0;
-                  const dateB = b?.initiationDate ? new Date(b.initiationDate).getTime() : 0;
-                  return dateB - dateA;
-                })}
-                columns={columns}
-                rightElements={
-                  <Button
-                    variant="outline"
-                    onClick={() => getRequestByUnitId(selectedUnit, activetab)}
-                    className=" space-x-2 ml-3"
-                  >
-                    <RefreshCw className="h-4 w-4" />
-                  </Button>
-                }
-                showFilter={false}
-              />
-            </div>
-          </div>
-        </TabsContent>
+        {reportStatus.map((ele) => {
+          return (
+            <TabsContent value={ele.value}>
+              <div>
+                <div className="overflow-x-auto">
+                  <TableList
+                    data={filteredData}
+                    columns={columns}
+                    rowClassName={(row) => {
+                      if (row.purposeName === 'Award') {
+                        return `bg-yellow-100`;
+                      }
+                      if (row.purposeName === 'Probation Confirmation') {
+                        return `bg-blue-50`;
+                      }
+                    }}
+                    rightElements={
+                      <>
+                        <div className="w-full grid grid-cols-2 md:grid-cols-3 gap-4">
+                          <Select
+                            value={selectedUnit.toString()}
+                            onValueChange={(value) => setSelectedUnit(Number(value))}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select Position Grade" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {units.map((ele) => {
+                                return <SelectItem value={ele.unitid?.toString()}>{ele.unitName}</SelectItem>;
+                              })}
+                            </SelectContent>
+                          </Select>
+                          <Select value={selectedDepartment} onValueChange={(value) => setSelectedDepartment(value)}>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select department Grade" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="all">All</SelectItem>
+                              {departments.map((ele) => {
+                                return <SelectItem value={ele}>{ele}</SelectItem>;
+                              })}
+                            </SelectContent>
+                          </Select>
+                          <Select value={selectedGrade} onValueChange={(value) => setSelectedGrade(value)}>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select position grade" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="all">All</SelectItem>
+                              {grades.map((ele) => {
+                                return <SelectItem value={ele}>{ele}</SelectItem>;
+                              })}
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <Button
+                          variant="outline"
+                          onClick={() => getRequestByUnitId(selectedUnit)}
+                          className=" space-x-2 ml-3"
+                        >
+                          <RefreshCw className="h-4 w-4" />
+                        </Button>
+                      </>
+                    }
+                    showFilter={false}
+                  />
+                </div>
+              </div>
+            </TabsContent>
+          );
+        })}
       </Tabs>
       <DAndArNOCDetailDialog
+        excelPreviewData={excelPreviewData}
+        errorRowsIndexs={errorRowsIndexs}
+        errorRows={errorRows}
         isOpen={isOpen}
         onOpenChange={setIsOpen}
         nocData={selectedRequest}
@@ -275,7 +347,11 @@ const ReceivedRequests = () => {
         AccecptButtonName={'Forward To Vigilance'}
         revertButtonName={'Revert To Corporate HR'}
         handleExcelDownload={handleExcelDownload}
+        handleExcelPreview={handleExcelPreview}
         isEditable={true}
+        setErrorRowsIndexs={setErrorRowsIndexs}
+        setErrorRows={setErrorRows}
+        setExcelPreviewData={setExcelPreviewData}
       />
     </div>
   );

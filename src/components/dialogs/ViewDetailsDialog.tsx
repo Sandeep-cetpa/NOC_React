@@ -45,7 +45,11 @@ export const RequestDetailsDialog = ({ request, setOpen, open }) => {
 
   return (
     <Dialog open={open} onOpenChange={() => setOpen(false)}>
-      <DialogContent className="max-w-4xl ">
+      <DialogContent
+        onPointerDownOutside={(e) => e.preventDefault()} // Prevents closing on outside click
+        onEscapeKeyDown={(e) => e.preventDefault()}
+        className="max-w-4xl "
+      >
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <User className="h-5 w-5" />

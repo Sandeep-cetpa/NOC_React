@@ -70,7 +70,11 @@ const UnitHrNOCDetailDialog = ({
   if (!nocData) return null;
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-6xl overflow-y-auto">
+      <DialogContent
+        onPointerDownOutside={(e) => e.preventDefault()} // Prevents closing on outside click
+        onEscapeKeyDown={(e) => e.preventDefault()}
+        className="max-w-6xl overflow-y-auto"
+      >
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <User className="w-5 h-5" />
