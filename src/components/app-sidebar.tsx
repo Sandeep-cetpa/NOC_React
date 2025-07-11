@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { LogOut, Hotel, ChevronsLeft, ChevronsRight, FileText, MonitorCog } from 'lucide-react';
+import { LogOut, Hotel, ChevronsLeft, ChevronsRight, FileText, MonitorCog, Loader } from 'lucide-react';
 import { NavMain } from '@/components/nav-main';
 import {
   Sidebar,
@@ -14,18 +14,17 @@ import {
 import { environment } from '@/config';
 import { Separator } from '@radix-ui/react-separator';
 import { useNavigate } from 'react-router';
-import useUserRoles from '@/hooks/useUserRoles';
 import { removeSessionItem } from '@/lib/helperFunction';
 import { useDispatch, useSelector } from 'react-redux';
 import { setEmployeesData } from '@/features/employee/employeeSlice';
 import toast from 'react-hot-toast';
 import { setUnits } from '@/features/unit/unitSlice';
-import { RootState } from '@/app/store';
-import { fetchPurpose } from '@/features/purpose/purposeSlice';
+import { AppDispatch, RootState } from '@/app/store';
 import { fetchStatus } from '@/features/status/statusSlice';
 import { fetchApplications } from '@/features/applications/applicationsSlice';
-import { fetchMasterData } from '@/features/masterData/masterSlice';
 import { useAuth } from 'react-oidc-context';
+import { UserRole } from '@/types/auth';
+import { useAppSelector } from '@/app/hooks';
 
 export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
   const navigate = useNavigate();
@@ -33,11 +32,22 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
   const { state, toggleSidebar } = useSidebar();
   const employees = useSelector((state: RootState) => state.employee.employees);
   const status = useSelector((state: RootState) => state.allStatus.allStatus);
-  const purposes = useSelector((state: RootState) => state.pupose.purpose);
   const applications = useSelector((state: RootState) => state.applications.applications);
-  const { isUnitHr, roles } = useUserRoles();
-  const hasAccess = roles.length > 0;
-  // const hasAccess = isNodalOfficer || isSuperAdmin || isAdmin || isUnitCGM;
+  const { loading: userLoading, Roles: userRoles } = useAppSelector((state) => state.user);
+  const Roles = userRoles?.map((ele) => ele?.roleName);
+  const canAccessAdminDashboard = (
+    [
+      'admin',
+      'superAdmin',
+      'CGM',
+      'CMAdmin',
+      'CMUser',
+      'DandAR',
+      'HrUser',
+      'VigilanceAdmin',
+      'VigilanceUser',
+    ] as UserRole[]
+  ).some((role) => Roles?.includes(role));
 
   const navMainItems = {
     navMain: [
@@ -55,7 +65,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
       },
     ],
   };
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
   const fetchData = async () => {
     try {
@@ -103,17 +113,14 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
     removeSessionItem('token');
     window.location.href = environment.logoutUrl;
   };
-  //  console.log(purposes,"purposes")
-  // React.useEffect(() => {
-  //   if (purposes.length === 0) {
-  //     dispatch(fetchPurpose());
-  //   }
-  // }, [purposes]);
   React.useEffect(() => {
     if (applications?.length === 0) {
       dispatch(fetchApplications());
     }
   }, [applications]);
+  if (userLoading) {
+    return <Loader />;
+  }
   return (
     <Sidebar collapsible="icon" {...props} className={state === 'collapsed' ? 'sidebar-collapsed' : ''}>
       <div className="flex justify-end md:pt-[90px] ">
@@ -129,7 +136,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
-          {hasAccess && (
+          {canAccessAdminDashboard && (
             <SidebarMenuButton
               onClick={() => navigate('/admin-dashboard')}
               asChild

@@ -47,5 +47,5 @@ export const gradeHierarchy = [
 ];
 
 export const ManualUrl = './TaskManagementSystem.pdf';
-
+export const SESSION_CHECK_INTERVAL = 20 * 60 * 1000;
 export const environment = import.meta.env.VITE_ENV === 'production' ? DFCCIL_PROD : DFCCIL_UAT;

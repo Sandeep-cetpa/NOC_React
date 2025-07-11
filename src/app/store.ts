@@ -6,7 +6,6 @@ import employeeReducer from '../features/employee/employeeSlice';
 import userReducer from '../features/user/userSlice';
 import authReducer from '../features/auth/authSlice';
 import applicationsReducer from '../features/applications/applicationsSlice';
-import purposeReducer from '../features/purpose/purposeSlice';
 import statusReducer from '../features/status/statusSlice';
 import masterDataReducer from '../features/masterData/masterSlice';
 
@@ -21,7 +20,6 @@ const rootReducer = combineReducers({
   user: userReducer,
   auth: authReducer,
   applications: applicationsReducer,
-  pupose: purposeReducer,
   allStatus: statusReducer,
   masterData: masterDataReducer,
 });

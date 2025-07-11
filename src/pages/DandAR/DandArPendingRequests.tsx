@@ -57,12 +57,11 @@ const ReceivedRequests = () => {
       </Badge>
     );
   };
-  console.log(findUnitNameByUnitId(units, 2), 'requests');
-  console.log(units, 'requests');
+
   useEffect(() => {
     getRequestByUnitId(selectedUnit, activetab);
   }, [activetab]);
-  console.log(selectedRequest, 'selected request');
+
   const handleApproveClick = async (nocId: any, status: any) => {
     const payloadFormData = new FormData();
 

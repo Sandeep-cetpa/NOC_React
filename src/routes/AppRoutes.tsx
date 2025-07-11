@@ -1,7 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router';
 import PrivateRoute from './PrivateRoute';
 import NotFound from '@/pages/notFound/NotFound';
-import AdminPrivateRoute from './AdminPrivateRoute';
 import ManageRoles from '@/pages/admin/ManageRoles';
 import CreateRequest from '@/pages/employee/CreateRequest';
 import TrackNoc from '@/pages/employee/TrackNoc';
@@ -9,13 +8,8 @@ import NocRequestForEmployee from '@/pages/UnitHr/NocRequestForEmployee';
 import FrontChannelLogout from '@/auth/FrontChannelLogout';
 import RequestReceived from '@/pages/cgm/RequestReceived';
 import ProcessedRequestByCgm from '@/pages/cgm/ProcessedRequestByCgm';
-import CgmPrivateRoute from './CgmPrivateRoute';
-import DAndARPrivateRoute from './DAndARPrivateRoute';
-import UnitHrPrivateRoute from './UnitHrPrivateRoute';
 import PendingNocRequests from '@/pages/UnitHr/PendingNocRequests';
 import ProcessedNocRequests from '@/pages/UnitHr/ProcessedNocRequests';
-import CorporateUnitHrPrivateRoute from './CorporateUnitHrPrivateRoute';
-import VigilanceAdminPrivateRoute from './VigilanceAdminPrivateRoute';
 import ReceivedRequests from '@/pages/CorporateUnitHr/ReceivedRequests';
 import RequestUnderProcess from '@/pages/CorporateUnitHr/RequestUnderProcess';
 import NocRequestsFromVigilance from '@/pages/CorporateUnitHr/NocRequestsFromVigilance';
@@ -24,8 +18,6 @@ import ManageGreyList from '@/pages/VigilanceAdmin/ManageGreyList';
 import VigilanceRequestReceived from '@/pages/VigilanceAdmin/VigilanceRequestReceived';
 import ProcessedRequest from '@/pages/VigilanceAdmin/ProcessedRequest';
 import DandArPendingRequests from '@/pages/DandAR/DandArPendingRequests';
-import DandArProcessedRequests from '@/pages/DandAR/NocRequestForEmployeeByDandAR';
-import GmPrivateRoute from './GmPrivateRoute';
 import GmProcessedRequests from '@/pages/gm/GmProcessedRequests';
 import GmRejectedRequests from '@/pages/gm/GmRejectedRequests';
 import GmREquesteReceived from '@/pages/gm/GmREquesteReceived';
@@ -37,6 +29,8 @@ import { fetchMasterData } from '@/features/masterData/masterSlice';
 import { AppDispatch, RootState } from '@/app/store';
 import NocRequestForEmployeeByCorporateHr from '@/pages/CorporateUnitHr/NocRequestForEmployeeByCorporateHr';
 import NocRequestForEmployeeByDandAR from '@/pages/DandAR/NocRequestForEmployeeByDandAR';
+import AppLayout from '@/components/layout/app-layout';
+import Unauthorized from '@/pages/unauthorized/Unauthorized';
 
 const AppRoutes = () => {
   const { isAuthenticated } = useAuth();
@@ -50,46 +44,62 @@ const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/logout-notification" element={<FrontChannelLogout />} />
-      <Route element={<PrivateRoute />}>
-        <Route path="/" element={<Navigate to="/create-request" replace={true} />} />
-        <Route path="/track-noc" element={<TrackNoc />} />
-        <Route path="/create-request" element={<CreateRequest />} />
-        <Route path="/noc-request-for-employee" element={<NocRequestForEmployee />} />
+      <Route path="/unauthorized" element={<Unauthorized />} />
+      <Route element={<AppLayout isAdmin={false} />}>
+        <Route element={<PrivateRoute allowedRoles={[]} />}>
+          <Route path="/" element={<Navigate to="/create-request" replace={true} />} />
+          <Route path="/track-noc" element={<TrackNoc />} />
+          <Route path="/create-request" element={<CreateRequest />} />
+          <Route path="/noc-request-for-employee" element={<NocRequestForEmployee />} />
+        </Route>
       </Route>
-      <Route element={<AdminPrivateRoute />}>
-        <Route path="/admin-dashboard" element={<Dashboard />} />
-        {/* <Route path="/form" element={<Forms />} /> */}
-        <Route path="/admin-manage-role" element={<ManageRoles />} />
+      <Route element={<AppLayout isAdmin={true} />}>
+        <Route element={<PrivateRoute allowedRoles={['admin', 'superAdmin', 'HrUser']} />}>
+          <Route path="/admin-dashboard" element={<Dashboard />} />
+          <Route path="/admin-manage-role" element={<ManageRoles />} />
+        </Route>
       </Route>
-      <Route element={<CgmPrivateRoute />}>
-        <Route path="/cgm-request-received" element={<RequestReceived />} />
-        <Route path="/cgm-processed-request" element={<ProcessedRequestByCgm />} />
+      <Route element={<AppLayout isAdmin={true} />}>
+        <Route element={<PrivateRoute allowedRoles={['CGM']} />}>
+          <Route path="/cgm-request-received" element={<RequestReceived />} />
+          <Route path="/cgm-processed-request" element={<ProcessedRequestByCgm />} />
+        </Route>
       </Route>
-      <Route element={<UnitHrPrivateRoute />}>
-        <Route path="/unit-hr-request-for-employee" element={<NocRequestForEmployee />} />
-        <Route path="/unit-hr-pending-noc-requests" element={<PendingNocRequests />} />
-        <Route path="/unit-hr-processed-noc-requests" element={<ProcessedNocRequests />} />
+      <Route element={<AppLayout isAdmin={true} />}>
+        <Route element={<PrivateRoute allowedRoles={['HrUser']} />}>
+          <Route path="/unit-hr-request-for-employee" element={<NocRequestForEmployee />} />
+          <Route path="/unit-hr-pending-noc-requests" element={<PendingNocRequests />} />
+          <Route path="/unit-hr-processed-noc-requests" element={<ProcessedNocRequests />} />
+        </Route>
       </Route>
-      <Route element={<CorporateUnitHrPrivateRoute />}>
-        <Route path="/corporate-unit-hr-received-requests" element={<ReceivedRequests />} />
-        <Route path="/corporate-unit-hr-request-under-process" element={<RequestUnderProcess />} />
-        <Route path="/corporate-unit-hr-noc-requests-from-vigilance" element={<NocRequestsFromVigilance />} />
-        <Route path="/corporate-unit-hr-request-for-employee" element={<NocRequestForEmployeeByCorporateHr />} />
+      <Route element={<AppLayout isAdmin={true} />}>
+        <Route element={<PrivateRoute allowedRoles={['HrUser']} />}>
+          <Route path="/corporate-unit-hr-received-requests" element={<ReceivedRequests />} />
+          <Route path="/corporate-unit-hr-request-under-process" element={<RequestUnderProcess />} />
+          <Route path="/corporate-unit-hr-noc-requests-from-vigilance" element={<NocRequestsFromVigilance />} />
+          <Route path="/corporate-unit-hr-request-for-employee" element={<NocRequestForEmployeeByCorporateHr />} />
+        </Route>
       </Route>
-      <Route element={<VigilanceAdminPrivateRoute />}>
-        <Route path="/vigilance-admin-role-management" element={<RoleManagement />} />
-        <Route path="/vigilance-admin-manage-grey-list" element={<ManageGreyList />} />
-        <Route path="/vigilance-admin-request-received" element={<VigilanceRequestReceived />} />
-        <Route path="/vigilance-admin-processed-request" element={<ProcessedRequest />} />
+      <Route element={<AppLayout isAdmin={true} />}>
+        <Route element={<PrivateRoute allowedRoles={['VigilanceAdmin', 'VigilanceUser']} />}>
+          <Route path="/vigilance-admin-role-management" element={<RoleManagement />} />
+          <Route path="/vigilance-admin-manage-grey-list" element={<ManageGreyList />} />
+          <Route path="/vigilance-admin-request-received" element={<VigilanceRequestReceived />} />
+          <Route path="/vigilance-admin-processed-request" element={<ProcessedRequest />} />
+        </Route>
       </Route>
-      <Route element={<DAndARPrivateRoute />}>
-        <Route path="/d-and-ar-pending-requests" element={<DandArPendingRequests />} />
-        <Route path="/d-and-ar-raise-requests" element={<NocRequestForEmployeeByDandAR />} />
+      <Route element={<AppLayout isAdmin={true} />}>
+        <Route element={<PrivateRoute allowedRoles={['DandAR']} />}>
+          <Route path="/d-and-ar-pending-requests" element={<DandArPendingRequests />} />
+          <Route path="/d-and-ar-raise-requests" element={<NocRequestForEmployeeByDandAR />} />
+        </Route>
       </Route>
-      <Route element={<GmPrivateRoute />}>
-        <Route path="/gm-request-received" element={<GmREquesteReceived />} />
-        <Route path="/gm-processed-requests" element={<GmProcessedRequests />} />
-        <Route path="/gm-rejected-requests" element={<GmRejectedRequests />} />
+      <Route element={<AppLayout isAdmin={true} />}>
+        <Route element={<PrivateRoute allowedRoles={['']} />}>
+          <Route path="/gm-request-received" element={<GmREquesteReceived />} />
+          <Route path="/gm-processed-requests" element={<GmProcessedRequests />} />
+          <Route path="/gm-rejected-requests" element={<GmRejectedRequests />} />
+        </Route>
       </Route>
       <Route path="*" element={<NotFound />} />
     </Routes>

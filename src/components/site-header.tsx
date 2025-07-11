@@ -9,7 +9,6 @@ import LogoutButton from '../auth/LogoutButton';
 
 const SiteHeader: React.FC = () => {
   const user = useSelector((state: RootState) => state.user);
-  console.log(user, 'user');
   const { toggleSidebar } = useSidebar();
   return (
     <header className="bg-white shadow-md sticky top-0 w-full z-50 border-b-4 border-red-600 h-[80px] px-4">

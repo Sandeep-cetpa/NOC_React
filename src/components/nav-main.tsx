@@ -22,6 +22,9 @@ export function NavMain({
     items?: any[];
   }[];
 }) {
+  if (!items?.length) {
+    return null;
+  }
   const { setOpenMobile, state } = useSidebar();
   const location = useLocation();
   const [openIndex, setOpenIndex] = useState<number | null>(null);

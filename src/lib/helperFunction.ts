@@ -90,7 +90,15 @@ export function statusConfig(status: string) {
       };
   }
 }
-
+export function clearAllStorage(): void {
+  localStorage.clear();
+  sessionStorage.clear();
+  const cookies: string[] = document.cookie.split(';');
+  for (const cookie of cookies) {
+    const [name] = cookie.split('=');
+    document.cookie = `${name.trim()}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+  }
+}
 export const setSessionItem = (key: string, value: any) => {
   const valueToStore = typeof value === 'object' ? JSON.stringify(value) : value;
   sessionStorage.setItem(key, valueToStore);
