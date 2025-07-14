@@ -145,7 +145,7 @@ const NocRequestForEmployeeByDandAR = () => {
       [newUUID]: newRowObject,
     }));
   };
-
+  console.log(selectedForm, 'selected form');
   const removeRow = (uuidToRemove) => {
     setTableRows((prev) => {
       const updated = Object.entries(prev)
@@ -253,7 +253,11 @@ const NocRequestForEmployeeByDandAR = () => {
       setIsLoading(false);
     }
   };
-
+  useEffect(() => {
+    if (formData.BulkExcel) {
+      handleExcelPreview();
+    }
+  }, [formData.BulkExcel]);
   return (
     <div className="bg-white">
       <div className="p-6 space-y-6">
@@ -334,6 +338,7 @@ const NocRequestForEmployeeByDandAR = () => {
                     errorRowIndexes={errorRowsIndexs}
                     data={excelPreviewData}
                     errorMessages={errorRows}
+                    isUploadButton={true}
                   />
                 )}
               </div>

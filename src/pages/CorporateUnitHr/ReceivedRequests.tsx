@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Eye, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -9,15 +9,23 @@ import { Badge } from '@/components/ui/badge';
 import TableList from '@/components/ui/data-table';
 import Loader from '@/components/ui/loader';
 import CorporateHrNOCDetailDialog from '@/components/dialogs/CorporateHrNOCDetailDialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import toast from 'react-hot-toast';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/app/store';
 
 const ReceivedRequests = () => {
+  const tabStatus = [
+    { label: 'Request From Corporate Office', value: 'corporate' },
+    { label: 'Request From Unit', value: 'unit' },
+  ];
   const [activetab, setActiveTab] = useState('corporate');
   const [request, setRequests] = useState([]);
   const user = useSelector((state: RootState) => state.user);
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedGrade, setSelectedGrade] = useState('all');
+  const [selectedDepartment, setSelectedDepartment] = useState('all');
+  const { departments, grades } = useSelector((state: RootState) => state.masterData.data);
   const [corporateHrRemarks, setCorporateHdRemarks] = useState({
     remark: '',
   });
@@ -149,11 +157,17 @@ const ReceivedRequests = () => {
       ),
     },
   ];
-  if (isLoading) {
-    return <Loader />;
-  }
+  const filteredData = useMemo(() => {
+    return request.filter((item) => {
+      // const postMatch = selectedGrade === 'all' || item.post === selectedGrade;
+      const departmentMatch = selectedDepartment === 'all' || item.department === selectedDepartment;
+      // return postMatch && departmentMatch;
+      return departmentMatch;
+    });
+  }, [selectedDepartment, selectedGrade, request]);
   return (
     <div className=" p-6">
+      {isLoading && <Loader />}
       <Tabs
         onValueChange={(e) => {
           setActiveTab(e);
@@ -167,59 +181,65 @@ const ReceivedRequests = () => {
         value={activetab}
       >
         <TabsList>
-          <TabsTrigger value="corporate">Request From Corporate Office</TabsTrigger>
-          <TabsTrigger value="unit">Request From Unit</TabsTrigger>
+          {tabStatus.map((ele) => {
+            return <TabsTrigger value={ele.value}>{ele.label}</TabsTrigger>;
+          })}
         </TabsList>
-        <TabsContent value="unit">
-          <div>
-            <h1 className="text-3xl my-4">Request From Unit </h1>
-            <div className="overflow-x-auto">
-              <TableList
-                data={request.sort((a, b) => {
-                  const dateA = a?.initiationDate ? new Date(a.initiationDate).getTime() : 0;
-                  const dateB = b?.initiationDate ? new Date(b.initiationDate).getTime() : 0;
-                  return dateB - dateA;
-                })}
-                columns={columns}
-                rightElements={
-                  <Button
-                    variant="outline"
-                    onClick={() => getRequestByUnitId(selectedUnit, activetab)}
-                    className=" space-x-2 ml-3"
-                  >
-                    <RefreshCw className="h-4 w-4" />
-                  </Button>
-                }
-                showFilter={false}
-              />
-            </div>
-          </div>
-        </TabsContent>
-        <TabsContent value="corporate">
-          <div>
-            <h1 className="text-3xl my-3">Request From Corporate Office </h1>
-            <div className="overflow-x-auto">
-              <TableList
-                data={request.sort((a, b) => {
-                  const dateA = a?.initiationDate ? new Date(a.initiationDate).getTime() : 0;
-                  const dateB = b?.initiationDate ? new Date(b.initiationDate).getTime() : 0;
-                  return dateB - dateA;
-                })}
-                columns={columns}
-                rightElements={
-                  <Button
-                    variant="outline"
-                    onClick={() => getRequestByUnitId(selectedUnit, activetab)}
-                    className=" space-x-2 ml-3"
-                  >
-                    <RefreshCw className="h-4 w-4" />
-                  </Button>
-                }
-                showFilter={false}
-              />
-            </div>
-          </div>
-        </TabsContent>
+        {tabStatus.map((ele) => {
+          return (
+            <TabsContent value={ele.value}>
+              <div>
+                <h1 className="text-3xl my-4">{ele.label}</h1>
+                <div className="overflow-x-auto">
+                  <TableList
+                    data={filteredData.sort((a, b) => {
+                      const dateA = a?.initiationDate ? new Date(a.initiationDate).getTime() : 0;
+                      const dateB = b?.initiationDate ? new Date(b.initiationDate).getTime() : 0;
+                      return dateB - dateA;
+                    })}
+                    columns={columns}
+                    rightElements={
+                      <>
+                        <div className="w-full md:w-1/2 grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <Select value={selectedDepartment} onValueChange={(value) => setSelectedDepartment(value)}>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select department Grade" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="all">All</SelectItem>
+                              {departments.map((ele) => {
+                                return <SelectItem value={ele}>{ele}</SelectItem>;
+                              })}
+                            </SelectContent>
+                          </Select>
+                          <Select value={selectedGrade} onValueChange={(value) => setSelectedGrade(value)}>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select position grade" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="all">All</SelectItem>
+                              {grades.map((ele) => {
+                                return <SelectItem value={ele}>{ele}</SelectItem>;
+                              })}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <Button
+                          variant="outline"
+                          onClick={() => getRequestByUnitId(selectedUnit, activetab)}
+                          className=" space-x-2 ml-3"
+                        >
+                          <RefreshCw className="h-4 w-4" />
+                        </Button>
+                      </>
+                    }
+                    showFilter={false}
+                  />
+                </div>
+              </div>
+            </TabsContent>
+          );
+        })}
       </Tabs>
       <CorporateHrNOCDetailDialog
         isOpen={isOpen}

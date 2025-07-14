@@ -19,7 +19,7 @@ const DAndArNOCDetailDialog = ({
   setdAndARRemarksRemarks,
   handleApproveClick,
   handleGetTrailClick,
-  handleRevertClick,
+  revertBackToCorporateHr,
   corporateHrData,
   AccecptButtonName,
   revertButtonName,
@@ -63,7 +63,7 @@ const DAndArNOCDetailDialog = ({
       return dateString;
     }
   };
-  console.log(excelPreviewData, 'excelPreviewData');
+
   const getFieldIcon = (fieldType) => {
     switch (fieldType?.toLowerCase()) {
       case 'file':
@@ -485,7 +485,7 @@ const DAndArNOCDetailDialog = ({
               </Button>
               <Button
                 className="bg-yellow-500 hover:bg-yellow-600"
-                onClick={() => handleRevertClick(nocData?.refId, RequestStatus.RevertBackToHR.value)}
+                onClick={() => revertBackToCorporateHr(nocData?.refId)}
               >
                 {revertButtonName}
               </Button>

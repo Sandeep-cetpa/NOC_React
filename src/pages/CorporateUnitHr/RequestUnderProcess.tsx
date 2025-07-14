@@ -193,6 +193,7 @@ const RequestUnderProcess = () => {
                               <SelectValue placeholder="Select Position Grade" />
                             </SelectTrigger>
                             <SelectContent>
+                              <SelectItem value="0">All Units</SelectItem>
                               {units.map((ele) => {
                                 return <SelectItem value={ele.unitid?.toString()}>{ele.unitName}</SelectItem>;
                               })}

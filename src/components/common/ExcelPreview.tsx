@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { AlertTriangle } from 'lucide-react';
+import { Input } from '../ui/input';
 
 // shadcn/ui Table components (proper implementation)
 const Table = ({ className, ...props }) => (
@@ -39,7 +40,6 @@ const DataTable = ({ data, columns, errorRowIndexes = [], errorMessages = {} }) 
   if (!data || data.length === 0) {
     return <div className="flex items-center justify-center p-8 text-muted-foreground">No data to display</div>;
   }
-
   return (
     <div className="space-y-4">
       <div className="rounded-md border">
@@ -100,11 +100,39 @@ const DataTable = ({ data, columns, errorRowIndexes = [], errorMessages = {} }) 
 };
 
 // Main Employee Data Table Component
-const ExcelDataPreview = ({ data = [], errorRowIndexes = [], errorMessages = {} }) => {
+const ExcelDataPreview = ({ data = [], errorRowIndexes = [], errorMessages = {}, isUploadButton = false }) => {
   if (!data || data.length === 0) {
-    return <div className="flex items-center justify-center p-8 text-muted-foreground">No data to display</div>;
+    return null;
   }
+  const transformExcelData = (data) => {
+    if (!data || data.length < 2) return [];
 
+    const headers = data[0];
+    const rows = data.slice(1);
+
+    return rows.map((row) => {
+      const rowObj = {};
+
+      headers.forEach((header, index) => {
+        rowObj[header] = row[index] ?? '';
+      });
+
+      // Add file placeholder
+      rowObj.uploadFile = null;
+
+      return rowObj;
+    });
+  };
+  const [tableData, setTableData] = useState([]);
+
+  useEffect(() => {
+    if (data.length > 0) {
+      const transformed = transformExcelData(data);
+      setTableData(transformed);
+    }
+  }, [data]);
+  console.log(tableData, 'tableData');
+  if (!tableData || tableData.length === 0) return null;
   const headers = data[0] || [];
   const rows = data.slice(1) || [];
 
@@ -112,12 +140,39 @@ const ExcelDataPreview = ({ data = [], errorRowIndexes = [], errorMessages = {} 
     ...headers.map((header, index) => ({
       header: header,
       accessorKey: `col_${index}`,
-      className: `min-w-[150px] bg-primary text-white ${index === headers.length - 1 ? 'rounded-tr-lg' : ''}`,
+      className: `min-w-[150px] bg-primary ${index === 0 ? 'rounded-tl-lg' : ''} text-white ${
+        index === headers.length - 1 && !isUploadButton ? 'rounded-tr-lg' : ''
+      }`,
       cell: (row) => {
         const cellValue = row[index];
         return cellValue || <span className="text-gray-400 italic text-xs">Empty</span>;
       },
     })),
+    ...(isUploadButton
+      ? [
+          {
+            header: 'Upload File',
+            accessorKey: 'uploadFile',
+            className: `min-w-[150px] bg-primary text-white rounded-tr-lg`,
+            cell: (row, rowIndex) => (
+              <Input
+                type="file"
+                onChange={(e) => {
+                  console.log(rowIndex, 'row Index');
+                  const file = e.target.files?.[0] || null;
+                  setTableData((prevData) => {
+                    const updated = [...prevData];
+                    if (updated[rowIndex - 2]) {
+                      updated[rowIndex - 2].uploadFile = file;
+                    }
+                    return updated;
+                  });
+                }}
+              />
+            ),
+          },
+        ]
+      : []),
   ];
 
   return <DataTable data={rows} columns={columns} errorRowIndexes={errorRowIndexes} errorMessages={errorMessages} />;

@@ -1,7 +1,7 @@
 const DFCCIL_UAT = {
   apiUrl: 'https://uatnocapi.dfccil.com/api',
   orgHierarchy: 'https://uatorganization.dfccil.com/api',
-  logoutUrl: 'http://uatlogin.dfccil.com/applications',
+  logoutUrl: 'https://uatlogin.dfccil.com/applications',
   authUrl: 'https://app2.dfccil.com',
   clientId: 'd59a787020d841469a71107917549ef3',
   postLogout: 'https://uatlogin.dfccil.com/signout',

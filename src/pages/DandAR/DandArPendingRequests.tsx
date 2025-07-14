@@ -38,24 +38,33 @@ const ReceivedRequests = () => {
   const [errorRowsIndexs, setErrorRowsIndexs] = useState([]);
   const [excelPreviewData, setExcelPreviewData] = useState([]);
   const { departments, units, grades } = useSelector((state: RootState) => state.masterData.data);
-  const getRequestByUnitId = async (unitId) => {
+  const userRoles = user?.Roles?.find((ele) => ele?.roleId === 7);
+  const fetchRequestsByTab = async (unitId: number | string, tab: string) => {
     try {
       setIsLoading(true);
-      const response = await axiosInstance.get(`/DandR/NOC?UnitId=${unitId}&isUnit=false`);
-      if (response.data.success) {
-        const allRequests = [
-          ...response?.data?.data?.nonBulkRecord,
-          ...response?.data?.data?.probationRecords,
-          ...response?.data?.data?.awardRecords,
-        ];
-        setRequests(allRequests);
+      let endpoint = `/DandR/NOC?UnitId=${unitId}&isUnit=false`;
+
+      if (tab === 'processed') {
+        endpoint = `/DandR/NOC/Report?UnitId=${unitId}`;
+      }
+      const response = await axiosInstance.get(endpoint);
+      if (response.data?.success) {
+        const { nonBulkRecord = [], probationRecords = [], awardRecords = [] } = response.data.data || {};
+        setRequests([...nonBulkRecord, ...probationRecords, ...awardRecords]);
       }
     } catch (err) {
-      console.log(err);
+      console.error('Error fetching requests:', err);
     } finally {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (selectedUnit) {
+      fetchRequestsByTab(selectedUnit, activetab);
+    }
+  }, [activetab, selectedUnit]);
+
   const getStatusBadge = (status) => {
     if (!status) {
       return;
@@ -69,10 +78,6 @@ const ReceivedRequests = () => {
       </Badge>
     );
   };
-  useEffect(() => {
-    getRequestByUnitId(selectedUnit);
-  }, [activetab, selectedUnit]);
-
   const handleApproveClick = async (nocId: any, status: any) => {
     const payloadFormData = new FormData();
 
@@ -114,6 +119,31 @@ const ReceivedRequests = () => {
           return updatedErrors;
         });
         toast.error(response?.data?.errorMessage);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  const revertBackToCorporateHr = async (nocId: any, status: any) => {
+    try {
+      setIsLoading(true);
+      const response = await axiosInstance.post('/DandR/NOC/Revert', {
+        refId: nocId,
+        remarks: dAndARRemarks?.Remarks,
+        unitId: userRoles?.unitsAssigned[0]?.unitId,
+        fkAutoId: user.EmpID,
+      });
+      console.log(response.data);
+      if (response?.data?.success) {
+        toast.success('Request updated successfully');
+        fetchRequestsByTab(selectedUnit, activetab);
+        setIsLoading(false);
+        setIsOpen(false);
+        setErrorRowsIndexs([]);
+        setErrorRows({});
+        setdAndARRemarksRemarks({});
+      } else {
+        toast.error(response.data.errorMessage);
       }
     } catch (err) {
       console.log(err);
@@ -287,6 +317,7 @@ const ReceivedRequests = () => {
                               <SelectValue placeholder="Select Position Grade" />
                             </SelectTrigger>
                             <SelectContent>
+                              <SelectItem value="0">All Units</SelectItem>
                               {units.map((ele) => {
                                 return <SelectItem value={ele.unitid?.toString()}>{ele.unitName}</SelectItem>;
                               })}
@@ -318,7 +349,7 @@ const ReceivedRequests = () => {
 
                         <Button
                           variant="outline"
-                          onClick={() => getRequestByUnitId(selectedUnit)}
+                          onClick={() => fetchRequestsByTab(selectedUnit, activetab)}
                           className=" space-x-2 ml-3"
                         >
                           <RefreshCw className="h-4 w-4" />
@@ -342,6 +373,7 @@ const ReceivedRequests = () => {
         nocData={selectedRequest}
         handleApproveClick={handleApproveClick}
         handleGetTrailClick={handleApproveClick}
+        revertBackToCorporateHr={revertBackToCorporateHr}
         setdAndARRemarksRemarks={setdAndARRemarksRemarks}
         corporateHrData={dAndARRemarks}
         AccecptButtonName={'Forward To Vigilance'}

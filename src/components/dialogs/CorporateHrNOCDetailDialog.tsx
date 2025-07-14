@@ -9,6 +9,7 @@ import { Textarea } from '../ui/textarea';
 import { Label } from '../ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { RequestStatus } from '@/constant/status';
+import { format } from 'date-fns';
 
 const CorporateHrNOCDetailDialog = ({
   nocData,
@@ -24,13 +25,12 @@ const CorporateHrNOCDetailDialog = ({
   revertButtonName,
   isEditable = false,
 }) => {
-  console.log(nocData);
+  if (!nocData) return null;
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
     try {
       // Handle different date formats
       let date;
-
       // Check if it's in DD-MMM-YYYY format (like "26-Nov-2024")
       if (dateString.includes('-') && dateString.split('-').length === 3) {
         const parts = dateString.split('-');
@@ -88,8 +88,6 @@ const CorporateHrNOCDetailDialog = ({
     }
     return field.value;
   };
-
-  if (!nocData) return null;
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -217,6 +215,61 @@ const CorporateHrNOCDetailDialog = ({
                       ) : (
                         <p className="bg-white p-3 rounded border">
                           {isDateField ? formatDate(value) || value || 'NA' : value || 'NA'}
+                        </p>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {nocData?.revision && (
+            <div className="bg-blue-50 p-4 rounded-lg">
+              <h3 className="font-semibold text-lg mb-3 text-red-500 flex items-center gap-2">
+                <Mail className="w-5 h-5" />
+                Officer Reverted Remarks & Information
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {Object.entries(nocData?.revision).map(([key, value]: [any, any]) => {
+                  const formatKeyName = (key) => {
+                    return key
+                      .replace(/([A-Z])/g, ' $1')
+                      .replace(/^./, (str) => str.toUpperCase())
+                      .replace(/hr/gi, 'HR')
+                      .replace(/ipr/gi, 'IPR')
+                      .replace(/cgm/gi, 'CGM')
+                      .replace(/dandar/gi, 'D&AR')
+                      .replace(/reamarks/gi, 'Remarks')
+                      .trim();
+                  };
+
+                  // Fields to skip
+                  const skipFields = ['Pk Revert', 'Raised To', 'Objection For', 'Raised At'];
+
+                  if (!nocData?.revision) return null;
+
+                  const formattedKey = formatKeyName(key);
+                  const isDateField = key.toLowerCase().includes('date');
+                  const isFileField = key.toLowerCase().includes('file');
+
+                  // Skip fields logic
+                  if (formattedKey === 'Service Entry') return null;
+                  if (formattedKey.toLowerCase().includes('unit')) return null;
+                  if (formattedKey.toLowerCase().includes('pk revert')) return null;
+                  if (skipFields.includes(formattedKey)) return null;
+
+                  return (
+                    <div key={key}>
+                      <label className="text-sm font-medium text-gray-600">{formattedKey}</label>
+                      {isFileField ? (
+                        <div className="flex items-center gap-2 bg-red-500 p-3 rounded border">
+                          {value && <Download className="w-4 h-4 text-blue-600" />}
+                          <span className="text-blue-600 cursor-pointer hover:underline">{value || 'NA'}</span>
+                        </div>
+                      ) : (
+                        <p className="bg-white p-3 rounded border">
+                          {isDateField ? format(value, 'dd MMM yyyy') || value || 'NA' : value || 'NA'}
                         </p>
                       )}
                     </div>
