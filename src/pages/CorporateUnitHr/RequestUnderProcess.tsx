@@ -5,7 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { format } from 'date-fns';
 import axiosInstance from '@/services/axiosInstance';
 import { Badge } from '@/components/ui/badge';
-import { statusConfig } from '@/lib/helperFunction';
+import { findUnitNameByUnitId, statusConfig } from '@/lib/helperFunction';
 import Loader from '@/components/ui/loader';
 import TableList from '@/components/ui/data-table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -119,6 +119,13 @@ const RequestUnderProcess = () => {
     },
 
     {
+      accessorKey: 'unitId',
+      header: 'Location',
+      cell: ({ row }) => (
+        <div className="w-[170px]">{findUnitNameByUnitId(units, row.original.unitId)?.unitName ?? 'NA'}</div>
+      ),
+    },
+    {
       accessorKey: 'post',
       header: 'Designation',
       cell: ({ row }) => <div>{row?.original?.post ? row?.original?.post : 'NA'}</div>,
@@ -184,7 +191,7 @@ const RequestUnderProcess = () => {
                     columns={columns}
                     rightElements={
                       <>
-                        <div className="w-full grid grid-cols-2 md:grid-cols-3 gap-4">
+                        <div className="w-full grid grid-cols-2 md:grid-cols-4 gap-4">
                           <Select
                             value={selectedUnit.toString()}
                             onValueChange={(value) => setSelectedUnit(Number(value))}
@@ -221,15 +228,10 @@ const RequestUnderProcess = () => {
                               })}
                             </SelectContent>
                           </Select>
+                          <Button variant="outline" onClick={() => getRequestByUnitId(selectedUnit)}>
+                            <RefreshCw className="h-4 w-4" /> Refresh
+                          </Button>
                         </div>
-
-                        <Button
-                          variant="outline"
-                          onClick={() => getRequestByUnitId(selectedUnit)}
-                          className=" space-x-2 ml-3"
-                        >
-                          <RefreshCw className="h-4 w-4" />
-                        </Button>
                       </>
                     }
                     showFilter={false}

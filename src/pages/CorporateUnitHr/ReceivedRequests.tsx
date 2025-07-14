@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { format } from 'date-fns';
 import axiosInstance from '@/services/axiosInstance';
-import { statusConfig } from '@/lib/helperFunction';
+import { findUnitNameByUnitId, statusConfig } from '@/lib/helperFunction';
 import { Badge } from '@/components/ui/badge';
 import TableList from '@/components/ui/data-table';
 import Loader from '@/components/ui/loader';
@@ -25,7 +25,7 @@ const ReceivedRequests = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedGrade, setSelectedGrade] = useState('all');
   const [selectedDepartment, setSelectedDepartment] = useState('all');
-  const { departments, grades } = useSelector((state: RootState) => state.masterData.data);
+  const { departments, grades,units } = useSelector((state: RootState) => state.masterData.data);
   const [corporateHrRemarks, setCorporateHdRemarks] = useState({
     remark: '',
   });
@@ -125,7 +125,13 @@ const ReceivedRequests = () => {
       header: 'Purpose',
       cell: ({ row }) => <div>{row.original.purposeName}</div>,
     },
-
+    {
+      accessorKey: 'unitId',
+      header: 'Location',
+      cell: ({ row }) => (
+        <div className="w-[170px]">{findUnitNameByUnitId(units, row.original.unitId)?.unitName ?? 'NA'}</div>
+      ),
+    },
     {
       accessorKey: 'post',
       header: 'Designation',

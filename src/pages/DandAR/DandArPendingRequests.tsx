@@ -31,7 +31,7 @@ const ReceivedRequests = () => {
   const [dAndARRemarks, setdAndARRemarksRemarks] = useState({});
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [isOpen, setIsOpen] = React.useState(false);
-  const [selectedUnit, setSelectedUnit] = useState(1);
+  const [selectedUnit, setSelectedUnit] = useState(0);
   const [selectedGrade, setSelectedGrade] = useState('all');
   const [selectedDepartment, setSelectedDepartment] = useState('all');
   const [errorRows, setErrorRows] = useState({});
@@ -49,8 +49,12 @@ const ReceivedRequests = () => {
       }
       const response = await axiosInstance.get(endpoint);
       if (response.data?.success) {
-        const { nonBulkRecord = [], probationRecords = [], awardRecords = [] } = response.data.data || {};
-        setRequests([...nonBulkRecord, ...probationRecords, ...awardRecords]);
+        if (activetab !== 'pending') {
+          setRequests(response.data.data);
+        } else {
+          const { nonBulkRecord = [], probationRecords = [], awardRecords = [] } = response.data.data || {};
+          setRequests([...nonBulkRecord, ...probationRecords, ...awardRecords]);
+        }
       }
     } catch (err) {
       console.error('Error fetching requests:', err);
@@ -60,7 +64,7 @@ const ReceivedRequests = () => {
   };
 
   useEffect(() => {
-    if (selectedUnit) {
+    if (selectedUnit || selectedUnit === 0) {
       fetchRequestsByTab(selectedUnit, activetab);
     }
   }, [activetab, selectedUnit]);

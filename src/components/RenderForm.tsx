@@ -31,7 +31,6 @@ const RenderForm = ({
   isSubmitting,
   fileRef,
   missingFields,
-  handleExcelPreview,
 }) => {
   if (!selectedForm) return null;
   const location = useLocation();
@@ -273,7 +272,6 @@ const RenderForm = ({
                             disabled={false}
                             onChange={(value) => {
                               handleInputChange('BulkExcel', value?.target?.files[0]);
-                              handleExcelPreview();
                             }}
                           />
                         </div>

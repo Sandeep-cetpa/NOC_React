@@ -38,7 +38,7 @@ const TableCell = ({ className, ...props }) => (
 // Responsive DataTable component using react-table pattern
 const DataTable = ({ data, columns, errorRowIndexes = [], errorMessages = {} }) => {
   if (!data || data.length === 0) {
-    return <div className="flex items-center justify-center p-8 text-muted-foreground">No data to display</div>;
+    return null;
   }
   return (
     <div className="space-y-4">
@@ -100,7 +100,14 @@ const DataTable = ({ data, columns, errorRowIndexes = [], errorMessages = {} }) 
 };
 
 // Main Employee Data Table Component
-const ExcelDataPreview = ({ data = [], errorRowIndexes = [], errorMessages = {}, isUploadButton = false }) => {
+const ExcelDataPreview = ({
+  data = [],
+  errorRowIndexes = [],
+  errorMessages = {},
+  isUploadButton = false,
+  setExcelData,
+  excelData,
+}) => {
   if (!data || data.length === 0) {
     return null;
   }
@@ -123,16 +130,15 @@ const ExcelDataPreview = ({ data = [], errorRowIndexes = [], errorMessages = {},
       return rowObj;
     });
   };
-  const [tableData, setTableData] = useState([]);
 
   useEffect(() => {
     if (data.length > 0) {
       const transformed = transformExcelData(data);
-      setTableData(transformed);
+      setExcelData(transformed);
     }
   }, [data]);
-  console.log(tableData, 'tableData');
-  if (!tableData || tableData.length === 0) return null;
+  console.log(excelData, 'excelData');
+  if (!excelData || excelData.length === 0) return null;
   const headers = data[0] || [];
   const rows = data.slice(1) || [];
 
@@ -160,7 +166,7 @@ const ExcelDataPreview = ({ data = [], errorRowIndexes = [], errorMessages = {},
                 onChange={(e) => {
                   console.log(rowIndex, 'row Index');
                   const file = e.target.files?.[0] || null;
-                  setTableData((prevData) => {
+                  setExcelData((prevData) => {
                     const updated = [...prevData];
                     if (updated[rowIndex - 2]) {
                       updated[rowIndex - 2].uploadFile = file;

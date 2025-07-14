@@ -47,8 +47,9 @@ const NocRequestForEmployeeByDandAR = () => {
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [tableRows, setTableRows] = useState([]);
+  const [excelData, setExcelData] = useState([]);
   const [submitStatus, setSubmitStatus] = useState<{ type: string; message: string } | null>(null);
-
+  console.log(excelData, 'excelData in nox page');
   const handleFormSelect = (formId: any) => {
     const form = forms.find((f) => Number(f.purposeId) === Number(formId));
     setMisssingfields([]);
@@ -79,6 +80,7 @@ const NocRequestForEmployeeByDandAR = () => {
   }, []);
   const handleInputChange = (fieldId: string, value: any, fieldType?: any) => {
     const key = fieldType === 'File' ? `File${fieldId}` : fieldId;
+
     const numericfieldId = Number(fieldId);
     if (numericfieldId === 122 && value === true) {
       if (fileRef.current) {
@@ -160,6 +162,7 @@ const NocRequestForEmployeeByDandAR = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('➡️ Starting submission');
 
     const result = validateForm(
       selectedForm,
@@ -168,41 +171,39 @@ const NocRequestForEmployeeByDandAR = () => {
       location.pathname !== '/create-request',
       userInfo?.Lavel
     );
+
     setMisssingfields(result);
     if (result?.length > 0) {
       return;
     }
+
     setIsSubmitting(true);
     setSubmitStatus(null);
     setIsLoading(true);
+
     try {
-      const submission = {
-        purposeId: selectedForm?.purposeId,
-        ...formData,
-      };
       const payloadFormData = new FormData();
-      function appendFormData(formData, data, parentKey = '') {
-        for (const key in data) {
-          const value = data[key];
-          const formKey = parentKey ? `${parentKey}[${key}]` : key;
-          if (value instanceof File) {
-            formData.append(formKey, value);
-          } else if (value && typeof value === 'object' && !(value instanceof Date)) {
-            appendFormData(formData, value, formKey);
-          } else {
-            formData.append(formKey, value);
-          }
+      excelData?.forEach((ele, index) => {
+        const isoDate = new Date(ele['Promotion due from (DD-MM-YYYY)']).toISOString();
+        payloadFormData.append(`Data[${index}].EmployeeCode`, ele['Employee Code'] || '');
+        payloadFormData.append(`Data[${index}].PromotionDueDate`, isoDate);
+        payloadFormData.append(`Data[${index}].PertainingPast`, ele['Pertaining to Past Unit'] || '');
+        payloadFormData.append(`Data[${index}].PertainingPresent`, ele['Pertaining to Present Unit'] || '');
+        payloadFormData.append(`Data[${index}].AnyOtherRemark`, ele['Any Other Remarks'] || '');
+
+        if (ele.uploadFile) {
+          payloadFormData.append(`Data[${index}].IprFile`, ele.uploadFile);
         }
-      }
-      appendFormData(payloadFormData, submission);
-      if (Object.entries(tableRows).length > 1) {
-        payloadFormData.append('dynamicTable', JSON.stringify(tableRows));
-      }
-      const response = await axiosInstance.post('/CorporateHR/NOC', payloadFormData, {
+      });
+      payloadFormData.append('ExcelFile', formData?.BulkExcel);
+      payloadFormData.append('PurposeId', selectedForm?.purposeId);
+      payloadFormData.append('FkAutoId', userInfo?.EmpID);
+      const response = await axiosInstance.post('/DandR/NOC', payloadFormData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
-      if (response.data.success) {
-        toast.success(`Your request has been submitted successfully. Reference ID: ${response.data.userId}`);
+
+      if (response.data?.success) {
+        toast.success(`✅ Request submitted successfully. Reference ID: ${response.data.userId}`);
         setFormData({});
         setSelectedForm(null);
         setMisssingfields([]);
@@ -210,25 +211,29 @@ const NocRequestForEmployeeByDandAR = () => {
         setTableRows([]);
         navigate('/unit-hr-processed-noc-requests');
       } else {
-        setErrorRowsIndexs(response?.data?.erorrRowsIfBulk);
+        // Handle partial errors if bulk failed
+        const errorIndexes = response?.data?.data?.erorrRowsIfBulk || [];
+        setErrorRowsIndexs(errorIndexes);
         setErrorRows(() => {
           const updatedErrors = {};
-          response?.data?.erorrRowsIfBulk?.forEach((rowIndex) => {
-            updatedErrors[rowIndex] = response?.data?.errorMessageIfBulk;
+          errorIndexes.forEach((rowIndex) => {
+            updatedErrors[rowIndex] = response?.data?.data?.errorMessageIfBulk;
           });
           return updatedErrors;
         });
       }
     } catch (error) {
+      console.error('Submission error:', error);
       setSubmitStatus({
         type: 'error',
-        message: 'Failed to submit form. Please try again.',
+        message: '❌ Failed to submit form. Please try again.',
       });
     } finally {
       setIsSubmitting(false);
       setIsLoading(false);
     }
   };
+
   const handleExcelPreview = async () => {
     setErrorRowsIndexs([]);
     setErrorRows({});
@@ -257,6 +262,9 @@ const NocRequestForEmployeeByDandAR = () => {
     if (formData.BulkExcel) {
       handleExcelPreview();
     }
+    setExcelPreviewData([]);
+    setErrorRowsIndexs([]);
+    setErrorRows(null);
   }, [formData.BulkExcel]);
   return (
     <div className="bg-white">
@@ -331,7 +339,6 @@ const NocRequestForEmployeeByDandAR = () => {
                   addNewRow={addNewRow}
                   removeRow={removeRow}
                   selectedForm={selectedForm}
-                  handleExcelPreview={handleExcelPreview}
                 />
                 {excelPreviewData.length > 0 && (
                   <ExcelDataPreview
@@ -339,6 +346,8 @@ const NocRequestForEmployeeByDandAR = () => {
                     data={excelPreviewData}
                     errorMessages={errorRows}
                     isUploadButton={true}
+                    excelData={excelData}
+                    setExcelData={setExcelData}
                   />
                 )}
               </div>

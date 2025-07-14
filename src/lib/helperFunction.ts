@@ -312,11 +312,6 @@ export const validateForm = (selectedForm, formData, setSubmitStatus, isUnitHrPa
   const is142True = formData[142];
   let fieldsToIgnore = [];
 
-  // if (is122True) {
-  //   fieldsToIgnore = [142, 122];
-  // } else if (is142True) {
-  //   fieldsToIgnore = [123, 122, 124, 125, 126, 142];
-  // }
   if (is122True) {
     fieldsToIgnore.push(142, 122);
   }
@@ -328,6 +323,9 @@ export const validateForm = (selectedForm, formData, setSubmitStatus, isUnitHrPa
   // Add fieldId 153 if purposeId is 53
   if (selectedForm?.purposeId === 53) {
     fieldsToIgnore.push(153);
+  }
+  if (selectedForm?.purposeId === 58) {
+    fieldsToIgnore.push(168);
   }
   requiredFields = requiredFields.filter((field) => {
     const fieldId = parseInt(field.fieldId);
@@ -359,7 +357,7 @@ export const validateForm = (selectedForm, formData, setSubmitStatus, isUnitHrPa
   const extraMissingFields = [];
 
   // IPR fields validation based on user grade
-  if (isIPRMandatory && selectedForm.purposeId !== 53) {
+  if (isIPRMandatory && selectedForm.purposeId !== 53 && selectedForm.purposeId !== 58) {
     if (!formData.iprFile) {
       extraMissingFields.push({ fieldName: 'IPR File', fieldId: 'iprFile' });
     }
@@ -368,6 +366,11 @@ export const validateForm = (selectedForm, formData, setSubmitStatus, isUnitHrPa
     }
   }
   if (selectedForm?.purposeId === 53) {
+    if (!formData.BulkExcel) {
+      extraMissingFields.push({ fieldName: 'Upload Excel', fieldId: 'BulkExcel' });
+    }
+  }
+  if (selectedForm?.purposeId === 58) {
     if (!formData.BulkExcel) {
       extraMissingFields.push({ fieldName: 'Upload Excel', fieldId: 'BulkExcel' });
     }

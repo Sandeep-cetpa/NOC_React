@@ -57,7 +57,7 @@ const CorporateHrNOCDetailDialog = ({
       return dateString;
     }
   };
-
+  console.log(nocData, 'NOC DATA');
   const getFieldIcon = (fieldType) => {
     switch (fieldType?.toLowerCase()) {
       case 'file':
@@ -200,7 +200,11 @@ const CorporateHrNOCDetailDialog = ({
                   const formattedKey = formatKeyName(key);
 
                   if (formattedKey === 'Service Entry') return null;
-                  if (formattedKey.toLocaleLowerCase().includes('unit')) {
+                  if (
+                    (formattedKey.toLocaleLowerCase().includes('unit') ||
+                      formattedKey.toLocaleLowerCase().includes('cgm')) &&
+                    nocData.unitId === 1
+                  ) {
                     return null;
                   }
 
