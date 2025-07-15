@@ -3,7 +3,7 @@ import { RefreshCw, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { format } from 'date-fns';
-import { statusConfig } from '@/lib/helperFunction';
+import { findUnitNameByUnitId, statusConfig } from '@/lib/helperFunction';
 import { Badge } from '@/components/ui/badge';
 import toast from 'react-hot-toast';
 import axiosInstance from '@/services/axiosInstance';
@@ -13,9 +13,9 @@ import TableList from '@/components/ui/data-table';
 import CgmNOCDetailDialog from '@/components/dialogs/CgmNOCDetailDialog';
 import Loader from '@/components/ui/loader';
 import { allPurpose } from '@/constant/static';
+import VigilanceUserNOCDetailDialog from '@/components/dialogs/VigilanceUserNOCDetailDialog';
 
-const RequestReceived = () => {
-  const userRoles = useSelector((state: RootState) => state.user.Roles);
+const RequestReceivedVigilanceUser = () => {
   const user = useSelector((state: RootState) => state.user);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedUnit, setSelectedUnit] = useState<string>('');
@@ -24,17 +24,16 @@ const RequestReceived = () => {
   const [requests, setRequests] = useState([]);
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [isOpen, setIsOpen] = React.useState(false);
-  const { departments } = useSelector((state: RootState) => state.masterData.data);
+  const { departments, units } = useSelector((state: RootState) => state.masterData.data);
   const [cgmData, setcgmData] = useState({
     remarks: '',
     dor: '',
     doj: '',
   });
-  console.log(user);
-  const getAllRequests = async (unitId: any) => {
+  const getAllRequests = async () => {
     try {
       setIsLoading(true);
-      const response = await axiosInstance.get(`/CGM/NOC?UnitId=${unitId}`);
+      const response = await axiosInstance.get(`/VigilanceUser/NOC`);
       if (response.data.success) {
         setRequests(response.data.data);
       }
@@ -44,22 +43,9 @@ const RequestReceived = () => {
       setIsLoading(false);
     }
   };
-  const handleUnitSelection = (unitId: string) => {
-    setSelectedUnit(unitId);
-    getAllRequests(unitId);
-  };
   useEffect(() => {
-    if (userRoles?.length > 0) {
-      const firstRole = userRoles[0];
-      if (firstRole.unitsAssigned?.length > 0) {
-        const firstUnit = firstRole?.unitsAssigned[0];
-        const unitIdString = firstUnit?.unitId?.toString();
-        setSelectedUnit(unitIdString);
-        getAllRequests(firstUnit.unitId);
-      }
-    }
-  }, [userRoles]); // optionally, you may want to depend on userRoles
-
+    getAllRequests();
+  }, []);
   const handleApproveandRejectClick = async (nocId: number, status) => {
     try {
       setIsLoading(true);
@@ -72,7 +58,7 @@ const RequestReceived = () => {
       });
       if (response.data.success) {
         setIsOpen(false);
-        getAllRequests(selectedUnit);
+        getAllRequests();
         toast.success('Request approved successfully');
       }
     } catch (error) {
@@ -81,7 +67,7 @@ const RequestReceived = () => {
       setIsLoading(false);
     }
   };
-  const handleRevertClick = async (nocId: number) => {
+  const handleTrailClick = async (nocId: number) => {
     try {
       setIsLoading(true);
       const response = await axiosInstance.post('/CGM/NOC', {
@@ -92,7 +78,7 @@ const RequestReceived = () => {
       });
       if (response.data.success) {
         setIsOpen(false);
-        getAllRequests(selectedUnit);
+        getAllRequests();
         toast.success('Request approved successfully');
       }
     } catch (error) {
@@ -148,7 +134,13 @@ const RequestReceived = () => {
       header: 'Purpose',
       cell: ({ row }) => <div>{row.original.purposeName}</div>,
     },
-
+    {
+      accessorKey: 'unitId',
+      header: 'Location',
+      cell: ({ row }) => (
+        <div className="w-[170px]">{findUnitNameByUnitId(units, row.original.unitId)?.unitName ?? 'NA'}</div>
+      ),
+    },
     {
       accessorKey: 'post',
       header: 'Designation',
@@ -189,7 +181,7 @@ const RequestReceived = () => {
       // return postMatch && departmentMatch;
       return purposeMatch && departmentMatch;
     });
-  }, [selectedPurpose, requests, selectedUnit, selectedDepartment]);
+  }, [selectedPurpose, requests, selectedDepartment]);
   return (
     <div className=" p-6">
       {isLoading && <Loader />}
@@ -205,21 +197,7 @@ const RequestReceived = () => {
             columns={columns}
             rightElements={
               <>
-                <div className="w-full md:w-1/2 grid grid-cols-2 md:grid-cols-4 gap-3">
-                  <Select value={selectedUnit} onValueChange={handleUnitSelection}>
-                    <SelectTrigger id="unit-select" className="">
-                      <SelectValue placeholder="Choose a unit" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {userRoles
-                        ?.flatMap((role) => role.unitsAssigned || [])
-                        .map((unit) => (
-                          <SelectItem key={unit.unitId} value={unit.unitId.toString()}>
-                            {unit.unitName}
-                          </SelectItem>
-                        ))}
-                    </SelectContent>
-                  </Select>
+                <div className="w-full md:w-1/2 grid grid-cols-1 md:grid-cols-3 gap-3">
                   <Select value={selectedPurpose.toString()} onValueChange={(value) => setSelectedPurpose(value)}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select purpose" />
@@ -248,7 +226,7 @@ const RequestReceived = () => {
                     </SelectContent>
                   </Select>
 
-                  <Button variant="outline" onClick={() => getAllRequests(selectedUnit)} className=" space-x-2">
+                  <Button variant="outline" onClick={() => getAllRequests()} className=" space-x-2">
                     <RefreshCw className="h-4 w-4" /> Refresh
                   </Button>
                 </div>
@@ -257,23 +235,21 @@ const RequestReceived = () => {
             showFilter={false}
           />
         </div>
-        <CgmNOCDetailDialog
+        <VigilanceUserNOCDetailDialog
           setcgmData={setcgmData}
           handleApproveClick={handleApproveandRejectClick}
-          handleRejectClick={handleApproveandRejectClick}
-          handleRevertClick={handleRevertClick}
+          handleRevertClick={handleTrailClick}
           cgmData={cgmData}
           isOpen={isOpen}
           onOpenChange={setIsOpen}
           nocData={selectedRequest}
           isEditable={true}
-          AccecptButtonName={'Forward to Corporate HR'}
-          rejectButtonName={'Reject'}
-          revertButtonName={'Revert to Unit Hr'}
+          AccecptButtonName={'Forward to DY.CVO'}
+          revertButtonName={'Get Trail'}
         />
       </div>
     </div>
   );
 };
 
-export default RequestReceived;
+export default RequestReceivedVigilanceUser;

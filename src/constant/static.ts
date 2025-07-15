@@ -1,40 +1,58 @@
-export const STATIC = {};
-
-export const colorSchemes = [
-  { id: 'blue', name: 'Blue', class: 'bg-gradient-to-br from-blue-500 to-blue-600' },
-  { id: 'green', name: 'Green', class: 'bg-gradient-to-br from-green-500 to-green-600' },
-  { id: 'teal', name: 'Teal', class: 'bg-gradient-to-br from-teal-500 to-teal-600' },
-  { id: 'sky', name: 'Sky', class: 'bg-gradient-to-br from-sky-500 to-sky-600' },
-  { id: 'indigo', name: 'Indigo', class: 'bg-gradient-to-br from-indigo-500 to-indigo-600' },
-  { id: 'violet', name: 'Violet', class: 'bg-gradient-to-br from-violet-500 to-violet-600' },
-  { id: 'purple', name: 'Purple', class: 'bg-gradient-to-br from-purple-500 to-purple-600' },
-  { id: 'red', name: 'Red', class: 'bg-gradient-to-br from-red-500 to-red-600' },
-  { id: 'rose', name: 'Rose', class: 'bg-gradient-to-br from-rose-500 to-rose-600' },
-  { id: 'amber', name: 'Amber', class: 'bg-gradient-to-br from-amber-500 to-amber-600' },
-  { id: 'orange', name: 'Orange', class: 'bg-gradient-to-br from-orange-500 to-orange-600' },
-  { id: 'cyan', name: 'Cyan', class: 'bg-gradient-to-br from-cyan-500 to-cyan-600' },
-  { id: 'emerald', name: 'Emerald', class: 'bg-gradient-to-br from-emerald-500 to-emerald-600' },
-  { id: 'lime', name: 'Lime', class: 'bg-gradient-to-br from-lime-500 to-lime-600' },
-  { id: 'yellow', name: 'Yellow', class: 'bg-gradient-to-br from-yellow-400 to-yellow-500' },
-  { id: 'fuchsia', name: 'Fuchsia', class: 'bg-gradient-to-br from-fuchsia-500 to-fuchsia-600' },
-  { id: 'pink', name: 'Pink', class: 'bg-gradient-to-br from-pink-500 to-pink-600' },
-  { id: 'slate', name: 'Slate', class: 'bg-gradient-to-br from-slate-600 to-slate-700' },
-  { id: 'blue-purple', name: 'Blue Purple', class: 'bg-gradient-to-br from-blue-500 to-purple-500' },
-  { id: 'cyan-blue', name: 'Cyan Blue', class: 'bg-gradient-to-br from-cyan-400 to-blue-500' },
-  { id: 'green-teal', name: 'Green Teal', class: 'bg-gradient-to-br from-green-400 to-teal-500' },
-  { id: 'orange-red', name: 'Orange Red', class: 'bg-gradient-to-br from-orange-400 to-red-500' },
-  { id: 'pink-purple', name: 'Pink Purple', class: 'bg-gradient-to-br from-pink-400 to-purple-500' },
-  { id: 'indigo-violet', name: 'Indigo Violet', class: 'bg-gradient-to-br from-indigo-400 to-violet-500' },
-  { id: 'dark-blue', name: 'Dark Blue', class: 'bg-gradient-to-br from-blue-700 to-blue-800' },
-  { id: 'dark-purple', name: 'Dark Purple', class: 'bg-gradient-to-br from-purple-700 to-purple-800' },
-  { id: 'dark-teal', name: 'Dark Teal', class: 'bg-gradient-to-br from-teal-700 to-teal-800' },
-  { id: 'dark-gray', name: 'Dark Gray', class: 'bg-gradient-to-br from-gray-700 to-gray-800' },
-];
-
-export const applicationCategories = [
-  { id: 'finance', name: 'Finance', description: 'Financial management applications', iconName: 'Wallet' },
-  { id: 'hr', name: 'Human Resources', description: 'HR and workforce management', iconName: 'Users' },
-  { id: 'operations', name: 'Operations', description: 'Business operations applications', iconName: 'Settings' },
-  { id: 'systems', name: 'Systems', description: 'Technical and IT systems', iconName: 'Laptop' },
-  { id: 'services', name: 'Services', description: 'Service management applications', iconName: 'Briefcase' },
+// // Purpose data with color mapping
+export const allPurpose = [
+  {
+    label: 'Higher Education',
+    value: 45,
+    color: 'bg-blue-100',
+  },
+  {
+    label: 'External Employment',
+    value: 47,
+    color: 'bg-green-100',
+  },
+  {
+    label: 'Passport',
+    value: 48,
+    color: 'bg-yellow-100',
+  },
+  {
+    label: 'Ex India Leave',
+    value: 49,
+    color: 'bg-purple-100',
+  },
+  {
+    label: 'Others',
+    value: 50,
+    color: 'bg-pink-100',
+  },
+  {
+    label: 'Deputation Extension',
+    value: 51,
+    color: 'bg-indigo-100',
+  },
+  {
+    label: 'Re-Employment',
+    value: 52,
+    color: 'bg-red-100',
+  },
+  {
+    label: 'Probation Confirmation',
+    value: 53,
+    color: 'bg-orange-100',
+  },
+  {
+    label: 'Resignation',
+    value: 56,
+    color: 'bg-teal-100',
+  },
+  {
+    label: 'Superannuation',
+    value: 57,
+    color: 'bg-cyan-100',
+  },
+  {
+    label: 'Permanent Absorption',
+    value: 59,
+    color: 'bg-lime-100',
+  },
 ];

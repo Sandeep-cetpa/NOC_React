@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { RefreshCw, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -12,14 +12,17 @@ import { RootState } from '@/app/store';
 import TableList from '@/components/ui/data-table';
 import CgmNOCDetailDialog from '@/components/dialogs/CgmNOCDetailDialog';
 import Loader from '@/components/ui/loader';
+import { allPurpose } from '@/constant/static';
 
 const ProcessedRequestByCgm = () => {
   const userRoles = useSelector((state: RootState) => state.user.Roles);
-  const user = useSelector((state: RootState) => state.user);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedUnit, setSelectedUnit] = useState<string>('');
   const [requests, setRequests] = useState([]);
   const [selectedRequest, setSelectedRequest] = useState(null);
+  const [selectedPurpose, setSelectedPurpose] = useState<string>('all');
+  const [selectedDepartment, setSelectedDepartment] = useState('all');
+  const { departments } = useSelector((state: RootState) => state.masterData.data);
   const [isOpen, setIsOpen] = React.useState(false);
   const [cgmData, setcgmData] = useState({
     remarks: '',
@@ -157,16 +160,23 @@ const ProcessedRequestByCgm = () => {
       ),
     },
   ];
-  if (isLoading) {
-    return <Loader />;
-  }
+
+  const filteredData = useMemo(() => {
+    return requests.filter((item) => {
+      const departmentMatch = selectedDepartment === 'all' || item.department === selectedDepartment;
+      const purposeMatch = selectedPurpose === 'all' || Number(item.purposeId) === Number(selectedPurpose);
+      // return postMatch && departmentMatch;
+      return purposeMatch && departmentMatch;
+    });
+  }, [selectedPurpose, requests, selectedUnit, selectedDepartment]);
   return (
     <div className=" p-6">
+      {isLoading && <Loader />}
       <div className="w-full mx-auto">
         <h1 className="font text-3xl mb-3">Pending Requests </h1>
         <div className="space-y-4">
           <TableList
-            data={requests.sort((a, b) => {
+            data={filteredData?.sort((a, b) => {
               const dateA = a?.initiationDate ? new Date(a.initiationDate).getTime() : 0;
               const dateB = b?.initiationDate ? new Date(b.initiationDate).getTime() : 0;
               return dateB - dateA;
@@ -174,42 +184,51 @@ const ProcessedRequestByCgm = () => {
             columns={columns}
             rightElements={
               <>
-                <div className="flex rounded-xl">
-                  {/* <div className="flex space-y-2">
-                    <Select value={selectedUnit} onValueChange={handleUnitSelection}>
-                      <SelectTrigger id="unit-select" className="w-[200px]">
-                        <SelectValue placeholder="Choose a unit" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {userRoles
-                          ?.flatMap((role) => role.unitsAssigned || [])
-                          .map((unit) => (
-                            <SelectItem key={unit.unitId} value={unit.unitId.toString()}>
-                              {unit.unitName}
-                            </SelectItem>
-                          ))}
-                      </SelectContent>
-                    </Select>
-                  </div> */}
-                  <div className="flex space-y-2 mx-0 md:mx-2 mr-2">
-                    <Select value={selectedUnit} onValueChange={handleUnitSelection}>
-                      <SelectTrigger id="unit-select" className="w-[200px]">
-                        <SelectValue placeholder="Choose a unit" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {userRoles
-                          ?.flatMap((role) => role.unitsAssigned || [])
-                          .map((unit) => (
-                            <SelectItem key={unit.unitId} value={unit.unitId.toString()}>
-                              {unit.unitName}
-                            </SelectItem>
-                          ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+                <div className="w-full md:w-1/2 grid grid-cols-2 md:grid-cols-4 gap-3">
+                  <Select value={selectedUnit} onValueChange={handleUnitSelection}>
+                    <SelectTrigger id="unit-select" className="">
+                      <SelectValue placeholder="Choose a unit" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {userRoles
+                        ?.flatMap((role) => role.unitsAssigned || [])
+                        .map((unit) => (
+                          <SelectItem key={unit.unitId} value={unit.unitId.toString()}>
+                            {unit.unitName}
+                          </SelectItem>
+                        ))}
+                    </SelectContent>
+                  </Select>
+                  <Select value={selectedPurpose.toString()} onValueChange={(value) => setSelectedPurpose(value)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select purpose" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Purpose</SelectItem>
+                      {allPurpose.map((ele) => (
+                        <SelectItem key={ele.value} value={ele.value.toString()}>
+                          <div className="flex items-center gap-2">
+                            <span className={`w-3 h-3 rounded-full ${ele.color}`} />
+                            <span>{ele.label}</span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Select value={selectedDepartment} onValueChange={(value) => setSelectedDepartment(value)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select department Grade" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All</SelectItem>
+                      {departments.map((ele) => {
+                        return <SelectItem value={ele}>{ele}</SelectItem>;
+                      })}
+                    </SelectContent>
+                  </Select>
 
                   <Button variant="outline" onClick={() => getAllRequests(selectedUnit)} className=" space-x-2">
-                    <RefreshCw className="h-4 w-4" />
+                    <RefreshCw className="h-4 w-4" /> Refresh
                   </Button>
                 </div>
               </>

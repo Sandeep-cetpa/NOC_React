@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import toast from 'react-hot-toast';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/app/store';
+import { allPurpose } from '@/constant/static';
 
 const ReceivedRequests = () => {
   const tabStatus = [
@@ -25,7 +26,8 @@ const ReceivedRequests = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedGrade, setSelectedGrade] = useState('all');
   const [selectedDepartment, setSelectedDepartment] = useState('all');
-  const { departments, grades,units } = useSelector((state: RootState) => state.masterData.data);
+  const [selectedPurpose, setSelectedPurpose] = useState('all');
+  const { departments, grades, units } = useSelector((state: RootState) => state.masterData.data);
   const [corporateHrRemarks, setCorporateHdRemarks] = useState({
     remark: '',
   });
@@ -167,10 +169,11 @@ const ReceivedRequests = () => {
     return request.filter((item) => {
       // const postMatch = selectedGrade === 'all' || item.post === selectedGrade;
       const departmentMatch = selectedDepartment === 'all' || item.department === selectedDepartment;
+      const purposeMatch = selectedPurpose === 'all' || Number(item.purposeId) === Number(selectedPurpose);
       // return postMatch && departmentMatch;
-      return departmentMatch;
+      return departmentMatch && purposeMatch;
     });
-  }, [selectedDepartment, selectedGrade, request]);
+  }, [selectedDepartment, selectedPurpose, request]);
   return (
     <div className=" p-6">
       {isLoading && <Loader />}
@@ -206,7 +209,26 @@ const ReceivedRequests = () => {
                     columns={columns}
                     rightElements={
                       <>
-                        <div className="w-full md:w-1/2 grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="w-full md:w-1/2 grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <Select
+                            value={selectedPurpose.toString()}
+                            onValueChange={(value) => setSelectedPurpose(value)}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select purpose" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="all">All Purpose</SelectItem>
+                              {allPurpose.map((ele) => (
+                                <SelectItem key={ele.value} value={ele.value.toString()}>
+                                  <div className="flex items-center gap-2">
+                                    <span className={`w-3 h-3 rounded-full ${ele.color}`} />
+                                    <span>{ele.label}</span>
+                                  </div>
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                           <Select value={selectedDepartment} onValueChange={(value) => setSelectedDepartment(value)}>
                             <SelectTrigger>
                               <SelectValue placeholder="Select department Grade" />

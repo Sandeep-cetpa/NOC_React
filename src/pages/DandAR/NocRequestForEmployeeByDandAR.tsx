@@ -184,7 +184,7 @@ const NocRequestForEmployeeByDandAR = () => {
     try {
       const payloadFormData = new FormData();
       excelData?.forEach((ele, index) => {
-        const isoDate = new Date(ele['Promotion due from (DD-MM-YYYY)']).toISOString();
+        const isoDate = new Date(ele['Promotion due from (DD-MM-YYYY)'])?.toISOString();
         payloadFormData.append(`Data[${index}].EmployeeCode`, ele['Employee Code'] || '');
         payloadFormData.append(`Data[${index}].PromotionDueDate`, isoDate);
         payloadFormData.append(`Data[${index}].PertainingPast`, ele['Pertaining to Past Unit'] || '');
@@ -213,6 +213,9 @@ const NocRequestForEmployeeByDandAR = () => {
       } else {
         // Handle partial errors if bulk failed
         const errorIndexes = response?.data?.data?.erorrRowsIfBulk || [];
+        if (!errorIndexes?.length) {
+          toast.error(response.data.errorMessage);
+        }
         setErrorRowsIndexs(errorIndexes);
         setErrorRows(() => {
           const updatedErrors = {};

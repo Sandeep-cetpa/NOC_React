@@ -13,6 +13,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '@/app/store';
 import DAndArNOCDetailDialog from '@/components/dialogs/DAndArNOCDetailDialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { allPurpose } from '@/constant/static';
 const reportStatus = [
   {
     label: 'Pending Request',
@@ -31,6 +32,7 @@ const ReceivedRequests = () => {
   const [dAndARRemarks, setdAndARRemarksRemarks] = useState({});
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [isOpen, setIsOpen] = React.useState(false);
+  const [selectedPurpose, setSelectedPurpose] = useState('all');
   const [selectedUnit, setSelectedUnit] = useState(0);
   const [selectedGrade, setSelectedGrade] = useState('all');
   const [selectedDepartment, setSelectedDepartment] = useState('all');
@@ -38,6 +40,7 @@ const ReceivedRequests = () => {
   const [errorRowsIndexs, setErrorRowsIndexs] = useState([]);
   const [excelPreviewData, setExcelPreviewData] = useState([]);
   const { departments, units, grades } = useSelector((state: RootState) => state.masterData.data);
+
   const userRoles = user?.Roles?.find((ele) => ele?.roleId === 7);
   const fetchRequestsByTab = async (unitId: number | string, tab: string) => {
     try {
@@ -273,11 +276,12 @@ const ReceivedRequests = () => {
   const filteredData = useMemo(() => {
     return request.filter((item) => {
       // const postMatch = selectedGrade === 'all' || item.post === selectedGrade;
+      const purposeMatch = selectedPurpose === 'all' || Number(item.purposeId) === Number(selectedPurpose);
       const departmentMatch = selectedDepartment === 'all' || item.department === selectedDepartment;
       // return postMatch && departmentMatch;
-      return departmentMatch;
+      return departmentMatch && purposeMatch;
     });
-  }, [selectedDepartment, selectedGrade, request]);
+  }, [selectedDepartment, selectedPurpose, request]);
 
   return (
     <div className=" p-6">
@@ -312,13 +316,32 @@ const ReceivedRequests = () => {
                     }}
                     rightElements={
                       <>
-                        <div className="w-full grid grid-cols-2 md:grid-cols-3 gap-4">
+                        <div className="w-full grid grid-cols-2 md:grid-cols-4 gap-4">
+                          <Select
+                            value={selectedPurpose.toString()}
+                            onValueChange={(value) => setSelectedPurpose(value)}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select purpose" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="all">All Purpose</SelectItem>
+                              {allPurpose.map((ele) => (
+                                <SelectItem key={ele.value} value={ele.value.toString()}>
+                                  <div className="flex items-center gap-2">
+                                    <span className={`w-3 h-3 rounded-full ${ele.color}`} />
+                                    <span>{ele.label}</span>
+                                  </div>
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                           <Select
                             value={selectedUnit.toString()}
                             onValueChange={(value) => setSelectedUnit(Number(value))}
                           >
                             <SelectTrigger>
-                              <SelectValue placeholder="Select Position Grade" />
+                              <SelectValue placeholder="Select unit" />
                             </SelectTrigger>
                             <SelectContent>
                               <SelectItem value="0">All Units</SelectItem>
@@ -329,7 +352,7 @@ const ReceivedRequests = () => {
                           </Select>
                           <Select value={selectedDepartment} onValueChange={(value) => setSelectedDepartment(value)}>
                             <SelectTrigger>
-                              <SelectValue placeholder="Select department Grade" />
+                              <SelectValue placeholder="Select department" />
                             </SelectTrigger>
                             <SelectContent>
                               <SelectItem value="all">All</SelectItem>

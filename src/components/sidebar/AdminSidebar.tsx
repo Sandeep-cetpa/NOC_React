@@ -129,6 +129,13 @@ export function AdminSidebar(props: React.ComponentProps<typeof Sidebar>) {
           { title: 'Processed Requests', url: '/cgm-processed-request', icon: CheckCircle, role: roleArray }
         );
       }
+      if (roleId === 5) {
+        roleIcon = UserCheck;
+        items.push(
+          { title: 'Pending Request', url: '/vigilance-user-request-received', icon: Clock, role: roleArray },
+          { title: 'Processed Requests', url: '/vigilance-user-processed-request', icon: CheckCircle, role: roleArray }
+        );
+      }
 
       const displayTitle =
         roleId === 3 && assinedUnit?.find((ele) => ele?.unitId === 1)
@@ -144,6 +151,7 @@ export function AdminSidebar(props: React.ComponentProps<typeof Sidebar>) {
       };
     }),
   };
+
   const navMainItems = data?.navMain?.filter((item) => item.role.some((role) => Roles?.includes(role)));
   const handleLogout = () => {
     removeSessionItem('token');

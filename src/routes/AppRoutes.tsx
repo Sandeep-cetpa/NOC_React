@@ -31,6 +31,8 @@ import NocRequestForEmployeeByCorporateHr from '@/pages/CorporateUnitHr/NocReque
 import NocRequestForEmployeeByDandAR from '@/pages/DandAR/NocRequestForEmployeeByDandAR';
 import AppLayout from '@/components/layout/app-layout';
 import Unauthorized from '@/pages/unauthorized/Unauthorized';
+import RequestReceivedVigilanceUser from '@/pages/VigilanceUser/RequestReceivedVigilanceUser';
+import ProcessedRequestVigilanceUser from '@/pages/VigilanceUser/ProcessedRequestVigilanceUser';
 
 const AppRoutes = () => {
   const { isAuthenticated } = useAuth();
@@ -54,7 +56,7 @@ const AppRoutes = () => {
         </Route>
       </Route>
       <Route element={<AppLayout isAdmin={true} />}>
-        <Route element={<PrivateRoute allowedRoles={['admin', 'superAdmin', 'HrUser']} />}>
+        <Route element={<PrivateRoute allowedRoles={[]} />}>
           <Route path="/admin-dashboard" element={<Dashboard />} />
           <Route path="/admin-manage-role" element={<ManageRoles />} />
         </Route>
@@ -81,11 +83,17 @@ const AppRoutes = () => {
         </Route>
       </Route>
       <Route element={<AppLayout isAdmin={true} />}>
-        <Route element={<PrivateRoute allowedRoles={['VigilanceAdmin', 'VigilanceUser']} />}>
+        <Route element={<PrivateRoute allowedRoles={['VigilanceAdmin']} />}>
           <Route path="/vigilance-admin-role-management" element={<RoleManagement />} />
           <Route path="/vigilance-admin-manage-grey-list" element={<ManageGreyList />} />
           <Route path="/vigilance-admin-request-received" element={<VigilanceRequestReceived />} />
           <Route path="/vigilance-admin-processed-request" element={<ProcessedRequest />} />
+        </Route>
+      </Route>
+      <Route element={<AppLayout isAdmin={true} />}>
+        <Route element={<PrivateRoute allowedRoles={['VigilanceUser']} />}>
+          <Route path="/vigilance-user-request-received" element={<RequestReceivedVigilanceUser />} />
+          <Route path="/vigilance-user-processed-request" element={<ProcessedRequestVigilanceUser />} />
         </Route>
       </Route>
       <Route element={<AppLayout isAdmin={true} />}>

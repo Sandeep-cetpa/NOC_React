@@ -315,7 +315,7 @@ const NocRequestForEmployeeByCorporateHr = () => {
       })),
     [employees]
   );
-
+  console.log(forms.map((form) => ({ label: form.purposeName, value: form.purposeId })));
   return (
     <div className="bg-white">
       <div className="p-6 space-y-6">
