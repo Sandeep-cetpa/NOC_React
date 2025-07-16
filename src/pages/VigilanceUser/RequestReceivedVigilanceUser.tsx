@@ -3,7 +3,7 @@ import { RefreshCw, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { format } from 'date-fns';
-import { findUnitNameByUnitId, statusConfig } from '@/lib/helperFunction';
+import { findUnitNameByUnitId, statusConfig, validateVigilanceFields } from '@/lib/helperFunction';
 import { Badge } from '@/components/ui/badge';
 import toast from 'react-hot-toast';
 import axiosInstance from '@/services/axiosInstance';
@@ -18,9 +18,10 @@ import VigilanceUserNOCDetailDialog from '@/components/dialogs/VigilanceUserNOCD
 const RequestReceivedVigilanceUser = () => {
   const user = useSelector((state: RootState) => state.user);
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedUnit, setSelectedUnit] = useState<string>('');
   const [selectedPurpose, setSelectedPurpose] = useState<string>('all');
   const [selectedDepartment, setSelectedDepartment] = useState('all');
+  const [vigilanceFieldsData, setVigilanceFieldsData] = useState([]);
+  const [purpose, setPurpose] = useState([]);
   const [requests, setRequests] = useState([]);
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [isOpen, setIsOpen] = React.useState(false);
@@ -43,22 +44,28 @@ const RequestReceivedVigilanceUser = () => {
       setIsLoading(false);
     }
   };
-  useEffect(() => {
-    getAllRequests();
-  }, []);
+  console.log(cgmData);
   const handleApproveandRejectClick = async (nocId: number, status) => {
+    const skipForExternal = selectedRequest.purposeId == 47 && selectedRequest?.officerRemarks?.isDirector;
+    const isFormValid = validateVigilanceFields(cgmData, skipForExternal);
+
+    if (!isFormValid && skipForExternal) return;
     try {
+      const formdata = new FormData();
+      formdata.append('RefId', nocId.toString());
+      formdata.append('Status', status.toString());
+      formdata.append('Remarks', cgmData.remarks);
+      cgmData?.vigilanceFields?.forEach((ele) => {
+        formdata.append(`FormInputs[${ele?.fieldId}]`, ele?.optionChecked === 'yes' ? ele?.value : ele?.optionChecked);
+      });
       setIsLoading(true);
-      const response = await axiosInstance.put('/CGM/NOC', {
-        refId: nocId,
-        status: status,
-        remarks: cgmData.remarks,
-        cgmUnitId: selectedUnit,
-        cgmAutoId: user.EmpID,
+      const response = await axiosInstance.put('/VigilanceUser/NOC', formdata, {
+        headers: { 'Content-Type': 'multipart/form-data' },
       });
       if (response.data.success) {
         setIsOpen(false);
         getAllRequests();
+        setcgmData({});
         toast.success('Request approved successfully');
       }
     } catch (error) {
@@ -73,7 +80,7 @@ const RequestReceivedVigilanceUser = () => {
       const response = await axiosInstance.post('/CGM/NOC', {
         refId: nocId,
         remarks: cgmData.remarks,
-        unitId: selectedUnit,
+
         fkAutoId: user.EmpID,
       });
       if (response.data.success) {
@@ -87,6 +94,22 @@ const RequestReceivedVigilanceUser = () => {
       setIsLoading(false);
     }
   };
+  useEffect(() => {
+    getAllRequests();
+  }, []);
+  const getExtraPurposeForTable = async () => {
+    try {
+      const response = await axiosInstance.get('/VigilanceUser/NOC/Purposes');
+      if (response.data.success) {
+        setPurpose(response.data.data);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  useEffect(() => {
+    getExtraPurposeForTable();
+  }, []);
   const getStatusBadge = (status) => {
     if (!status) {
       return;
@@ -246,6 +269,9 @@ const RequestReceivedVigilanceUser = () => {
           isEditable={true}
           AccecptButtonName={'Forward to DY.CVO'}
           revertButtonName={'Get Trail'}
+          purpose={purpose}
+          vigilanceFieldsData={vigilanceFieldsData}
+          setVigilanceFieldsData={setVigilanceFieldsData}
         />
       </div>
     </div>

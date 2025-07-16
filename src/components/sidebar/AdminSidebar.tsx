@@ -141,7 +141,6 @@ export function AdminSidebar(props: React.ComponentProps<typeof Sidebar>) {
         roleId === 3 && assinedUnit?.find((ele) => ele?.unitId === 1)
           ? 'Corporate Hr'
           : roleName.replace(/([a-z])([A-Z])/g, '$1 $2');
-
       return {
         title: displayTitle,
         icon: roleIcon,
@@ -151,7 +150,6 @@ export function AdminSidebar(props: React.ComponentProps<typeof Sidebar>) {
       };
     }),
   };
-
   const navMainItems = data?.navMain?.filter((item) => item.role.some((role) => Roles?.includes(role)));
   const handleLogout = () => {
     removeSessionItem('token');

@@ -56,7 +56,7 @@ const AppRoutes = () => {
         </Route>
       </Route>
       <Route element={<AppLayout isAdmin={true} />}>
-        <Route element={<PrivateRoute allowedRoles={[]} />}>
+        <Route element={<PrivateRoute allowedRoles={["admin","superAdmin"]} />}>
           <Route path="/admin-dashboard" element={<Dashboard />} />
           <Route path="/admin-manage-role" element={<ManageRoles />} />
         </Route>

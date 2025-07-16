@@ -14,6 +14,7 @@ import {
   CheckCircle,
   HelpCircle,
 } from 'lucide-react';
+import toast from 'react-hot-toast';
 export function statusConfig(status: string) {
   switch (status) {
     case 'Raised By User':
@@ -415,3 +416,33 @@ export function getObjectFromSessionStorage(key) {
   }
   return null;
 }
+export const validateVigilanceFields = (data, skipForExternal) => {
+  if (!skipForExternal) {
+    return true;
+  }
+  if (!data?.vigilanceFields || !Array.isArray(data.vigilanceFields) || data.vigilanceFields.length === 0) {
+    toast.error('Vigilance clearance information details are missing. Please fill them before submitting.');
+    return false;
+  }
+
+  for (let i = 0; i < data.vigilanceFields.length; i++) {
+    const field = data.vigilanceFields[i];
+    const fieldLabel = (field?.fieldName || `Field ${i + 1}`).replace(/_/g, ' ').split('\r\n')[0].trim();
+
+    const option = field?.optionChecked?.trim()?.toLowerCase();
+
+    // Check option validity
+    if (option !== 'yes' && option !== 'no') {
+      toast.error(`Please select "Yes" or "No" for "${fieldLabel}".`);
+      return false;
+    }
+
+    // If 'yes', then value is required
+    if (option === 'yes' && !field?.value?.trim()) {
+      toast.error(`Value required for "${fieldLabel}" since "Yes" is selected.`);
+      return false;
+    }
+  }
+
+  return true;
+};

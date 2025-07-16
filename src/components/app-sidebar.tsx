@@ -48,7 +48,17 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
       'VigilanceUser',
     ] as UserRole[]
   ).some((role) => Roles?.includes(role));
-
+  const roleWiseUrlNavigation = {
+    admin: '/admin-dashboard',
+    superAdmin: '/admin-dashboard',
+    CGM: '/cgm-request-received',
+    CMAdmin: '',
+    CMUser: '',
+    DandAR: '/d-and-ar-pending-requests',
+    HrUser: '/unit-hr-pending-noc-requests',
+    VigilanceAdmin: '/vigilance-admin-role-management',
+    VigilanceUser: '/vigilance-user-request-received',
+  };
   const navMainItems = {
     navMain: [
       {
@@ -138,7 +148,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu>
           {canAccessAdminDashboard && (
             <SidebarMenuButton
-              onClick={() => navigate('/admin-dashboard')}
+              onClick={() => navigate(roleWiseUrlNavigation[Roles[0]])}
               asChild
               tooltip={'Manage Organization'}
               className={`transition-all text-black cursor-pointer duration-300  active:bg-primary [&>svg]:size-7 ease-in-out hover:bg-primary hover:text-white h-full w-full active:text-white`}

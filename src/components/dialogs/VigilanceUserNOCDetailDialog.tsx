@@ -9,6 +9,7 @@ import { Textarea } from '../ui/textarea';
 import { Label } from '../ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { RequestStatus } from '@/constant/status';
+import VigilanceFieldsSection from '../common/VigilanceFieldsSection';
 
 const VigilanceUserNOCDetailDialog = ({
   nocData,
@@ -21,9 +22,22 @@ const VigilanceUserNOCDetailDialog = ({
   AccecptButtonName,
   revertButtonName,
   isEditable = false,
+  purpose,
+  vigilanceFieldsData,
+  setVigilanceFieldsData,
 }) => {
   if (!nocData) return null;
-  console.log(nocData);
+
+  const handleVigilanceFieldsChange = (fieldsData) => {
+    setVigilanceFieldsData(fieldsData);
+    // You can also update cgmData here if needed
+    if (setcgmData) {
+      setcgmData((prev) => ({
+        ...prev,
+        vigilanceFields: fieldsData,
+      }));
+    }
+  };
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
     try {
@@ -162,6 +176,7 @@ const VigilanceUserNOCDetailDialog = ({
               </Card>
             </div>
           </div>
+          {/* Vigilance Fields Section - Add this before Officer Remarks */}
 
           {/* Officer Remarks */}
           {(nocData?.officerRemarksR || nocData?.officerRemarks) && (
@@ -309,7 +324,13 @@ const VigilanceUserNOCDetailDialog = ({
               ))}
             </div>
           )}
-
+          {isEditable && purpose && nocData?.purposeId === 47 && nocData?.officerRemarks?.isDirector && (
+            <VigilanceFieldsSection
+              nocData={nocData}
+              purposeList={purpose}
+              onFieldsChange={handleVigilanceFieldsChange}
+            />
+          )}
           {/* CGM Input Section */}
           {isEditable && (
             <div className="m-3 pb-4">
@@ -336,7 +357,7 @@ const VigilanceUserNOCDetailDialog = ({
           {isEditable && (
             <>
               <Button
-                onClick={() => handleApproveClick(nocData?.refId, RequestStatus.UnderCorporateHR.value)}
+                onClick={() => handleApproveClick(nocData?.refId, RequestStatus.SentToCVo.value)}
                 className="bg-green-600 hover:bg-green-700"
               >
                 {AccecptButtonName || 'Approve'}
