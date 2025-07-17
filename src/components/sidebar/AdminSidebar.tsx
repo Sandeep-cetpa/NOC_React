@@ -70,7 +70,13 @@ export function AdminSidebar(props: React.ComponentProps<typeof Sidebar>) {
         roleIcon = Clock;
         items.push(
           { title: 'Pending Requests', url: '/d-and-ar-pending-requests', icon: Clock, role: roleArray },
-          { title: 'Create NOC For Employee', url: '/d-and-ar-raise-requests', icon: CheckCircle, role: roleArray }
+          { title: 'Create NOC For Employee', url: '/d-and-ar-raise-requests', icon: CheckCircle, role: roleArray },
+          {
+            title: 'Request From Vigilance',
+            url: '/d-and-ar-request-from-vigilance',
+            icon: CheckCircle,
+            role: roleArray,
+          }
         );
       }
 

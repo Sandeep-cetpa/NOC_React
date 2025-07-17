@@ -1,37 +1,40 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { RefreshCw, Eye } from 'lucide-react';
+import { RefreshCw, Eye, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { format } from 'date-fns';
-import { findUnitNameByUnitId, statusConfig } from '@/lib/helperFunction';
+import { findUnitNameByUnitId, statusConfig, validateVigilanceFields } from '@/lib/helperFunction';
 import { Badge } from '@/components/ui/badge';
+import toast from 'react-hot-toast';
 import axiosInstance from '@/services/axiosInstance';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/app/store';
 import TableList from '@/components/ui/data-table';
 import Loader from '@/components/ui/loader';
 import { allPurpose } from '@/constant/static';
-import VigilanceUserNOCDetailDialog from '@/components/dialogs/VigilanceUserNOCDetailDialog';
+import VigilanceAdminNOCDetailDialog from '@/components/dialogs/VigilanceAdminNOCDetailDialog';
+import { Switch } from '@/components/ui/switch';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
-const ProcessedRequestVigilanceUser = () => {
-  const userRoles = useSelector((state: RootState) => state.user.Roles);
+const VigilanceAdminRequestReceived = () => {
+  const user = useSelector((state: RootState) => state.user);
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedUnit, setSelectedUnit] = useState<string>('');
-  const [requests, setRequests] = useState([]);
-  const [selectedRequest, setSelectedRequest] = useState(null);
   const [selectedPurpose, setSelectedPurpose] = useState<string>('all');
   const [selectedDepartment, setSelectedDepartment] = useState('all');
-  const { departments, units } = useSelector((state: RootState) => state.masterData.data);
+  const [requests, setRequests] = useState([]);
+  const [selectedRequest, setSelectedRequest] = useState(null);
+  const [IsAutomaticApproval, setIsAutomaticApproval] = useState(false);
   const [isOpen, setIsOpen] = React.useState(false);
+  const { departments, units } = useSelector((state: RootState) => state.masterData.data);
   const [cgmData, setcgmData] = useState({
     remarks: '',
     dor: '',
     doj: '',
   });
-  const getAllRequests = async (unitId: any) => {
+  const getAllRequests = async () => {
     try {
       setIsLoading(true);
-      const response = await axiosInstance.get(`/VigilanceUser/NOC/Report?UnitId=${unitId}`);
+      const response = await axiosInstance.get(`/VigilanceAdmin/NOC`);
       if (response.data.success) {
         setRequests(response.data.data);
       }
@@ -41,24 +44,96 @@ const ProcessedRequestVigilanceUser = () => {
       setIsLoading(false);
     }
   };
-  useEffect(() => {
-    if (selectedUnit) {
-      getAllRequests(selectedUnit);
-    }
-  }, [selectedUnit]);
+  const handleApproveandRejectClick = async (nocId: number, status) => {
+    try {
+      const formdata = new FormData();
+      formdata.append('RefId', nocId.toString());
+      formdata.append('Status', status.toString());
+      formdata.append('Remarks', cgmData.remarks);
 
-  useEffect(() => {
-    if (userRoles?.length > 0) {
-      const firstRole = userRoles[0];
-      if (firstRole.unitsAssigned?.length > 0) {
-        const firstUnit = firstRole?.unitsAssigned[0];
-        const unitIdString = firstUnit?.unitId?.toString();
-        setSelectedUnit(unitIdString);
-        getAllRequests(firstUnit.unitId);
+      setIsLoading(true);
+      const response = await axiosInstance.put('/VigilanceAdmin/NOC', formdata, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      if (response.data.success) {
+        setIsOpen(false);
+        getAllRequests();
+        setcgmData(null);
+        toast.success('Request approved successfully');
       }
+    } catch (error) {
+      console.error('Error approving NOC:', error);
+    } finally {
+      setIsLoading(false);
     }
-  }, [userRoles]);
-
+  };
+  const handleTrailClick = async (nocId: number) => {
+    try {
+      setIsLoading(true);
+      const response = await axiosInstance.post('/CGM/NOC', {
+        refId: nocId,
+        remarks: cgmData.remarks,
+        fkAutoId: user.EmpID,
+      });
+      if (response?.data?.success) {
+        setIsOpen(false);
+        getAllRequests();
+        toast.success('Request approved successfully');
+      }
+    } catch (error) {
+      console.error('Error approving NOC:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  const handleRevert = async (nocId: number) => {
+    try {
+      setIsLoading(true);
+      const response = await axiosInstance.post('/VigilanceAdmin/NOC/Revert', {
+        refId: nocId,
+        remarks: cgmData.remarks,
+        unitId: 0,
+        fkAutoId: user.EmpID,
+      });
+      if (response?.data?.success) {
+        setIsOpen(false);
+        getAllRequests();
+        toast.success('Request approved successfully');
+      }
+    } catch (error) {
+      console.error('Error approving NOC:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  useEffect(() => {
+    getAllRequests();
+  }, []);
+  const getCurrentAutomaticApprovalStatus = async () => {
+    try {
+      const response = await axiosInstance.get('/VigilanceAdmin/NOC/Get-AutoRenewal');
+      console.log(response.data);
+      if (response.data.success) {
+        setIsAutomaticApproval(response?.data?.data === 'True' ? true : false);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  const changeCurrentAutomaticApprovalStatus = async (status: boolean) => {
+    try {
+      const response = await axiosInstance.put(`/VigilanceAdmin/NOC/Update-Renewal?request=${status}`);
+      console.log(response.data);
+      if (response.data.success) {
+        getCurrentAutomaticApprovalStatus();
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  useEffect(() => {
+    getCurrentAutomaticApprovalStatus();
+  }, []);
   const getStatusBadge = (status) => {
     if (!status) {
       return;
@@ -153,12 +228,34 @@ const ProcessedRequestVigilanceUser = () => {
       // return postMatch && departmentMatch;
       return purposeMatch && departmentMatch;
     });
-  }, [selectedPurpose, requests, selectedUnit, selectedDepartment]);
+  }, [selectedPurpose, requests, selectedDepartment]);
   return (
     <div className=" p-6">
       {isLoading && <Loader />}
       <div className="w-full mx-auto">
-        <h1 className="text-3xl mb-3">Processed Requests</h1>
+        <div className="flex items-center">
+          <h1 className="text-3xl font-semibold mb-3">Pending Requests</h1>
+          <div className="flex items-center gap-2 mb-2 ml-3">
+            <Switch
+              checked={IsAutomaticApproval}
+              onCheckedChange={() => changeCurrentAutomaticApprovalStatus(!IsAutomaticApproval)}
+            />
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Info className="w-5 h-5 text-muted-foreground cursor-pointer" />
+                </TooltipTrigger>
+                <TooltipContent className="max-w-xs">
+                  <p>
+                    <strong>Automatic Approval:</strong> When this feature is enabled, the NOC request will be
+                    automatically approved for employees who are not listed in the grey list.
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+        </div>
+
         <div className="space-y-4">
           <TableList
             data={filteredData?.sort((a, b) => {
@@ -169,18 +266,7 @@ const ProcessedRequestVigilanceUser = () => {
             columns={columns}
             rightElements={
               <>
-                <div className="w-full md:w-1/2 grid grid-cols-2 md:grid-cols-4 gap-3">
-                  <Select value={selectedUnit.toString()} onValueChange={(value) => setSelectedUnit(value)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select unit" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="0">All Units</SelectItem>
-                      {units.map((ele) => {
-                        return <SelectItem value={ele.unitid?.toString()}>{ele.unitName}</SelectItem>;
-                      })}
-                    </SelectContent>
-                  </Select>
+                <div className="w-full md:w-1/2 grid grid-cols-1 md:grid-cols-3 gap-3">
                   <Select value={selectedPurpose.toString()} onValueChange={(value) => setSelectedPurpose(value)}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select purpose" />
@@ -203,13 +289,17 @@ const ProcessedRequestVigilanceUser = () => {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">All</SelectItem>
-                      {departments.map((ele) => {
-                        return <SelectItem value={ele}>{ele}</SelectItem>;
+                      {departments.map((ele, index) => {
+                        return (
+                          <SelectItem key={index} value={ele}>
+                            {ele}
+                          </SelectItem>
+                        );
                       })}
                     </SelectContent>
                   </Select>
 
-                  <Button variant="outline" onClick={() => getAllRequests(selectedUnit)} className=" space-x-2">
+                  <Button variant="outline" onClick={() => getAllRequests()} className=" space-x-2">
                     <RefreshCw className="h-4 w-4" /> Refresh
                   </Button>
                 </div>
@@ -218,16 +308,22 @@ const ProcessedRequestVigilanceUser = () => {
             showFilter={false}
           />
         </div>
-        <VigilanceUserNOCDetailDialog
+        <VigilanceAdminNOCDetailDialog
           setcgmData={setcgmData}
+          handleApproveClick={handleApproveandRejectClick}
+          handleRevertClick={handleRevert}
+          handleTrailClick={handleTrailClick}
           cgmData={cgmData}
           isOpen={isOpen}
           onOpenChange={setIsOpen}
           nocData={selectedRequest}
+          isEditable={true}
+          AccecptButtonName={'Forward to Corporate HR'}
+          revertButtonName={'Revert Vigilance User'}
         />
       </div>
     </div>
   );
 };
 
-export default ProcessedRequestVigilanceUser;
+export default VigilanceAdminRequestReceived;

@@ -1,37 +1,33 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { RefreshCw, Eye } from 'lucide-react';
+import { Eye, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { format } from 'date-fns';
+import axiosInstance from '@/services/axiosInstance';
 import { findUnitNameByUnitId, statusConfig } from '@/lib/helperFunction';
 import { Badge } from '@/components/ui/badge';
-import axiosInstance from '@/services/axiosInstance';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/app/store';
 import TableList from '@/components/ui/data-table';
 import Loader from '@/components/ui/loader';
+import CorporateHrNOCDetailDialog from '@/components/dialogs/CorporateHrNOCDetailDialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/app/store';
 import { allPurpose } from '@/constant/static';
-import VigilanceUserNOCDetailDialog from '@/components/dialogs/VigilanceUserNOCDetailDialog';
 
-const ProcessedRequestVigilanceUser = () => {
-  const userRoles = useSelector((state: RootState) => state.user.Roles);
+const DandARNocRequestsFromVigilance = () => {
+  const [request, setRequests] = useState([]);
+  const user = useSelector((state: RootState) => state.user);
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedUnit, setSelectedUnit] = useState<string>('');
-  const [requests, setRequests] = useState([]);
-  const [selectedRequest, setSelectedRequest] = useState(null);
-  const [selectedPurpose, setSelectedPurpose] = useState<string>('all');
+  const [selectedGrade, setSelectedGrade] = useState('all');
   const [selectedDepartment, setSelectedDepartment] = useState('all');
-  const { departments, units } = useSelector((state: RootState) => state.masterData.data);
-  const [isOpen, setIsOpen] = React.useState(false);
-  const [cgmData, setcgmData] = useState({
-    remarks: '',
-    dor: '',
-    doj: '',
+  const [selectedPurpose, setSelectedPurpose] = useState('all');
+  const { departments, grades, units } = useSelector((state: RootState) => state.masterData.data);
+  const [corporateHrRemarks, setCorporateHdRemarks] = useState({
+    remark: '',
   });
-  const getAllRequests = async (unitId: any) => {
+  const getRequestByUnitId = async () => {
     try {
       setIsLoading(true);
-      const response = await axiosInstance.get(`/VigilanceUser/NOC/Report?UnitId=${unitId}`);
+      const response = await axiosInstance.get(`/DandR/NOC/NOC-From-Vigilance`);
       if (response.data.success) {
         setRequests(response.data.data);
       }
@@ -41,24 +37,8 @@ const ProcessedRequestVigilanceUser = () => {
       setIsLoading(false);
     }
   };
-  useEffect(() => {
-    if (selectedUnit) {
-      getAllRequests(selectedUnit);
-    }
-  }, [selectedUnit]);
-
-  useEffect(() => {
-    if (userRoles?.length > 0) {
-      const firstRole = userRoles[0];
-      if (firstRole.unitsAssigned?.length > 0) {
-        const firstUnit = firstRole?.unitsAssigned[0];
-        const unitIdString = firstUnit?.unitId?.toString();
-        setSelectedUnit(unitIdString);
-        getAllRequests(firstUnit.unitId);
-      }
-    }
-  }, [userRoles]);
-
+  const [selectedRequest, setSelectedRequest] = useState(null);
+  const [isOpen, setIsOpen] = React.useState(false);
   const getStatusBadge = (status) => {
     if (!status) {
       return;
@@ -72,6 +52,10 @@ const ProcessedRequestVigilanceUser = () => {
       </Badge>
     );
   };
+  useEffect(() => {
+    getRequestByUnitId();
+  }, []);
+
   const columns = [
     {
       accessorKey: 'refId',
@@ -136,7 +120,6 @@ const ProcessedRequestVigilanceUser = () => {
         <Button
           onClick={() => {
             setSelectedRequest(row.original);
-
             setIsOpen(true);
           }}
         >
@@ -145,23 +128,23 @@ const ProcessedRequestVigilanceUser = () => {
       ),
     },
   ];
-
   const filteredData = useMemo(() => {
-    return requests.filter((item) => {
+    return request.filter((item) => {
+      // const postMatch = selectedGrade === 'all' || item.post === selectedGrade;
       const departmentMatch = selectedDepartment === 'all' || item.department === selectedDepartment;
       const purposeMatch = selectedPurpose === 'all' || Number(item.purposeId) === Number(selectedPurpose);
       // return postMatch && departmentMatch;
-      return purposeMatch && departmentMatch;
+      return departmentMatch && purposeMatch;
     });
-  }, [selectedPurpose, requests, selectedUnit, selectedDepartment]);
+  }, [selectedDepartment, selectedPurpose, request]);
   return (
     <div className=" p-6">
       {isLoading && <Loader />}
-      <div className="w-full mx-auto">
-        <h1 className="text-3xl mb-3">Processed Requests</h1>
-        <div className="space-y-4">
+      <div>
+        <h1 className="text-3xl my-4">Requests From Vigilance</h1>
+        <div className="overflow-x-auto">
           <TableList
-            data={filteredData?.sort((a, b) => {
+            data={filteredData.sort((a, b) => {
               const dateA = a?.initiationDate ? new Date(a.initiationDate).getTime() : 0;
               const dateB = b?.initiationDate ? new Date(b.initiationDate).getTime() : 0;
               return dateB - dateA;
@@ -169,18 +152,7 @@ const ProcessedRequestVigilanceUser = () => {
             columns={columns}
             rightElements={
               <>
-                <div className="w-full md:w-1/2 grid grid-cols-2 md:grid-cols-4 gap-3">
-                  <Select value={selectedUnit.toString()} onValueChange={(value) => setSelectedUnit(value)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select unit" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="0">All Units</SelectItem>
-                      {units.map((ele) => {
-                        return <SelectItem value={ele.unitid?.toString()}>{ele.unitName}</SelectItem>;
-                      })}
-                    </SelectContent>
-                  </Select>
+                <div className="w-full md:w-1/2 grid grid-cols-1 md:grid-cols-3 gap-4">
                   <Select value={selectedPurpose.toString()} onValueChange={(value) => setSelectedPurpose(value)}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select purpose" />
@@ -208,26 +180,40 @@ const ProcessedRequestVigilanceUser = () => {
                       })}
                     </SelectContent>
                   </Select>
-
-                  <Button variant="outline" onClick={() => getAllRequests(selectedUnit)} className=" space-x-2">
-                    <RefreshCw className="h-4 w-4" /> Refresh
-                  </Button>
+                  <Select value={selectedGrade} onValueChange={(value) => setSelectedGrade(value)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select position grade" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All</SelectItem>
+                      {grades.map((ele) => {
+                        return <SelectItem value={ele}>{ele}</SelectItem>;
+                      })}
+                    </SelectContent>
+                  </Select>
                 </div>
+                <Button variant="outline" onClick={() => getRequestByUnitId()} className=" space-x-2 ml-3">
+                  <RefreshCw className="h-4 w-4" />
+                </Button>
               </>
             }
             showFilter={false}
           />
         </div>
-        <VigilanceUserNOCDetailDialog
-          setcgmData={setcgmData}
-          cgmData={cgmData}
-          isOpen={isOpen}
-          onOpenChange={setIsOpen}
-          nocData={selectedRequest}
-        />
       </div>
+      <CorporateHrNOCDetailDialog
+        isOpen={isOpen}
+        onOpenChange={setIsOpen}
+        nocData={selectedRequest}
+        setcorporateHrData={setCorporateHdRemarks}
+        corporateHrData={corporateHrRemarks}
+        AccecptButtonName={'Forword To D & AR'}
+        rejectButtonName={'Reject Request'}
+        revertButtonName={'Get Trail'}
+        isEditable={false}
+      />
     </div>
   );
 };
 
-export default ProcessedRequestVigilanceUser;
+export default DandARNocRequestsFromVigilance;

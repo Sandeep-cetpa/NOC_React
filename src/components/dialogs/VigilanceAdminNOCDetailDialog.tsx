@@ -9,35 +9,21 @@ import { Textarea } from '../ui/textarea';
 import { Label } from '../ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { RequestStatus } from '@/constant/status';
-import VigilanceFieldsSection from '../common/VigilanceFieldsSection';
-
-const VigilanceUserNOCDetailDialog = ({
+const VigilanceAdminNOCDetailDialog = ({
   nocData,
   isOpen,
   onOpenChange,
   setcgmData,
   handleApproveClick,
   handleRevertClick,
+  handleTrailClick,
   cgmData,
   AccecptButtonName,
   revertButtonName,
   isEditable = false,
-  purpose,
-  vigilanceFieldsData,
-  setVigilanceFieldsData,
 }) => {
   if (!nocData) return null;
-  console.log(nocData, 'nocData');
-  const handleVigilanceFieldsChange = (fieldsData) => {
-    setVigilanceFieldsData(fieldsData);
-    // You can also update cgmData here if needed
-    if (setcgmData) {
-      setcgmData((prev) => ({
-        ...prev,
-        vigilanceFields: fieldsData,
-      }));
-    }
-  };
+  console.log(nocData, 'nocdata');
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
     try {
@@ -164,14 +150,18 @@ const VigilanceUserNOCDetailDialog = ({
                     <span className="font-medium">Post:</span>
                     <span>{nocData.post}</span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="font-medium">DOB:</span>
-                    <span>{formatDate(nocData.dob)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="font-medium">DOR:</span>
-                    <span>{formatDate(nocData.dor)}</span>
-                  </div>
+                  {nocData.dob && (
+                    <div className="flex justify-between">
+                      <span className="font-medium">DOB:</span>
+                      <span>{formatDate(nocData.dob)}</span>
+                    </div>
+                  )}
+                  {nocData.dor && (
+                    <div className="flex justify-between">
+                      <span className="font-medium">DOR:</span>
+                      <span>{formatDate(nocData.dor)}</span>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </div>
@@ -204,6 +194,7 @@ const VigilanceUserNOCDetailDialog = ({
                   const formattedKey = formatKeyName(key);
 
                   if (formattedKey === 'Service Entry') return null;
+                  if (formattedKey === 'Is Director') return null;
 
                   return (
                     <div key={key}>
@@ -226,35 +217,152 @@ const VigilanceUserNOCDetailDialog = ({
           )}
           {/* Form Inputs */}
           {nocData.inputs && nocData.inputs.length > 0 && (
-            <div className="bg-yellow-50 p-4 rounded-lg">
-              <h3 className="font-semibold text-lg mb-3 flex items-center gap-2">
-                <FileText className="w-5 h-5" />
-                Application Form Data
-              </h3>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                {nocData.inputs.map((field, index) => (
-                  <div key={index} className="bg-white p-3 rounded-lg border">
-                    <div className="flex items-center gap-2 mb-2">
-                      {getFieldIcon(field.fieldType)}
-                      <label className="text-sm font-medium text-gray-700">
-                        {formatLabel
-                          ? formatLabel(field.fieldName)
-                          : field.fieldName.replace(/_/g, ' ').replace(/\*/g, '').toUpperCase()}
-                      </label>
-                    </div>
-                    <div className="text-sm">
-                      {renderFieldValue(field) === 'true'
-                        ? 'Yes'
-                        : renderFieldValue(field) === 'false'
-                        ? 'No'
-                        : renderFieldValue(field)}
+            <div className="space-y-6">
+              {/* Regular Application Form Data */}
+              {nocData.inputs?.filter(
+                (field) =>
+                  !['Is Director', 'Another Field', 'Yet Another Field'].includes(field.fieldName) &&
+                  field.filledBy !== 'vigilanceuser'
+              ).length > 0 && (
+                <div className="bg-white border border-gray-200 rounded-xl shadow-sm">
+                  <div className="border-b border-gray-200 px-6 py-4">
+                    <h3 className="text-xl font-semibold text-gray-900 flex items-center gap-3">
+                      <div className="p-2 bg-blue-50 rounded-lg">
+                        <FileText className="w-5 h-5 text-blue-600" />
+                      </div>
+                      Application Form Data
+                    </h3>
+                  </div>
+
+                  <div className="p-6">
+                    <div className="space-y-4">
+                      {nocData.inputs
+                        ?.filter(
+                          (field) =>
+                            !['Is Director', 'Another Field', 'Yet Another Field'].includes(field.fieldName) &&
+                            field.filledBy !== 'vigilanceuser'
+                        )
+                        .map((field, index) => (
+                          <div
+                            key={index}
+                            className="border border-gray-200 rounded-lg bg-gray-50 hover:shadow-md transition-all duration-200"
+                          >
+                            <div className="grid grid-cols-1 lg:grid-cols-2 min-h-[60px]">
+                              {/* Question/Label Side */}
+                              <div className="px-4 py-4 border-b lg:border-b-0 lg:border-r border-gray-200 bg-gray-100">
+                                <div className="flex items-center gap-2 h-full">
+                                  <div className="p-1.5 rounded bg-gray-200 flex-shrink-0">
+                                    {getFieldIcon(field.fieldType)}
+                                  </div>
+                                  <label className="text-sm font-medium text-gray-800 leading-relaxed">
+                                    {formatLabel
+                                      ? formatLabel(field.fieldName)
+                                      : field.fieldName
+                                          .replace(/_/g, ' ')
+                                          .replace(/\*/g, '')
+                                          .replace(/\r\n/g, ' ')
+                                          .trim()
+                                          .toLowerCase()
+                                          .replace(/\b\w/g, (l) => l.toUpperCase())}
+                                  </label>
+                                </div>
+                              </div>
+
+                              {/* Answer/Value Side */}
+                              <div className="px-4 py-4 bg-white">
+                                <div className="flex items-center h-full">
+                                  <div className="text-sm text-gray-900 leading-relaxed w-full">
+                                    {renderFieldValue(field) === 'true' ? (
+                                      <span className="text-green-600 font-medium">Yes</span>
+                                    ) : renderFieldValue(field) === 'false' ? (
+                                      <span className="text-red-600 font-medium">No</span>
+                                    ) : (
+                                      <span className="text-gray-800">{renderFieldValue(field)}</span>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
                     </div>
                   </div>
-                ))}
-              </div>
+                </div>
+              )}
+
+              {/* Vigilance Department Review */}
+              {nocData.inputs?.filter((field) => field.filledBy === 'vigilanceuser').length > 0 && (
+                <div className="bg-white border border-amber-200 rounded-xl shadow-sm">
+                  <div className="border-b border-amber-200 px-6 py-1 bg-amber-50">
+                    <h3 className="text-xl font-semibold text-amber-900 flex items-center gap-3">
+                      Vigilance Department Review
+                    </h3>
+                    <p className="text-sm text-amber-700">Fields reviewed and updated by the Vigilance Department</p>
+                  </div>
+
+                  <div className="p-6">
+                    <div className="space-y-4">
+                      {nocData.inputs
+                        ?.filter((field) => field.filledBy === 'vigilanceuser')
+                        .map((field, index) => (
+                          <div
+                            key={index}
+                            className="border border-amber-200 rounded-lg bg-amber-50 hover:shadow-md transition-all duration-200"
+                          >
+                            <div className="grid grid-cols-1 lg:grid-cols-2 min-h-[10px]">
+                              {/* Question/Label Side */}
+                              <div className="px-4 py-4 border-b lg:border-b-0 lg:border-r border-amber-200 bg-amber-100">
+                                <div className="flex items-center gap-2 h-full">
+                                  <div className="p-1.5 rounded bg-amber-200 flex-shrink-0">
+                                    {getFieldIcon(field.fieldType)}
+                                  </div>
+                                  <label className="text-sm font-medium text-amber-800 leading-relaxed">
+                                    {formatLabel
+                                      ? formatLabel(field.fieldName)
+                                      : field.fieldName
+                                          .replace(/_/g, ' ')
+                                          .replace(/\*/g, '')
+                                          .replace(/\r\n/g, ' ')
+                                          .trim()
+                                          .toLowerCase()
+                                          .replace(/\b\w/g, (l) => l.toUpperCase())}
+                                  </label>
+                                </div>
+                              </div>
+
+                              {/* Answer/Value Side */}
+                              <div className="px-4 py-4 bg-white relative">
+                                <div className="flex items-center justify-between h-full">
+                                  <div className="text-sm text-gray-900 leading-relaxed">
+                                    {renderFieldValue(field) === 'true' ? (
+                                      <span className="text-green-600 font-medium">Yes</span>
+                                    ) : renderFieldValue(field) === 'false' ? (
+                                      <span className="text-red-600 font-medium">No</span>
+                                    ) : (
+                                      <span className="text-gray-800">{renderFieldValue(field)}</span>
+                                    )}
+                                  </div>
+                                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800 border border-amber-200 flex-shrink-0 ml-3">
+                                    <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                      <path
+                                        fillRule="evenodd"
+                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                                        clipRule="evenodd"
+                                      />
+                                    </svg>
+                                    Reviewed
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           )}
-
           {/* Table Inputs */}
           {nocData.tableInputs && nocData.tableInputs.length > 0 && (
             <div className="space-y-6 rounded-lg">
@@ -324,13 +432,7 @@ const VigilanceUserNOCDetailDialog = ({
               ))}
             </div>
           )}
-          {isEditable && purpose && nocData?.purposeId === 47 && nocData?.officerRemarks?.isDirector && (
-            <VigilanceFieldsSection
-              nocData={nocData}
-              purposeList={purpose}
-              onFieldsChange={handleVigilanceFieldsChange}
-            />
-          )}
+
           {/* CGM Input Section */}
           {isEditable && (
             <div className="m-3 pb-4">
@@ -356,15 +458,17 @@ const VigilanceUserNOCDetailDialog = ({
         <div className="flex justify-end space-x-2">
           {isEditable && (
             <>
+              <Button className="bg-yellow-500 hover:bg-yellow-600" onClick={() => handleRevertClick(nocData?.refId)}>
+                {revertButtonName}
+              </Button>
               <Button
-                onClick={() => handleApproveClick(nocData?.refId, RequestStatus.SentToCVo.value)}
+                onClick={() => handleApproveClick(nocData?.refId, RequestStatus.CVOTOHR.value)}
                 className="bg-green-600 hover:bg-green-700"
               >
                 {AccecptButtonName || 'Approve'}
               </Button>
-
-              <Button className="bg-yellow-500 hover:bg-yellow-600" onClick={() => handleRevertClick(nocData?.refId)}>
-                {revertButtonName}
+              <Button className="bg-yellow-500 hover:bg-yellow-600" onClick={() => handleTrailClick(nocData?.refId)}>
+                Get Trail
               </Button>
             </>
           )}
@@ -376,4 +480,4 @@ const VigilanceUserNOCDetailDialog = ({
   );
 };
 
-export default VigilanceUserNOCDetailDialog;
+export default VigilanceAdminNOCDetailDialog;

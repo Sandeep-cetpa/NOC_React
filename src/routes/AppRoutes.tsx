@@ -15,8 +15,8 @@ import RequestUnderProcess from '@/pages/CorporateUnitHr/RequestUnderProcess';
 import NocRequestsFromVigilance from '@/pages/CorporateUnitHr/NocRequestsFromVigilance';
 import RoleManagement from '@/pages/VigilanceAdmin/RoleManagement';
 import ManageGreyList from '@/pages/VigilanceAdmin/ManageGreyList';
-import VigilanceRequestReceived from '@/pages/VigilanceAdmin/VigilanceRequestReceived';
-import ProcessedRequest from '@/pages/VigilanceAdmin/ProcessedRequest';
+import VigilanceRequestReceived from '@/pages/VigilanceAdmin/VigilanceAdminRequestReceived';
+import ProcessedRequest from '@/pages/VigilanceAdmin/ProcessedRequestVigilanceAdmin';
 import DandArPendingRequests from '@/pages/DandAR/DandArPendingRequests';
 import GmProcessedRequests from '@/pages/gm/GmProcessedRequests';
 import GmRejectedRequests from '@/pages/gm/GmRejectedRequests';
@@ -33,6 +33,8 @@ import AppLayout from '@/components/layout/app-layout';
 import Unauthorized from '@/pages/unauthorized/Unauthorized';
 import RequestReceivedVigilanceUser from '@/pages/VigilanceUser/RequestReceivedVigilanceUser';
 import ProcessedRequestVigilanceUser from '@/pages/VigilanceUser/ProcessedRequestVigilanceUser';
+import VigilanceAdminRequestReceived from '@/pages/VigilanceAdmin/VigilanceAdminRequestReceived';
+import DandARNocRequestsFromVigilance from '@/pages/DandAR/DandARNocRequestsFromVigilance';
 
 const AppRoutes = () => {
   const { isAuthenticated } = useAuth();
@@ -56,7 +58,7 @@ const AppRoutes = () => {
         </Route>
       </Route>
       <Route element={<AppLayout isAdmin={true} />}>
-        <Route element={<PrivateRoute allowedRoles={["admin","superAdmin"]} />}>
+        <Route element={<PrivateRoute allowedRoles={['admin', 'superAdmin']} />}>
           <Route path="/admin-dashboard" element={<Dashboard />} />
           <Route path="/admin-manage-role" element={<ManageRoles />} />
         </Route>
@@ -86,7 +88,7 @@ const AppRoutes = () => {
         <Route element={<PrivateRoute allowedRoles={['VigilanceAdmin']} />}>
           <Route path="/vigilance-admin-role-management" element={<RoleManagement />} />
           <Route path="/vigilance-admin-manage-grey-list" element={<ManageGreyList />} />
-          <Route path="/vigilance-admin-request-received" element={<VigilanceRequestReceived />} />
+          <Route path="/vigilance-admin-request-received" element={<VigilanceAdminRequestReceived />} />
           <Route path="/vigilance-admin-processed-request" element={<ProcessedRequest />} />
         </Route>
       </Route>
@@ -100,6 +102,7 @@ const AppRoutes = () => {
         <Route element={<PrivateRoute allowedRoles={['DandAR']} />}>
           <Route path="/d-and-ar-pending-requests" element={<DandArPendingRequests />} />
           <Route path="/d-and-ar-raise-requests" element={<NocRequestForEmployeeByDandAR />} />
+          <Route path="/d-and-ar-request-from-vigilance" element={<DandARNocRequestsFromVigilance />} />
         </Route>
       </Route>
       <Route element={<AppLayout isAdmin={true} />}>

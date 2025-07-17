@@ -11,9 +11,9 @@ import { RootState } from '@/app/store';
 import TableList from '@/components/ui/data-table';
 import Loader from '@/components/ui/loader';
 import { allPurpose } from '@/constant/static';
-import VigilanceUserNOCDetailDialog from '@/components/dialogs/VigilanceUserNOCDetailDialog';
+import VigilanceAdminNOCDetailDialog from '@/components/dialogs/VigilanceAdminNOCDetailDialog';
 
-const ProcessedRequestVigilanceUser = () => {
+const ProcessedRequestVigilanceAdmin = () => {
   const userRoles = useSelector((state: RootState) => state.user.Roles);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedUnit, setSelectedUnit] = useState<string>('');
@@ -31,7 +31,7 @@ const ProcessedRequestVigilanceUser = () => {
   const getAllRequests = async (unitId: any) => {
     try {
       setIsLoading(true);
-      const response = await axiosInstance.get(`/VigilanceUser/NOC/Report?UnitId=${unitId}`);
+      const response = await axiosInstance.get(`/VigilanceAdmin/NOC/Report?UnitId=${unitId}`);
       if (response.data.success) {
         setRequests(response.data.data);
       }
@@ -218,7 +218,7 @@ const ProcessedRequestVigilanceUser = () => {
             showFilter={false}
           />
         </div>
-        <VigilanceUserNOCDetailDialog
+        <VigilanceAdminNOCDetailDialog
           setcgmData={setcgmData}
           cgmData={cgmData}
           isOpen={isOpen}
@@ -230,4 +230,4 @@ const ProcessedRequestVigilanceUser = () => {
   );
 };
 
-export default ProcessedRequestVigilanceUser;
+export default ProcessedRequestVigilanceAdmin;
