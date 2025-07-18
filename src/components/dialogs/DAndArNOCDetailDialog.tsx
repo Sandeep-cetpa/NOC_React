@@ -63,7 +63,7 @@ const DAndArNOCDetailDialog = ({
       return dateString;
     }
   };
-
+  console.log(nocData, 'NOC DATA');
   const getFieldIcon = (fieldType) => {
     switch (fieldType?.toLowerCase()) {
       case 'file':
@@ -213,7 +213,6 @@ const DAndArNOCDetailDialog = ({
                 </div>
               )}
             </div>
-
             {/* Officer Remarks */}
             {(nocData?.officerRemarksR || nocData?.officerRemarks) && (
               <div className="bg-green-50 p-4 rounded-lg">
@@ -361,7 +360,9 @@ const DAndArNOCDetailDialog = ({
                 ))}
               </div>
             )}
-            {(nocData?.fkPurposeId === 54 || nocData?.fkPurposeId === 53) && <ExcelDataPreview data={nocData?.data} />}
+            {(nocData?.fkPurposeId === 54 || nocData?.fkPurposeId === 53) && (
+              <ExcelDataPreview excelData={nocData?.data} data={nocData?.data} />
+            )}
 
             {isEditable && nocData?.unitId === 1 && (
               <div className="m-2">
@@ -434,7 +435,13 @@ const DAndArNOCDetailDialog = ({
                           ...prev,
                           BulkExcel: file,
                         }));
+                      } else {
+                        setdAndARRemarksRemarks((prev) => ({
+                          ...prev,
+                          BulkExcel: null,
+                        }));
                       }
+
                       setErrorRowsIndexs([]);
                       setErrorRows({});
                       setExcelPreviewData([]);
@@ -469,7 +476,12 @@ const DAndArNOCDetailDialog = ({
           {(nocData?.fkPurposeId === 54 || nocData?.fkPurposeId === 53) && excelPreviewData?.length > 0 && (
             <div className="">
               <h1 className="mb-2 text-2xl text-gray-800">Uploaded Excel Preview</h1>
-              <ExcelDataPreview errorMessages={errorRows} errorRowIndexes={errorRowsIndexs} data={excelPreviewData} />
+              <ExcelDataPreview
+                errorMessages={errorRows}
+                errorRowIndexes={errorRowsIndexs}
+                excelData={excelPreviewData}
+                data={excelPreviewData}
+              />
             </div>
           )}
         </div>

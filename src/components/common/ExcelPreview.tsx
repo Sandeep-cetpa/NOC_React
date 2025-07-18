@@ -216,13 +216,13 @@ const ExcelDataPreview = ({
   errorRowIndexes = [],
   errorMessages = {},
   isUploadButton = false,
-  setExcelData,
+  setExcelData = () => {},
   excelData,
 }) => {
   if (!data || data.length === 0) {
     return null;
   }
-
+  console.log(data);
   const transformExcelData = (data) => {
     if (!data || data.length < 2) return [];
 
@@ -249,8 +249,6 @@ const ExcelDataPreview = ({
       setExcelData(transformed);
     }
   }, [data, setExcelData]);
-
-  console.log(excelData, 'excelData');
 
   if (!excelData || excelData.length === 0) return null;
 
@@ -309,8 +307,7 @@ const ExcelDataPreview = ({
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-semibold text-gray-900">Excel Data Preview</h2>
-          <p className="text-sm text-gray-600 mt-1">
+          <p className="text-sm text-gray-600 mt-2">
             {rows.length} row{rows.length > 1 ? 's' : ''} • {headers.length} column{headers.length > 1 ? 's' : ''}
           </p>
         </div>

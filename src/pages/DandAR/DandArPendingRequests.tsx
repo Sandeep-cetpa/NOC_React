@@ -271,7 +271,9 @@ const ReceivedRequests = () => {
     }
   };
   useEffect(() => {
-    handleExcelPreview();
+    if (dAndARRemarks?.BulkExcel) {
+      handleExcelPreview();
+    }
   }, [dAndARRemarks?.BulkExcel]);
   const filteredData = useMemo(() => {
     return request.filter((item) => {
