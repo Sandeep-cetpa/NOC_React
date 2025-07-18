@@ -146,7 +146,6 @@ const CreateRequest = () => {
       return updated;
     });
   };
-  console.log(userInfo, 'user');
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const result = validateForm(selectedForm, formData, setSubmitStatus, false, userInfo?.Lavel);

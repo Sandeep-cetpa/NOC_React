@@ -42,7 +42,7 @@ EnhancedDatePickerProps) => {
         ref={ref}
         disabled={disabled}
         className={cn(
-          'w-full border-2 border-gray-100 bg-transparent px-6 py-2.5 flex items-center justify-start text-left font-normal',
+          'w-full flex border-2 border-gray-100 bg-transparent px-6 py-2.5 flex items-center justify-start text-left font-normal',
           !value && 'text-muted-foreground',
           className
         )}

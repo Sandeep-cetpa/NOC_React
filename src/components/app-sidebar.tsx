@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { LogOut, Hotel, ChevronsLeft, ChevronsRight, FileText, MonitorCog, Loader } from 'lucide-react';
+import { LogOut, Hotel, ChevronsLeft, ChevronsRight, FileText, MonitorCog } from 'lucide-react';
 import { NavMain } from '@/components/nav-main';
 import {
   Sidebar,
@@ -25,6 +25,7 @@ import { fetchApplications } from '@/features/applications/applicationsSlice';
 import { useAuth } from 'react-oidc-context';
 import { UserRole } from '@/types/auth';
 import { useAppSelector } from '@/app/hooks';
+import Loader from './ui/loader';
 
 export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
   const navigate = useNavigate();
@@ -128,6 +129,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
       dispatch(fetchApplications());
     }
   }, [applications]);
+
   if (userLoading) {
     return <Loader />;
   }
@@ -148,7 +150,15 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu>
           {canAccessAdminDashboard && (
             <SidebarMenuButton
-              onClick={() => navigate(roleWiseUrlNavigation[Roles[0]])}
+              onClick={() => {
+                let isUnitHr = userRoles?.find((ele: any) => ele?.roleId === 3);
+                const isCorporateHR = isUnitHr?.unitsAssigned?.find((ele: any) => ele?.unitId === 1);
+                if (isCorporateHR) {
+                  navigate('/corporate-unit-hr-received-requests');
+                } else {
+                  navigate(roleWiseUrlNavigation[Roles[0]]);
+                }
+              }}
               asChild
               tooltip={'Manage Organization'}
               className={`transition-all text-black cursor-pointer duration-300  active:bg-primary [&>svg]:size-7 ease-in-out hover:bg-primary hover:text-white h-full w-full active:text-white`}

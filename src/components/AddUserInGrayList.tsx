@@ -88,11 +88,11 @@ const AddUserInGrayList = ({
 
                     {/* Employee List */}
                     <ScrollArea className="h-40 border rounded p-2 bg-white">
-                      {filteredEmployees.length === 0 ? (
+                      {filteredEmployees?.length === 0 ? (
                         <div className="text-sm text-muted-foreground p-2">No employees available in this unit</div>
                       ) : (
                         <div className="space-y-2">
-                          {filteredEmployees.map((emp) => (
+                          {filteredEmployees?.map((emp) => (
                             <div key={emp.value} className="flex items-center gap-2 p-1 hover:bg-slate-50 rounded">
                               <Checkbox
                                 checked={selectedEmployees.some((e) => e.value === emp.value)}

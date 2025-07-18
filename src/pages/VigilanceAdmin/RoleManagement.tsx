@@ -190,7 +190,6 @@ const RoleManagement = () => {
   };
 
   const handleRowClick = (row: Employee) => {
-    console.log('Row clicked:', row);
     setSelectedRowsForRemoval((prevSelected) => {
       const isAlreadySelected = prevSelected.some((selected) => selected.employeeCode === row.employeeCode);
       if (isAlreadySelected) {
@@ -200,8 +199,6 @@ const RoleManagement = () => {
       }
     });
   };
-
-  console.log(selectedRowsForRemoval, 'selectedRowsForRemoval');
   const isRowSelected = (row: Employee) => {
     return selectedRowsForRemoval.some((selected) => selected.employeeCode === row.employeeCode);
   };
@@ -335,6 +332,7 @@ const RoleManagement = () => {
         selectedEmployees={selectedEmployees}
         selectedUnitId={selectedUnitId}
         unitOptions={unitOptions}
+        setSelectedEmployees={setSelectedEmployees}
         filteredEmployees={filteredEmployees}
         isRoleMapping={true}
       />
@@ -361,7 +359,7 @@ const RoleManagement = () => {
               <>
                 <Button
                   variant="destructive"
-                  disabled={isRemoving}
+                  disabled={isRemoving || selectedRowsForRemoval.length === 0}
                   onClick={handleRemoveFromGreylist}
                   className="flex items-center gap-2"
                 >
@@ -375,7 +373,8 @@ const RoleManagement = () => {
                       <Trash2 className="h-4 w-4" />
                       Remove Users
                     </>
-                  )}
+                  )}{' '}
+                  ({selectedRowsForRemoval.length})
                 </Button>
               </>
             }

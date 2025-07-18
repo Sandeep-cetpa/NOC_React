@@ -222,7 +222,6 @@ const DAndArNOCDetailDialog = ({
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {Object.entries(nocData?.officerRemarksR || nocData?.officerRemarks).map(([key, value]) => {
-                   
                     const isDateField = key.toLowerCase().includes('date');
                     const isFileField = key.toLowerCase().includes('file');
                     const formattedKey = formatKeyName(key);
