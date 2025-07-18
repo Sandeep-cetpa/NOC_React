@@ -15,7 +15,7 @@ import {
   hiddenFieldsForNewPaasport,
 } from '@/config';
 import 'react-datepicker/dist/react-datepicker.css';
-import { useLocation, useNavigate } from 'react-router';
+import { useLocation } from 'react-router';
 import EnhancedDatePicker from './FormBuilder/EnhancedDatePicker';
 
 const RenderForm = ({
@@ -31,10 +31,10 @@ const RenderForm = ({
   isSubmitting,
   fileRef,
   missingFields,
+  handleExcelPreview,
 }) => {
   if (!selectedForm) return null;
   const location = useLocation();
-  const navigate = useNavigate();
   return (
     <div className="opacity-95">
       {selectedForm && (
@@ -101,7 +101,7 @@ const RenderForm = ({
                 {selectedForm?.fields
                   ?.filter((item) => !item?.isInTableValue && item?.filledBy === null)
                   ?.filter((item) => !(selectedForm?.purposeId === 53 && item?.fieldId === 153))
-                  ?.filter((item) => !(selectedForm?.purposeId === 58 && item?.fieldId === 168))
+                  ?.filter((item) => !(selectedForm?.purposeId === 57 && item?.fieldId === 168))
                   .filter((ele) => {
                     const fieldId = Number(ele?.fieldId);
                     if (!formData['122'] && hiddenFieldsForNewPaasport?.includes(fieldId)) {
@@ -221,7 +221,7 @@ const RenderForm = ({
                     </div>
                   </>
                 )}
-                {selectedForm.purposeId !== 53 && selectedForm.purposeId !== 58 && (
+                {selectedForm.purposeId !== 53 && selectedForm.purposeId !== 57 && (
                   <>
                     <div className="flex flex-col">
                       <Label className="mb-2">Upload IPR</Label>
@@ -256,7 +256,7 @@ const RenderForm = ({
                   </>
                 )}
                 {((selectedForm.purposeId === 53 && location.pathname === '/corporate-unit-hr-request-for-employee') ||
-                  (selectedForm.purposeId === 58 && location.pathname === '/d-and-ar-raise-requests')) && (
+                  (selectedForm.purposeId === 57 && location.pathname === '/d-and-ar-raise-requests')) && (
                   <>
                     <div>
                       <div className="flex flex-col">

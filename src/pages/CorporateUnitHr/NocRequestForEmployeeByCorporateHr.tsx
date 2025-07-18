@@ -155,7 +155,6 @@ const NocRequestForEmployeeByCorporateHr = () => {
   const handleEmployeeSelect = (empCode: string) => {
     const employee = employees.find((f) => Number(f.employeeMasterAutoId) === Number(empCode));
     setSelectedEmployee(empCode);
-    setFormData({});
     setSubmitStatus(null);
   };
 
@@ -256,12 +255,14 @@ const NocRequestForEmployeeByCorporateHr = () => {
         setMisssingfields([]);
         setSubmitStatus(null);
         setTableRows([]);
-        navigate('/unit-hr-processed-noc-requests');
+        navigate('/corporate-unit-hr-request-under-process');
       } else {
-        setErrorRowsIndexs(response?.data?.erorrRowsIfBulk);
+        toast.error(response.data.errorMessageIfBulk);
+        const errorRows = response?.data?.erorrRowsIfBulk || [];
+        setErrorRowsIndexs(errorRows);
         setErrorRows(() => {
           const updatedErrors = {};
-          response?.data?.erorrRowsIfBulk?.forEach((rowIndex) => {
+          errorRows?.forEach((rowIndex) => {
             updatedErrors[rowIndex] = response?.data?.errorMessageIfBulk;
           });
           return updatedErrors;
@@ -424,7 +425,12 @@ const NocRequestForEmployeeByCorporateHr = () => {
                   selectedForm={selectedForm}
                   handleExcelPreview={handleExcelPreview}
                 />
-                <ExcelDataPreview errorRowIndexes={errorRowsIndexs} data={excelPreviewData} errorMessages={errorRows} />
+                <ExcelDataPreview
+                  errorRowIndexes={errorRowsIndexs}
+                  data={excelPreviewData}
+                  excelData={excelPreviewData}
+                  errorMessages={errorRows}
+                />
               </div>
             )}
           </CardContent>

@@ -325,7 +325,7 @@ export const validateForm = (selectedForm, formData, setSubmitStatus, isUnitHrPa
   if (selectedForm?.purposeId === 53) {
     fieldsToIgnore.push(153);
   }
-  if (selectedForm?.purposeId === 58) {
+  if (selectedForm?.purposeId === 57) {
     fieldsToIgnore.push(168);
   }
   requiredFields = requiredFields.filter((field) => {
@@ -358,7 +358,7 @@ export const validateForm = (selectedForm, formData, setSubmitStatus, isUnitHrPa
   const extraMissingFields = [];
 
   // IPR fields validation based on user grade
-  if (isIPRMandatory && selectedForm.purposeId !== 53 && selectedForm.purposeId !== 58) {
+  if (isIPRMandatory && selectedForm.purposeId !== 53 && selectedForm.purposeId !== 57) {
     if (!formData.iprFile) {
       extraMissingFields.push({ fieldName: 'IPR File', fieldId: 'iprFile' });
     }
@@ -371,7 +371,7 @@ export const validateForm = (selectedForm, formData, setSubmitStatus, isUnitHrPa
       extraMissingFields.push({ fieldName: 'Upload Excel', fieldId: 'BulkExcel' });
     }
   }
-  if (selectedForm?.purposeId === 58) {
+  if (selectedForm?.purposeId === 57) {
     if (!formData.BulkExcel) {
       extraMissingFields.push({ fieldName: 'Upload Excel', fieldId: 'BulkExcel' });
     }
@@ -445,4 +445,25 @@ export const validateVigilanceFields = (data, skipForExternal) => {
   }
 
   return true;
+};
+
+export const formatKeyName = (key: string) => {
+  return (
+    key
+      // Add space before capital letters (only if not already spaced)
+      .replace(/([a-z])([A-Z])/g, '$1 $2')
+      // Add space before acronym (2+ uppercase letters together)
+      .replace(/([A-Z]+)([A-Z][a-z])/g, '$1 $2')
+      // Capitalize first letter
+      .replace(/^./, (str) => str.toUpperCase())
+      // Replace known acronyms properly
+      .replace(/\bHr\b/g, 'HR')
+      .replace(/\bIpr\b/g, 'IPR')
+      .replace(/\bCgm\b/g, 'CGM')
+      .replace(/\bDandar\b/gi, 'D&AR')
+      .replace(/Reamarks/gi, 'Remarks')
+      // Remove extra spaces if any
+      .replace(/\s+/g, ' ')
+      .trim()
+  );
 };

@@ -125,6 +125,7 @@ const VigilanceAdminRequestReceived = () => {
       const response = await axiosInstance.put(`/VigilanceAdmin/NOC/Update-Renewal?request=${status}`);
       console.log(response.data);
       if (response.data.success) {
+        toast.success('Auto renewal updated');
         getCurrentAutomaticApprovalStatus();
       }
     } catch (err) {

@@ -20,8 +20,7 @@ const TrackNoc = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [nocData, setNocData] = useState([]);
-  const masterData = useSelector((state:RootState)=>state.masterData.data)
-  console.log(masterData,"masterData")
+  const masterData = useSelector((state: RootState) => state.masterData.data);
   const getAllUserNoc = async (userId) => {
     try {
       setIsLoading(true);
@@ -101,11 +100,10 @@ const TrackNoc = () => {
       ),
     },
   ];
-  if (isLoading) {
-    return <Loader />;
-  }
+
   return (
     <div className="p-6">
+      {isLoading && <Loader />}
       <div className="">
         {/* Header */}
         <div className="mb-8">

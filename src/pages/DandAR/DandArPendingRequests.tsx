@@ -409,7 +409,7 @@ const ReceivedRequests = () => {
         revertButtonName={'Revert To Corporate HR'}
         handleExcelDownload={handleExcelDownload}
         handleExcelPreview={handleExcelPreview}
-        isEditable={true}
+        isEditable={activetab !== 'processed'}
         setErrorRowsIndexs={setErrorRowsIndexs}
         setErrorRows={setErrorRows}
         setExcelPreviewData={setExcelPreviewData}

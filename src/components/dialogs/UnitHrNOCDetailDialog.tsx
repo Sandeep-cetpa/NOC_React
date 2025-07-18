@@ -3,7 +3,7 @@ import { CalendarDays, User, FileText, Mail, Calendar, Download, Eye } from 'luc
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
 import { Button } from '../ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
-import { formatLabel } from '@/lib/helperFunction';
+import { formatKeyName, formatLabel } from '@/lib/helperFunction';
 import { Badge } from '../ui/badge';
 import { Textarea } from '../ui/textarea';
 import { Label } from '../ui/label';
@@ -142,18 +142,7 @@ const UnitHrNOCDetailDialog = ({
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {Object.entries(nocData?.officerRemarks || nocData?.officerRemarksR).map(([key, value]) => {
-                  // Format the key name to be user-friendly
-                  const formatKeyName = (key) => {
-                    return key
-                      .replace(/([A-Z])/g, ' $1') // Add space before capital letters
-                      .replace(/^./, (str) => str.toUpperCase()) // Capitalize first letter
-                      .replace(/hr/gi, 'HR') // Replace hr with HR
-                      .replace(/ipr/gi, 'IPR') // Replace ipr with IPR
-                      .replace(/cgm/gi, 'CGM') // Replace cgm with CGM
-                      .replace(/dandar/gi, 'D&AR') // Replace dandar with D&AR
-                      .replace(/reamarks/gi, 'Remarks') // Fix typo in remarks
-                      .trim();
-                  };
+            
                   // Check if the field is a date field
                   const isDateField = key.toLowerCase().includes('date');
 

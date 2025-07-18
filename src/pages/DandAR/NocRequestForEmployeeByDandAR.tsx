@@ -49,7 +49,6 @@ const NocRequestForEmployeeByDandAR = () => {
   const [tableRows, setTableRows] = useState([]);
   const [excelData, setExcelData] = useState([]);
   const [submitStatus, setSubmitStatus] = useState<{ type: string; message: string } | null>(null);
-  console.log(excelData, 'excelData in nox page');
   const handleFormSelect = (formId: any) => {
     const form = forms.find((f) => Number(f.purposeId) === Number(formId));
     setMisssingfields([]);
@@ -147,7 +146,6 @@ const NocRequestForEmployeeByDandAR = () => {
       [newUUID]: newRowObject,
     }));
   };
-  console.log(selectedForm, 'selected form');
   const removeRow = (uuidToRemove) => {
     setTableRows((prev) => {
       const updated = Object.entries(prev)
@@ -162,8 +160,6 @@ const NocRequestForEmployeeByDandAR = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('➡️ Starting submission');
-
     const result = validateForm(
       selectedForm,
       formData,
@@ -184,9 +180,16 @@ const NocRequestForEmployeeByDandAR = () => {
     try {
       const payloadFormData = new FormData();
       excelData?.forEach((ele, index) => {
-        const isoDate = new Date(ele['Promotion due from (DD-MM-YYYY)'])?.toISOString();
+        const rawDate = ele['Promotion due from (DD-MM-YYYY)'];
+        const parsedDate = new Date(rawDate);
+        const isValidDate = parsedDate instanceof Date && !isNaN(parsedDate.getTime());
+
         payloadFormData.append(`Data[${index}].EmployeeCode`, ele['Employee Code'] || '');
-        payloadFormData.append(`Data[${index}].PromotionDueDate`, isoDate);
+
+        if (isValidDate) {
+          payloadFormData.append(`Data[${index}].PromotionDueDate`, parsedDate.toISOString());
+        }
+
         payloadFormData.append(`Data[${index}].PertainingPast`, ele['Pertaining to Past Unit'] || '');
         payloadFormData.append(`Data[${index}].PertainingPresent`, ele['Pertaining to Present Unit'] || '');
         payloadFormData.append(`Data[${index}].AnyOtherRemark`, ele['Any Other Remarks'] || '');
@@ -203,13 +206,13 @@ const NocRequestForEmployeeByDandAR = () => {
       });
 
       if (response.data?.success) {
-        toast.success(`✅ Request submitted successfully. Reference ID: ${response.data.userId}`);
+        toast.success(`Request submitted successfully`);
         setFormData({});
         setSelectedForm(null);
         setMisssingfields([]);
         setSubmitStatus(null);
         setTableRows([]);
-        navigate('/unit-hr-processed-noc-requests');
+        navigate('/d-and-ar-pending-requests');
       } else {
         // Handle partial errors if bulk failed
         const errorIndexes = response?.data?.data?.erorrRowsIfBulk || [];
@@ -254,7 +257,6 @@ const NocRequestForEmployeeByDandAR = () => {
       if (response.data.success) {
         setExcelPreviewData(response.data.data);
       }
-      console.log(response.data, 'response');
     } catch (err) {
       console.log(err);
     } finally {

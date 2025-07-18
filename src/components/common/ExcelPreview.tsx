@@ -216,13 +216,12 @@ const ExcelDataPreview = ({
   errorRowIndexes = [],
   errorMessages = {},
   isUploadButton = false,
-  setExcelData = () => {},
+  setExcelData = (value) => {},
   excelData,
 }) => {
   if (!data || data.length === 0) {
     return null;
   }
-  console.log(data);
   const transformExcelData = (data) => {
     if (!data || data.length < 2) return [];
 
@@ -235,10 +234,8 @@ const ExcelDataPreview = ({
       headers.forEach((header, index) => {
         rowObj[header] = row[index] ?? '';
       });
-
       // Add file placeholder
       rowObj.uploadFile = null;
-
       return rowObj;
     });
   };
@@ -285,7 +282,6 @@ const ExcelDataPreview = ({
             cell: (row, rowIndex) => (
               <FileUploadCell
                 onFileChange={(file) => {
-                  console.log(rowIndex, 'row Index');
                   setExcelData((prevData) => {
                     const updated = [...prevData];
                     if (updated[rowIndex - 2]) {
@@ -311,11 +307,11 @@ const ExcelDataPreview = ({
             {rows.length} row{rows.length > 1 ? 's' : ''} • {headers.length} column{headers.length > 1 ? 's' : ''}
           </p>
         </div>
-        {errorRowIndexes.length > 0 && (
+        {errorRowIndexes?.length > 0 && (
           <div className="flex items-center gap-2 px-3 py-2 bg-red-100 rounded-lg">
             <AlertTriangle className="h-4 w-4 text-red-600" />
             <span className="text-sm font-medium text-red-800">
-              {errorRowIndexes.length} Error{errorRowIndexes.length > 1 ? 's' : ''}
+              {errorRowIndexes?.length} Error{errorRowIndexes?.length > 1 ? 's' : ''}
             </span>
           </div>
         )}

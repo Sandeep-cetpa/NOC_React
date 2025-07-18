@@ -3,7 +3,7 @@ import { User, FileText, Mail, Calendar, Download, Eye } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
 import { Button } from '../ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
-import { formatLabel } from '@/lib/helperFunction';
+import { formatKeyName, formatLabel } from '@/lib/helperFunction';
 import { Badge } from '../ui/badge';
 import { Textarea } from '../ui/textarea';
 import { Label } from '../ui/label';
@@ -177,18 +177,6 @@ const VigilanceAdminNOCDetailDialog = ({
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {Object.entries(nocData?.officerRemarksR || nocData?.officerRemarks).map(([key, value]) => {
-                  const formatKeyName = (key: string) => {
-                    return key
-                      .replace(/([A-Z])/g, ' $1')
-                      .replace(/^./, (str) => str.toUpperCase())
-                      .replace(/hr/gi, 'HR')
-                      .replace(/ipr/gi, 'IPR')
-                      .replace(/cgm/gi, 'CGM')
-                      .replace(/dandar/gi, 'D&AR')
-                      .replace(/reamarks/gi, 'Remarks')
-                      .trim();
-                  };
-
                   const isDateField = key.toLowerCase().includes('date');
                   const isFileField = key.toLowerCase().includes('file');
                   const formattedKey = formatKeyName(key);
@@ -459,10 +447,15 @@ const VigilanceAdminNOCDetailDialog = ({
           {isEditable && (
             <>
               <Button className="bg-yellow-500 hover:bg-yellow-600" onClick={() => handleRevertClick(nocData?.refId)}>
-                {revertButtonName}
+                {nocData.purposeId === 57 ? 'Forward to D and AR' : revertButtonName}
               </Button>
               <Button
-                onClick={() => handleApproveClick(nocData?.refId, RequestStatus.CVOTOHR.value)}
+                onClick={() =>
+                  handleApproveClick(
+                    nocData?.refId,
+                    nocData.purposeId === 57 ? RequestStatus.RevertBackToUnderDandAR.value : RequestStatus.CVOTOHR.value
+                  )
+                }
                 className="bg-green-600 hover:bg-green-700"
               >
                 {AccecptButtonName || 'Approve'}
