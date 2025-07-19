@@ -243,6 +243,7 @@ const NocRequestsFromVigilance = () => {
         rejectButtonName={'Reject Request'}
         revertButtonName={'Get Trail'}
         isEditable={true}
+        isFromVigilance={true}
       />
     </div>
   );

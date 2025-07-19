@@ -12,9 +12,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useSelector } from 'react-redux';
 import { RootState } from '@/app/store';
 import { allPurpose } from '@/constant/static';
-
+interface PromotionResponse {
+  nonBulkRecord: any[]; // Replace `any` with a specific type if known
+  promotionReportDTO: any[]; // Replace `any` with a specific type if known
+}
 const DandARNocRequestsFromVigilance = () => {
-  const [request, setRequests] = useState([]);
+  const [request, setRequests] = useState<PromotionResponse | null>(null);
   const user = useSelector((state: RootState) => state.user);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedGrade, setSelectedGrade] = useState('all');
@@ -129,14 +132,17 @@ const DandARNocRequestsFromVigilance = () => {
     },
   ];
   const filteredData = useMemo(() => {
-    return request.filter((item) => {
-      // const postMatch = selectedGrade === 'all' || item.post === selectedGrade;
-      const departmentMatch = selectedDepartment === 'all' || item.department === selectedDepartment;
-      const purposeMatch = selectedPurpose === 'all' || Number(item.purposeId) === Number(selectedPurpose);
-      // return postMatch && departmentMatch;
-      return departmentMatch && purposeMatch;
-    });
+    return (
+      request?.nonBulkRecord?.filter((item) => {
+        // const postMatch = selectedGrade === 'all' || item.post === selectedGrade;
+        const departmentMatch = selectedDepartment === 'all' || item.department === selectedDepartment;
+        const purposeMatch = selectedPurpose === 'all' || Number(item.purposeId) === Number(selectedPurpose);
+        // return postMatch && departmentMatch;
+        return departmentMatch && purposeMatch;
+      }) || []
+    );
   }, [selectedDepartment, selectedPurpose, request]);
+  console.log(filteredData);
   return (
     <div className=" p-6">
       {isLoading && <Loader />}
@@ -175,8 +181,12 @@ const DandARNocRequestsFromVigilance = () => {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">All</SelectItem>
-                      {departments.map((ele) => {
-                        return <SelectItem value={ele}>{ele}</SelectItem>;
+                      {departments.map((ele, index) => {
+                        return (
+                          <SelectItem key={index} value={ele}>
+                            {ele}
+                          </SelectItem>
+                        );
                       })}
                     </SelectContent>
                   </Select>

@@ -24,6 +24,7 @@ const CorporateHrNOCDetailDialog = ({
   AccecptButtonName,
   revertButtonName,
   isEditable = false,
+  isFromVigilance = false,
 }) => {
   if (!nocData) return null;
   const formatDate = (dateString) => {
@@ -183,17 +184,16 @@ const CorporateHrNOCDetailDialog = ({
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {Object.entries(nocData?.officerRemarksR || nocData?.officerRemarks).map(([key, value]) => {
-               
-
                   const isDateField = key.toLowerCase().includes('date');
                   const isFileField = key.toLowerCase().includes('file');
                   const formattedKey = formatKeyName(key);
 
                   if (formattedKey === 'Service Entry') return null;
                   if (
-                    (formattedKey.toLocaleLowerCase().includes('unit') ||
-                      formattedKey.toLocaleLowerCase().includes('cgm')) &&
-                    nocData.unitId === 1
+                    (formattedKey.toLowerCase().includes('unit') || formattedKey.toLowerCase().includes('cgm')) &&
+                    nocData.unitId === 1 &&
+                    formattedKey !== 'Present Unit' &&
+                    formattedKey !== 'Past Unit'
                   ) {
                     return null;
                   }
@@ -226,7 +226,6 @@ const CorporateHrNOCDetailDialog = ({
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {Object.entries(nocData?.revision).map(([key, value]: [any, any]) => {
-          
                   // Fields to skip
                   const skipFields = ['Pk Revert', 'Raised To', 'Objection For', 'Raised At'];
 
@@ -387,7 +386,7 @@ const CorporateHrNOCDetailDialog = ({
 
         {/* Action Buttons */}
         <div className="flex justify-end space-x-2">
-          {isEditable && (
+          {isEditable && !isFromVigilance && (
             <>
               <Button
                 onClick={() => handleApproveClick(nocData?.refId, RequestStatus.UnderDandAR.value)}
@@ -409,7 +408,18 @@ const CorporateHrNOCDetailDialog = ({
               </Button>
             </>
           )}
-
+          <Button
+            onClick={() => handleApproveClick(nocData?.refId, RequestStatus.UnderDandAR.value)}
+            className="bg-green-600 hover:bg-green-700"
+          >
+            {'Action Taken'}
+          </Button>
+          <Button
+            variant="destructive"
+            onClick={() => handleRejectClick(nocData?.refId, RequestStatus.RejectedByCorporateHR.value)}
+          >
+            {'Forword To GM HR'}
+          </Button>
           <Button onClick={() => onOpenChange(false)}>Close</Button>
         </div>
       </DialogContent>

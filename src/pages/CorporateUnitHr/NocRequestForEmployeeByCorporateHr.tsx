@@ -302,6 +302,14 @@ const NocRequestForEmployeeByCorporateHr = () => {
       setIsLoading(false);
     }
   };
+  useEffect(() => {
+    if (formData.BulkExcel) {
+      handleExcelPreview();
+    } else {
+      setExcelPreviewData([]);
+      setErrorRows({});
+    }
+  }, [formData.BulkExcel]);
   const employeeOptions = useMemo(
     () =>
       employees.map((emp) => ({

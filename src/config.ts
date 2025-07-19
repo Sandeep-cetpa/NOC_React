@@ -1,5 +1,6 @@
 const DFCCIL_UAT = {
   apiUrl: 'https://uatnocapi.dfccil.com/api',
+  imagesBaseUrl: 'https://uat.dfccil.com/DocUpload',
   orgHierarchy: 'https://uatorganization.dfccil.com/api',
   logoutUrl: 'https://uatlogin.dfccil.com/applications',
   authUrl: 'https://app2.dfccil.com',
@@ -12,6 +13,7 @@ const DFCCIL_UAT = {
 const DFCCIL_PROD = {
   apiUrl: 'https://uatnocapi.dfccil.com/api',
   orgHierarchy: 'https://orgsvc.dfccil.com/api',
+  imagesBaseUrl: 'https://uat.dfccil.com/DocUpload',
   logoutUrl: 'https://it.dfccil.com/Home/Home',
   authUrl: 'https://app2.dfccil.com',
   clientId: 'd59a787020d841469a71107917549ef3',

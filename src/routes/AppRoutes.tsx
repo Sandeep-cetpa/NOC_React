@@ -35,6 +35,8 @@ import RequestReceivedVigilanceUser from '@/pages/VigilanceUser/RequestReceivedV
 import ProcessedRequestVigilanceUser from '@/pages/VigilanceUser/ProcessedRequestVigilanceUser';
 import VigilanceAdminRequestReceived from '@/pages/VigilanceAdmin/VigilanceAdminRequestReceived';
 import DandARNocRequestsFromVigilance from '@/pages/DandAR/DandARNocRequestsFromVigilance';
+import { useGlobalLogout } from '@/auth/useGlobalLogout';
+import { SESSION_CHECK_INTERVAL } from '@/config';
 
 const AppRoutes = () => {
   const { isAuthenticated } = useAuth();
@@ -45,6 +47,20 @@ const AppRoutes = () => {
       dispatch(fetchMasterData());
     }
   }, [isAuthenticated, masterData]);
+  const auth = useAuth();
+  useGlobalLogout();
+
+  useEffect(() => {
+    if (auth.isAuthenticated) {
+      const handle = setInterval(() => {
+        auth.signinSilent().catch((err) => {
+          console.error('Silent token renewal failed:', err);
+        });
+      }, SESSION_CHECK_INTERVAL);
+
+      return () => clearInterval(handle);
+    }
+  }, [auth.isAuthenticated]);
   return (
     <Routes>
       <Route path="/logout-notification" element={<FrontChannelLogout />} />

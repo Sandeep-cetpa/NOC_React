@@ -326,7 +326,7 @@ export const validateForm = (selectedForm, formData, setSubmitStatus, isUnitHrPa
     fieldsToIgnore.push(153);
   }
   if (selectedForm?.purposeId === 57) {
-    fieldsToIgnore.push(168);
+    fieldsToIgnore.push(167);
   }
   requiredFields = requiredFields.filter((field) => {
     const fieldId = parseInt(field.fieldId);
@@ -394,13 +394,13 @@ export const validateForm = (selectedForm, formData, setSubmitStatus, isUnitHrPa
   const allMissing = [...missingFields.map((f) => parseInt(f.fieldId)), ...extraMissingFields.map((f) => f.fieldId)];
   const allMissingWithFiledName = [...missingFields, ...extraMissingFields];
 
-  if (allMissing.length > 0) {
-    const fieldNames = allMissingWithFiledName.map((f) => formatLabel(f.fieldName)).join(', ');
-    setSubmitStatus({
-      type: 'error',
-      message: `Please fill in the required fields: ${fieldNames}`,
-    });
-  }
+  // if (allMissing.length > 0) {
+  //   const fieldNames = allMissingWithFiledName.map((f) => formatLabel(f.fieldName)).join(', ');
+  //   setSubmitStatus({
+  //     type: 'error',
+  //     message: `Please fill in the required fields: ${fieldNames}`,
+  //   });
+  // }
 
   return allMissing;
 };

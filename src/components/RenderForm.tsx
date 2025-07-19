@@ -10,6 +10,7 @@ import { formatLabel } from '@/lib/helperFunction';
 import { Switch } from '@/components/ui/switch';
 import { Input } from '@/components/ui/input';
 import {
+  environment,
   hiddenFieldsForExIndiaLeaveSponsored,
   hiddenFieldsForExIndiaLeaveThirdParty,
   hiddenFieldsForNewPaasport,
@@ -52,7 +53,9 @@ const RenderForm = ({
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {Number(selectedForm.purposeId) === 47 && formData.isDirector && (
                   <div className="flex flex-col">
-                    <Label className="mb-2">Father's Name</Label>
+                    <Label className="mb-2">
+                      Father's Name <span className="text-red-500 ml-1">*</span>
+                    </Label>
                     <Input
                       type="text"
                       className={`flex items-center py-1 pl-3 ${
@@ -63,6 +66,11 @@ const RenderForm = ({
                       value={formData['FatherName']}
                       onChange={(value) => handleInputChange('FatherName', value?.target?.value)}
                     />
+                    {missingFields?.includes('FatherName') && (
+                      <p className="text-xs text-red-500 mt-1">
+                        {missingFields?.includes('FatherName') ? 'This field is required.' : ''}
+                      </p>
+                    )}
                   </div>
                 )}
 
@@ -101,7 +109,7 @@ const RenderForm = ({
                 {selectedForm?.fields
                   ?.filter((item) => !item?.isInTableValue && item?.filledBy === null)
                   ?.filter((item) => !(selectedForm?.purposeId === 53 && item?.fieldId === 153))
-                  ?.filter((item) => !(selectedForm?.purposeId === 57 && item?.fieldId === 168))
+                  ?.filter((item) => !(selectedForm?.purposeId === 57 && item?.fieldId === 167))
                   .filter((ele) => {
                     const fieldId = Number(ele?.fieldId);
                     if (!formData['122'] && hiddenFieldsForNewPaasport?.includes(fieldId)) {
@@ -385,19 +393,19 @@ const RenderForm = ({
                                   handleInputChange('BulkExcel', value?.target?.files[0]);
                                 }}
                               />
-                              {missingFields?.includes('BulkExcel') && (
-                                <p className="text-xs text-red-500 mt-1">This is a required field</p>
-                              )}
                             </div>
                           )}
                         </div>
+                        {missingFields?.includes('BulkExcel') && (
+                          <p className="text-xs text-red-500 mt-1">This is a required field</p>
+                        )}
                       </div>
                       <Button
                         variant="outline"
                         className="mt-5"
                         type="button"
                         onClick={() => {
-                          window.location.href = 'https://uat.dfccil.com/DocUpload/Promotion_Template.xlsx';
+                          window.location.href = `${environment.imagesBaseUrl}/Promotion_Template.xlsx`;
                         }}
                       >
                         Download Excel Template
@@ -464,7 +472,7 @@ const RenderForm = ({
                   </div>
                 )}
 
-              {/* {submitStatus && (
+              {submitStatus && (
                 <Alert
                   className={
                     submitStatus.type === 'error' ? 'border-red-200 bg-red-50' : 'border-green-200 bg-green-50'
@@ -481,7 +489,7 @@ const RenderForm = ({
                     </AlertDescription>
                   </div>
                 </Alert>
-              )} */}
+              )}
 
               <div className="flex justify-between">
                 {selectedForm &&
@@ -523,7 +531,7 @@ const RenderForm = ({
                     className="ml-3"
                     type="button"
                     onClick={() => {
-                      window.location.href = 'https://uat.dfccil.com/DocUpload/ProbationTemplate.xlsx';
+                      window.location.href = `${environment.imagesBaseUrl}/ProbationTemplate.xlsx`;
                     }}
                   >
                     Download Excel Template

@@ -301,7 +301,7 @@ const allPurpose = [
   {
     label: 'Superannuation',
     value: 57,
-    color: 'bg-cyan-100',
+    color: 'bg-gray-100',
   },
   {
     label: 'Permanent Absorption',
