@@ -10,6 +10,7 @@ import { Label } from '../ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { RequestStatus } from '@/constant/status';
 import { format } from 'date-fns';
+import { useNavigate } from 'react-router';
 
 const CorporateHrNOCDetailDialog = ({
   nocData,
@@ -58,6 +59,7 @@ const CorporateHrNOCDetailDialog = ({
       return dateString;
     }
   };
+  const navigate = useNavigate();
   console.log(nocData, 'NOC DATA');
   const getFieldIcon = (fieldType) => {
     switch (fieldType?.toLowerCase()) {
@@ -416,7 +418,10 @@ const CorporateHrNOCDetailDialog = ({
           </Button>
           <Button
             variant="destructive"
-            onClick={() => handleRejectClick(nocData?.refId, RequestStatus.RejectedByCorporateHR.value)}
+            onClick={() => {
+              navigate(`/corporate-unit-hr-noc-requests-from-vigilance/noc-deatils/${nocData?.refId}`);
+              // handleRejectClick(nocData?.refId, RequestStatus.RejectedByCorporateHR.value);
+            }}
           >
             {'Forword To GM HR'}
           </Button>

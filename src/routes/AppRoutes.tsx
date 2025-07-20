@@ -37,6 +37,7 @@ import VigilanceAdminRequestReceived from '@/pages/VigilanceAdmin/VigilanceAdmin
 import DandARNocRequestsFromVigilance from '@/pages/DandAR/DandARNocRequestsFromVigilance';
 import { useGlobalLogout } from '@/auth/useGlobalLogout';
 import { SESSION_CHECK_INTERVAL } from '@/config';
+import NocNoting from '@/pages/CorporateUnitHr/NocNoting';
 
 const AppRoutes = () => {
   const { isAuthenticated } = useAuth();
@@ -69,6 +70,7 @@ const AppRoutes = () => {
         <Route element={<PrivateRoute allowedRoles={[]} />}>
           <Route path="/" element={<Navigate to="/create-request" replace={true} />} />
           <Route path="/track-noc" element={<TrackNoc />} />
+
           <Route path="/create-request" element={<CreateRequest />} />
           <Route path="/noc-request-for-employee" element={<NocRequestForEmployee />} />
         </Route>
@@ -96,6 +98,7 @@ const AppRoutes = () => {
         <Route element={<PrivateRoute allowedRoles={['HrUser']} />}>
           <Route path="/corporate-unit-hr-received-requests" element={<ReceivedRequests />} />
           <Route path="/corporate-unit-hr-request-under-process" element={<RequestUnderProcess />} />
+          <Route path="/corporate-unit-hr-noc-requests-from-vigilance/noc-deatils/:nocId" element={<NocNoting />} />
           <Route path="/corporate-unit-hr-noc-requests-from-vigilance" element={<NocRequestsFromVigilance />} />
           <Route path="/corporate-unit-hr-request-for-employee" element={<NocRequestForEmployeeByCorporateHr />} />
         </Route>
