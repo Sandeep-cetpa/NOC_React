@@ -66,7 +66,7 @@ const RequestReceivedVigilanceUser = () => {
         setIsOpen(false);
         getAllRequests();
         setcgmData({});
-        toast.success('Request approved successfully');
+        toast.success('Request updated successfully');
       }
     } catch (error) {
       console.error('Error approving NOC:', error);
@@ -86,7 +86,7 @@ const RequestReceivedVigilanceUser = () => {
       if (response.data.success) {
         setIsOpen(false);
         getAllRequests();
-        toast.success('Request approved successfully');
+        toast.success('Request updated successfully');
       }
     } catch (error) {
       console.error('Error approving NOC:', error);

@@ -15,12 +15,10 @@ import RequestUnderProcess from '@/pages/CorporateUnitHr/RequestUnderProcess';
 import NocRequestsFromVigilance from '@/pages/CorporateUnitHr/NocRequestsFromVigilance';
 import RoleManagement from '@/pages/VigilanceAdmin/RoleManagement';
 import ManageGreyList from '@/pages/VigilanceAdmin/ManageGreyList';
-import VigilanceRequestReceived from '@/pages/VigilanceAdmin/VigilanceAdminRequestReceived';
 import ProcessedRequest from '@/pages/VigilanceAdmin/ProcessedRequestVigilanceAdmin';
 import DandArPendingRequests from '@/pages/DandAR/DandArPendingRequests';
 import GmProcessedRequests from '@/pages/gm/GmProcessedRequests';
 import GmRejectedRequests from '@/pages/gm/GmRejectedRequests';
-import GmREquesteReceived from '@/pages/gm/GmREquesteReceived';
 import Dashboard from '@/pages/admin/Dashboard';
 import { useEffect } from 'react';
 import { useAuth } from 'react-oidc-context';
@@ -38,6 +36,8 @@ import DandARNocRequestsFromVigilance from '@/pages/DandAR/DandARNocRequestsFrom
 import { useGlobalLogout } from '@/auth/useGlobalLogout';
 import { SESSION_CHECK_INTERVAL } from '@/config';
 import NocNoting from '@/pages/CorporateUnitHr/NocNoting';
+import GmRequesteReceived from '@/pages/gm/GmRequesteReceived';
+import SubmissionNoting from '@/pages/gm/SubmissionNoting';
 
 const AppRoutes = () => {
   const { isAuthenticated } = useAuth();
@@ -124,10 +124,10 @@ const AppRoutes = () => {
         </Route>
       </Route>
       <Route element={<AppLayout isAdmin={true} />}>
-        <Route element={<PrivateRoute allowedRoles={['']} />}>
-          <Route path="/gm-request-received" element={<GmREquesteReceived />} />
+        <Route element={<PrivateRoute allowedRoles={['GM']} />}>
+          <Route path="/gm-request-received" element={<GmRequesteReceived />} />
+          <Route path="/gm-request-received/:nocId" element={<SubmissionNoting />} />
           <Route path="/gm-processed-requests" element={<GmProcessedRequests />} />
-          <Route path="/gm-rejected-requests" element={<GmRejectedRequests />} />
         </Route>
       </Route>
       <Route path="*" element={<NotFound />} />

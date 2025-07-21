@@ -28,7 +28,7 @@ const CorporateHrNOCDetailDialog = ({
   revertButtonName,
   isEditable = false,
   isFromVigilance = false,
-  actionTaken=()=>{}
+  actionTaken=(ref,status)=>{}
 }) => {
   if (!nocData) return null;
   const formatDate = (dateString) => {

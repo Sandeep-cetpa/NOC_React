@@ -359,10 +359,9 @@ const DAndArNOCDetailDialog = ({
                 ))}
               </div>
             )}
-            {(nocData?.fkPurposeId === 54 || nocData?.fkPurposeId === 53) && (
+            {(nocData?.fkPurposeId === 54 || nocData?.fkPurposeId === 53 || nocData?.fkPurposeId === 57) && (
               <ExcelDataPreview excelData={nocData?.data} data={nocData?.data} />
             )}
-
             {isEditable && nocData?.unitId === 1 && (
               <div className="m-2">
                 <div>

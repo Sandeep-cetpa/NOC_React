@@ -1,55 +1,25 @@
 import React from 'react';
 import { User, FileText, Mail, Calendar, Download, Eye } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
-import { Button } from '../ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 import { formatKeyName, formatLabel } from '@/lib/helperFunction';
 import { Badge } from '../ui/badge';
-import { Textarea } from '../ui/textarea';
-import { Label } from '../ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
-import { RequestStatus } from '@/constant/status';
-import VigilanceFieldsSection from '../common/VigilanceFieldsSection';
+import { format } from 'date-fns';
+import { useNavigate } from 'react-router';
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import EmployeeLeavePDF from '../common/PdfGenerator';
+import { Button } from '../ui/button';
 
-const VigilanceUserNOCDetailDialog = ({
-  nocData,
-  isOpen,
-  onOpenChange,
-  setcgmData,
-  handleApproveClick,
-  handleRevertClick,
-  cgmData,
-  AccecptButtonName,
-  revertButtonName,
-  isEditable = false,
-  purpose,
-  vigilanceFieldsData,
-  setVigilanceFieldsData,
-}) => {
+const GmHrNOCDetailDialog = ({ nocData, isOpen, onOpenChange, isEditable }) => {
   if (!nocData) return null;
-  console.log(nocData, 'nocData');
-  const handleVigilanceFieldsChange = (fieldsData) => {
-    setVigilanceFieldsData(fieldsData);
-    // You can also update cgmData here if needed
-    if (setcgmData) {
-      setcgmData((prev) => ({
-        ...prev,
-        vigilanceFields: fieldsData,
-      }));
-    }
-  };
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
     try {
-      // Handle different date formats
       let date;
-      // Check if it's in DD-MMM-YYYY format (like "26-Nov-2024")
       if (dateString.includes('-') && dateString.split('-').length === 3) {
         const parts = dateString.split('-');
-        if (parts[1].length === 3) {
-          // Month is abbreviated (Nov, Dec, etc.)
+        if (parts[1]?.length === 3) {
           date = new Date(dateString);
         } else {
           date = new Date(dateString);
@@ -71,7 +41,8 @@ const VigilanceUserNOCDetailDialog = ({
       return dateString;
     }
   };
-
+  const navigate = useNavigate();
+  console.log(nocData, 'NOC DATA');
   const getFieldIcon = (fieldType) => {
     switch (fieldType?.toLowerCase()) {
       case 'file':
@@ -102,6 +73,7 @@ const VigilanceUserNOCDetailDialog = ({
     }
     return field.value;
   };
+
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent
@@ -118,7 +90,7 @@ const VigilanceUserNOCDetailDialog = ({
             <PDFDownloadLink
               document={<EmployeeLeavePDF data={nocData} />}
               fileName={`${nocData.refId || 'Sample'}-NOC.pdf`}
-              className="inline-flex items-center px-4 py-2 mr-0 md:mr-6  bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              className="inline-flex items-center px-4 py-2 bg-blue-600 mr-0 md:mr-6 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
               {({ loading }) => (loading ? 'Generating PDF...' : 'Download PDF')}
             </PDFDownloadLink>
@@ -175,19 +147,26 @@ const VigilanceUserNOCDetailDialog = ({
                     <span className="font-medium">Post:</span>
                     <span>{nocData.post}</span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="font-medium">DOB:</span>
-                    <span>{formatDate(nocData.dob)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="font-medium">DOR:</span>
-                    <span>{formatDate(nocData.dor)}</span>
-                  </div>
+                  {nocData?.purposeId === 47 && (
+                    <>
+                      {nocData.dob && (
+                        <div className="flex justify-between">
+                          <span className="font-medium">DOB:</span>
+                          <span>{formatDate(nocData.dob)}</span>
+                        </div>
+                      )}
+                      {nocData.dor && (
+                        <div className="flex justify-between">
+                          <span className="font-medium">DOR:</span>
+                          <span>{formatDate(nocData.dor)}</span>
+                        </div>
+                      )}
+                    </>
+                  )}
                 </CardContent>
               </Card>
             </div>
           </div>
-          {/* Vigilance Fields Section - Add this before Officer Remarks */}
 
           {/* Officer Remarks */}
           {(nocData?.officerRemarksR || nocData?.officerRemarks) && (
@@ -203,6 +182,14 @@ const VigilanceUserNOCDetailDialog = ({
                   const formattedKey = formatKeyName(key);
 
                   if (formattedKey === 'Service Entry') return null;
+                  if (
+                    (formattedKey.toLowerCase().includes('unit') || formattedKey.toLowerCase().includes('cgm')) &&
+                    nocData.unitId === 1 &&
+                    formattedKey !== 'Present Unit' &&
+                    formattedKey !== 'Past Unit'
+                  ) {
+                    return null;
+                  }
 
                   return (
                     <div key={key}>
@@ -223,6 +210,50 @@ const VigilanceUserNOCDetailDialog = ({
               </div>
             </div>
           )}
+
+          {nocData?.revision && (
+            <div className="bg-blue-50 p-4 rounded-lg">
+              <h3 className="font-semibold text-lg mb-3 text-red-500 flex items-center gap-2">
+                <Mail className="w-5 h-5" />
+                Officer Reverted Remarks & Information
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {Object.entries(nocData?.revision).map(([key, value]: [any, any]) => {
+                  // Fields to skip
+                  const skipFields = ['Pk Revert', 'Raised To', 'Objection For', 'Raised At'];
+
+                  if (!nocData?.revision) return null;
+
+                  const formattedKey = formatKeyName(key);
+                  const isDateField = key.toLowerCase().includes('date');
+                  const isFileField = key.toLowerCase().includes('file');
+
+                  // Skip fields logic
+                  if (formattedKey === 'Service Entry') return null;
+                  if (formattedKey.toLowerCase().includes('unit')) return null;
+                  if (formattedKey.toLowerCase().includes('pk revert')) return null;
+                  if (skipFields.includes(formattedKey)) return null;
+
+                  return (
+                    <div key={key}>
+                      <label className="text-sm font-medium text-gray-600">{formattedKey}</label>
+                      {isFileField ? (
+                        <div className="flex items-center gap-2 bg-red-500 p-3 rounded border">
+                          {value && <Download className="w-4 h-4 text-blue-600" />}
+                          <span className="text-blue-600 cursor-pointer hover:underline">{value || 'NA'}</span>
+                        </div>
+                      ) : (
+                        <p className="bg-white p-3 rounded border">
+                          {isDateField ? format(value, 'dd MMM yyyy') || value || 'NA' : value || 'NA'}
+                        </p>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
           {/* Form Inputs */}
           {nocData.inputs && nocData.inputs.length > 0 && (
             <div className="bg-yellow-50 p-4 rounded-lg">
@@ -253,7 +284,6 @@ const VigilanceUserNOCDetailDialog = ({
               </div>
             </div>
           )}
-
           {/* Table Inputs */}
           {nocData.tableInputs && nocData.tableInputs.length > 0 && (
             <div className="space-y-6 rounded-lg">
@@ -323,50 +353,14 @@ const VigilanceUserNOCDetailDialog = ({
               ))}
             </div>
           )}
-          {isEditable && purpose && nocData?.purposeId === 47 && nocData?.officerRemarks?.isDirector && (
-            <VigilanceFieldsSection
-              nocData={nocData}
-              purposeList={purpose}
-              onFieldsChange={handleVigilanceFieldsChange}
-            />
-          )}
-          {/* CGM Input Section */}
-          {isEditable && (
-            <div className="m-3 pb-4">
-              <div>
-                <Label>Enter Remarks</Label>
-                <Textarea
-                  value={cgmData?.remarks || ''}
-                  onChange={(e) =>
-                    setcgmData((pre) => ({
-                      ...pre,
-                      remarks: e.target.value,
-                    }))
-                  }
-                  rows={4}
-                  placeholder="Enter remarks here..."
-                  className="mt-1"
-                />
-              </div>
-            </div>
-          )}
         </div>
-        {/* Action Buttons */}
         <div className="flex justify-end space-x-2">
           {isEditable && (
-            <>
-              <Button
-                onClick={() => handleApproveClick(nocData?.refId, RequestStatus.SentToCVo.value)}
-                className="bg-green-600 hover:bg-green-700"
-              >
-                {AccecptButtonName || 'Approve'}
-              </Button>
-
-              <Button className="bg-yellow-500 hover:bg-yellow-600" onClick={() => handleRevertClick(nocData?.refId)}>
-                {revertButtonName}
-              </Button>
-            </>
+            <Button className="bg-yellow-500" onClick={() => navigate(`/gm-request-received/${nocData.refId}`)}>
+              Process
+            </Button>
           )}
+
           <Button onClick={() => onOpenChange(false)}>Close</Button>
         </div>
       </DialogContent>
@@ -374,4 +368,4 @@ const VigilanceUserNOCDetailDialog = ({
   );
 };
 
-export default VigilanceUserNOCDetailDialog;
+export default GmHrNOCDetailDialog;

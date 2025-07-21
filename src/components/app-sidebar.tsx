@@ -47,6 +47,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
       'HrUser',
       'VigilanceAdmin',
       'VigilanceUser',
+      'GM',
     ] as UserRole[]
   ).some((role) => Roles?.includes(role));
   const roleWiseUrlNavigation = {
@@ -59,6 +60,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
     HrUser: '/unit-hr-pending-noc-requests',
     VigilanceAdmin: '/vigilance-admin-role-management',
     VigilanceUser: '/vigilance-user-request-received',
+    GM: '/gm-request-received',
   };
   const navMainItems = {
     navMain: [

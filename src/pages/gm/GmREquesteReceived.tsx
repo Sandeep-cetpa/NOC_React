@@ -1,501 +1,248 @@
-import React, { useState } from 'react';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import {
-  Eye,
-  FileText,
-  User,
-  Briefcase,
-  MessageSquare,
-  Shield,
-  UserCog,
-  Search,
-  Printer,
-  Check,
-  X,
-} from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Eye, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
+import { format } from 'date-fns';
+import axiosInstance from '@/services/axiosInstance';
+import { findUnitNameByUnitId, statusConfig } from '@/lib/helperFunction';
 import { Badge } from '@/components/ui/badge';
+import TableList from '@/components/ui/data-table';
+import Loader from '@/components/ui/loader';
+import CorporateHrNOCDetailDialog from '@/components/dialogs/CorporateHrNOCDetailDialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import toast from 'react-hot-toast';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/app/store';
+import { allPurpose } from '@/constant/static';
+import GmHrNOCDetailDialog from '@/components/dialogs/GmHrNOCDetailDialog';
 
-type Request = {
-  employeeCode: string;
-  designation: string;
-  name: string;
-  purpose: string;
-  description: string;
-  remarksByUnitHR: string;
-  remarksByCGM: string;
-  remarksByCorporateHR: string;
-  remarksByDAndAR: string;
-  remarksByVigilanceOfficer: string;
-  remarksByDrCVO: string;
-};
-
-const dummyData: Request[] = [
-  {
-    employeeCode: 'EMP001',
-    designation: 'Software Engineer',
-    name: 'John Doe',
-    purpose: 'Passport Update',
-    description: 'Upload old passport',
-    remarksByUnitHR: 'Verified',
-    remarksByCGM: 'Approved',
-    remarksByCorporateHR: 'Reviewed',
-    remarksByDAndAR: 'Checked',
-    remarksByVigilanceOfficer: 'Cleared',
-    remarksByDrCVO: 'Final Approval',
-  },
-  {
-    employeeCode: 'EMP002',
-    designation: 'Senior Developer',
-    name: 'Jane Smith',
-    purpose: 'Document Update',
-    description: 'Upload new documents',
-    remarksByUnitHR: 'Pending',
-    remarksByCGM: 'In Review',
-    remarksByCorporateHR: 'Awaiting',
-    remarksByDAndAR: 'In Process',
-    remarksByVigilanceOfficer: 'Under Review',
-    remarksByDrCVO: 'Pending',
-  },
-  {
-    employeeCode: 'EMP001',
-    designation: 'Software Engineer',
-    name: 'John Doe',
-    purpose: 'Passport Update',
-    description: 'Upload old passport',
-    remarksByUnitHR: 'Verified',
-    remarksByCGM: 'Approved',
-    remarksByCorporateHR: 'Reviewed',
-    remarksByDAndAR: 'Checked',
-    remarksByVigilanceOfficer: 'Cleared',
-    remarksByDrCVO: 'Final Approval',
-  },
-  {
-    employeeCode: 'EMP002',
-    designation: 'Senior Developer',
-    name: 'Jane Smith',
-    purpose: 'Document Update',
-    description: 'Upload new documents',
-    remarksByUnitHR: 'Pending',
-    remarksByCGM: 'In Review',
-    remarksByCorporateHR: 'Awaiting',
-    remarksByDAndAR: 'In Process',
-    remarksByVigilanceOfficer: 'Under Review',
-    remarksByDrCVO: 'Pending',
-  },
-  {
-    employeeCode: 'EMP001',
-    designation: 'Software Engineer',
-    name: 'John Doe',
-    purpose: 'Passport Update',
-    description: 'Upload old passport',
-    remarksByUnitHR: 'Verified',
-    remarksByCGM: 'Approved',
-    remarksByCorporateHR: 'Reviewed',
-    remarksByDAndAR: 'Checked',
-    remarksByVigilanceOfficer: 'Cleared',
-    remarksByDrCVO: 'Final Approval',
-  },
-  {
-    employeeCode: 'EMP002',
-    designation: 'Senior Developer',
-    name: 'Jane Smith',
-    purpose: 'Document Update',
-    description: 'Upload new documents',
-    remarksByUnitHR: 'Pending',
-    remarksByCGM: 'In Review',
-    remarksByCorporateHR: 'Awaiting',
-    remarksByDAndAR: 'In Process',
-    remarksByVigilanceOfficer: 'Under Review',
-    remarksByDrCVO: 'Pending',
-  },
-  {
-    employeeCode: 'EMP001',
-    designation: 'Software Engineer',
-    name: 'John Doe',
-    purpose: 'Passport Update',
-    description: 'Upload old passport',
-    remarksByUnitHR: 'Verified',
-    remarksByCGM: 'Approved',
-    remarksByCorporateHR: 'Reviewed',
-    remarksByDAndAR: 'Checked',
-    remarksByVigilanceOfficer: 'Cleared',
-    remarksByDrCVO: 'Final Approval',
-  },
-  {
-    employeeCode: 'EMP002',
-    designation: 'Senior Developer',
-    name: 'Jane Smith',
-    purpose: 'Document Update',
-    description: 'Upload new documents',
-    remarksByUnitHR: 'Pending',
-    remarksByCGM: 'In Review',
-    remarksByCorporateHR: 'Awaiting',
-    remarksByDAndAR: 'In Process',
-    remarksByVigilanceOfficer: 'Under Review',
-    remarksByDrCVO: 'Pending',
-  },
-  {
-    employeeCode: 'EMP001',
-    designation: 'Software Engineer',
-    name: 'John Doe',
-    purpose: 'Passport Update',
-    description: 'Upload old passport',
-    remarksByUnitHR: 'Verified',
-    remarksByCGM: 'Approved',
-    remarksByCorporateHR: 'Reviewed',
-    remarksByDAndAR: 'Checked',
-    remarksByVigilanceOfficer: 'Cleared',
-    remarksByDrCVO: 'Final Approval',
-  },
-  {
-    employeeCode: 'EMP002',
-    designation: 'Senior Developer',
-    name: 'Jane Smith',
-    purpose: 'Document Update',
-    description: 'Upload new documents',
-    remarksByUnitHR: 'Pending',
-    remarksByCGM: 'In Review',
-    remarksByCorporateHR: 'Awaiting',
-    remarksByDAndAR: 'In Process',
-    remarksByVigilanceOfficer: 'Under Review',
-    remarksByDrCVO: 'Pending',
-  },
-  {
-    employeeCode: 'EMP001',
-    designation: 'Software Engineer',
-    name: 'John Doe',
-    purpose: 'Passport Update',
-    description: 'Upload old passport',
-    remarksByUnitHR: 'Verified',
-    remarksByCGM: 'Approved',
-    remarksByCorporateHR: 'Reviewed',
-    remarksByDAndAR: 'Checked',
-    remarksByVigilanceOfficer: 'Cleared',
-    remarksByDrCVO: 'Final Approval',
-  },
-  {
-    employeeCode: 'EMP002',
-    designation: 'Senior Developer',
-    name: 'Jane Smith',
-    purpose: 'Document Update',
-    description: 'Upload new documents',
-    remarksByUnitHR: 'Pending',
-    remarksByCGM: 'In Review',
-    remarksByCorporateHR: 'Awaiting',
-    remarksByDAndAR: 'In Process',
-    remarksByVigilanceOfficer: 'Under Review',
-    remarksByDrCVO: 'Pending',
-  },
-  {
-    employeeCode: 'EMP001',
-    designation: 'Software Engineer',
-    name: 'John Doe',
-    purpose: 'Passport Update',
-    description: 'Upload old passport',
-    remarksByUnitHR: 'Verified',
-    remarksByCGM: 'Approved',
-    remarksByCorporateHR: 'Reviewed',
-    remarksByDAndAR: 'Checked',
-    remarksByVigilanceOfficer: 'Cleared',
-    remarksByDrCVO: 'Final Approval',
-  },
-  {
-    employeeCode: 'EMP002',
-    designation: 'Senior Developer',
-    name: 'Jane Smith',
-    purpose: 'Document Update',
-    description: 'Upload new documents',
-    remarksByUnitHR: 'Pending',
-    remarksByCGM: 'In Review',
-    remarksByCorporateHR: 'Awaiting',
-    remarksByDAndAR: 'In Process',
-    remarksByVigilanceOfficer: 'Under Review',
-    remarksByDrCVO: 'Pending',
-  },
-];
-
-const getBadgeVariant = (status: string): 'default' | 'secondary' | 'destructive' | 'outline' => {
-  switch (status) {
-    case 'Verified':
-    case 'Approved':
-    case 'Reviewed':
-    case 'Checked':
-    case 'Cleared':
-    case 'Final Approval':
-      return 'default';
-    default:
-      return 'secondary';
-  }
-};
-
-const GmREquesteReceived = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedRequest, setSelectedRequest] = useState<Request | null>(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-
-  const filteredData = dummyData.filter((request) =>
-    Object.values(request).some((value) => value.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
-
-  const handleViewRequest = (request: Request) => {
-    setSelectedRequest(request);
-    setIsDialogOpen(true);
+const GmRequesteReceived = () => {
+  const [request, setRequests] = useState([]);
+  const user = useSelector((state: RootState) => state.user);
+  const [isLoading, setIsLoading] = useState(false);
+  const [selectedGrade, setSelectedGrade] = useState('all');
+  const [selectedDepartment, setSelectedDepartment] = useState('all');
+  const [selectedPurpose, setSelectedPurpose] = useState('all');
+  const { departments, grades, units } = useSelector((state: RootState) => state.masterData.data);
+  const [corporateHrRemarks, setCorporateHdRemarks] = useState({
+    remark: '',
+  });
+  const getRequestByUnitId = async () => {
+    try {
+      setIsLoading(true);
+      const response = await axiosInstance.get(`/GMHR/NOC`);
+      if (response.data.success) {
+        setRequests(response.data.data);
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  const [selectedRequest, setSelectedRequest] = useState(null);
+  const [isOpen, setIsOpen] = React.useState(false);
+  const getStatusBadge = (status) => {
+    if (!status) {
+      return;
+    }
+    const config = statusConfig(status);
+    const IconComponent = config?.icon;
+    return (
+      <Badge className={`${config?.color} hover:bg-none text-center items-center space-x-1 px-2 py-1`}>
+        <IconComponent className="h-3 w-3" />
+        <span>{config?.label}</span>
+      </Badge>
+    );
+  };
+  useEffect(() => {
+    getRequestByUnitId();
+  }, []);
+  const handleApproveClick = async (nocId: any, status: any) => {
+    try {
+      const response = await axiosInstance.put('/GMHR/NOC', {
+        refId: nocId,
+        status: status,
+        remarks: corporateHrRemarks.remark,
+        updatedDob: corporateHrRemarks?.dob,
+        updatedDor: corporateHrRemarks?.dor,
+        updatedDoeis: corporateHrRemarks?.doe,
+        corpHRUnitId: selectedRequest.unitId,
+        corpHRAutoId: user.EmpID,
+      });
+      if (response.data?.success) {
+        toast.success('Request Approved Successfully');
+        setIsOpen(false);
+        setSelectedRequest(null);
+        setCorporateHdRemarks({
+          remark: '',
+        });
+        getRequestByUnitId();
+      } else {
+        toast.error(response?.data?.message);
+      }
+    } catch (err) {
+      console.log(err);
+    }
   };
 
-  const handlePrint = () => {
-    window.print();
-  };
+  const columns = [
+    {
+      accessorKey: 'refId',
+      header: 'Reference ID',
+      cell: ({ row }) => <div>{`${row.original.refId ? 'NOC-' + row.original.refId : 'NA'}`}</div>,
+    },
+    {
+      accessorKey: 'employeeCode',
+      header: 'Employee Code',
+      cell: ({ row }) => <div>{row?.original?.employeeCode}</div>,
+    },
+    {
+      accessorKey: 'username',
+      header: 'Employee Name',
+      cell: ({ row }) => (
+        <div className=" w-[140px] truncate" title={row.original.username}>
+          {row.original.username}
+        </div>
+      ),
+    },
+    {
+      accessorKey: 'initiationDate',
+      header: 'Date',
+      cell: ({ row }) => (
+        <div className="flex items-center w-[90px]">
+          {row.original.initiationDate ? format(new Date(row.original.initiationDate), 'dd MMM yyyy') : '-'}
+        </div>
+      ),
+    },
+    {
+      accessorKey: 'purposeName',
+      header: 'Purpose',
+      cell: ({ row }) => <div>{row.original.purposeName}</div>,
+    },
+    {
+      accessorKey: 'unitId',
+      header: 'Location',
+      cell: ({ row }) => (
+        <div className="w-[170px]">{findUnitNameByUnitId(units, row.original.unitId)?.unitName ?? 'NA'}</div>
+      ),
+    },
+    {
+      accessorKey: 'post',
+      header: 'Designation',
+      cell: ({ row }) => <div>{row?.original?.post ? row?.original?.post : 'NA'}</div>,
+    },
+    {
+      accessorKey: 'department',
+      header: 'Department',
+      cell: ({ row }) => <div>{row.original.department}</div>,
+    },
 
+    {
+      accessorKey: 'currentStatus',
+      header: 'Status',
+      cell: ({ row }) => <div>{row.original.currentStatus && getStatusBadge(row.original.currentStatus)}</div>,
+    },
+    {
+      accessorKey: 'Action',
+      header: 'Action',
+      cell: ({ row }) => (
+        <Button
+          onClick={() => {
+            setSelectedRequest(row.original);
+            setIsOpen(true);
+          }}
+        >
+          <Eye />
+        </Button>
+      ),
+    },
+  ];
+  const filteredData = useMemo(() => {
+    return request.filter((item) => {
+      // const postMatch = selectedGrade === 'all' || item.post === selectedGrade;
+      const departmentMatch = selectedDepartment === 'all' || item.department === selectedDepartment;
+      const purposeMatch = selectedPurpose === 'all' || Number(item.purposeId) === Number(selectedPurpose);
+      // return postMatch && departmentMatch;
+      return departmentMatch && purposeMatch;
+    });
+  }, [selectedDepartment, selectedPurpose, request]);
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">Request Received</h1>
-        <div className="relative w-64">
-          <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
-          <Input
-            placeholder="Search requests..."
-            className="pl-8"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+    <div className=" p-6">
+      {isLoading && <Loader />}
+      <div>
+        <div>
+          <h1 className="text-3xl my-4">Pending Requests</h1>
+          <div className="overflow-x-auto">
+            <TableList
+              data={filteredData.sort((a, b) => {
+                const dateA = a?.initiationDate ? new Date(a.initiationDate).getTime() : 0;
+                const dateB = b?.initiationDate ? new Date(b.initiationDate).getTime() : 0;
+                return dateB - dateA;
+              })}
+              columns={columns}
+              rightElements={
+                <>
+                  <div className="w-full md:w-1/2 grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <Select value={selectedPurpose.toString()} onValueChange={(value) => setSelectedPurpose(value)}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select purpose" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Purpose</SelectItem>
+                        {allPurpose.map((ele) => (
+                          <SelectItem key={ele.value} value={ele.value.toString()}>
+                            <div className="flex items-center gap-2">
+                              <span className={`w-3 h-3 rounded-full ${ele.color}`} />
+                              <span>{ele.label}</span>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Select value={selectedDepartment} onValueChange={(value) => setSelectedDepartment(value)}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select department Grade" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All</SelectItem>
+                        {departments.map((ele, index) => {
+                          return (
+                            <SelectItem key={index} value={ele}>
+                              {ele}
+                            </SelectItem>
+                          );
+                        })}
+                      </SelectContent>
+                    </Select>
+                    <Select value={selectedGrade} onValueChange={(value) => setSelectedGrade(value)}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select position grade" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All</SelectItem>
+                        {grades.map((ele) => {
+                          return (
+                            <SelectItem key={ele} value={ele}>
+                              {ele}
+                            </SelectItem>
+                          );
+                        })}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <Button variant="outline" onClick={() => getRequestByUnitId()} className=" space-x-2 ml-3">
+                    <RefreshCw className="h-4 w-4" />
+                  </Button>
+                </>
+              }
+              showFilter={false}
+            />
+          </div>
         </div>
       </div>
-      <div className="w-full overflow-x-auto rounded-md border">
-        <div className="min-w-full">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-[100px] text-white">
-                  <div className="flex items-center gap-2">
-                    <User className="h-4 w-4" />
-                    Employee Code
-                  </div>
-                </TableHead>
-                <TableHead className="text-white">
-                  <div className="flex items-center gap-2">
-                    <Briefcase className="h-4 w-4" />
-                    Designation
-                  </div>
-                </TableHead>
-                <TableHead className="text-white">
-                  <div className="flex items-center gap-2">
-                    <User className="h-4 w-4" />
-                    Name
-                  </div>
-                </TableHead>
-                <TableHead className="text-white">
-                  <div className="flex items-center gap-2">
-                    <FileText className="h-4 w-4" />
-                    Purpose
-                  </div>
-                </TableHead>
-                <TableHead className="text-white">
-                  <div className="flex items-center gap-2">
-                    <MessageSquare className="h-4 w-4" />
-                    Description
-                  </div>
-                </TableHead>
-                <TableHead className="text-white whitespace-nowrap">
-                  <div className="flex items-center gap-2">
-                    <Shield className="h-4 w-4" />
-                    Remarks By Unit HR
-                  </div>
-                </TableHead>
-                <TableHead className="text-white whitespace-nowrap">
-                  <div className="flex items-center gap-2 ">
-                    <UserCog className="h-4 w-4" />
-                    Remarks By CGM
-                  </div>
-                </TableHead>
-                <TableHead className="text-white whitespace-nowrap">
-                  <div className="flex items-center gap-2">
-                    <Shield className="h-4 w-4" />
-                    Remarks By Corporate HR
-                  </div>
-                </TableHead>
-                <TableHead className="text-white whitespace-nowrap">
-                  <div className="flex items-center gap-2">
-                    <Shield className="h-4 w-4" />
-                    Remarks By D & AR
-                  </div>
-                </TableHead>
-                <TableHead className="text-white whitespace-nowrap">
-                  <div className="flex items-center gap-2">
-                    <Shield className="h-4 w-4" />
-                    Remarks By Vigilance Officer
-                  </div>
-                </TableHead>
-                <TableHead className="text-white whitespace-nowrap">
-                  <div className="flex items-center gap-2">
-                    <Shield className="h-4 w-4" />
-                    Remarks By Dr. CVO
-                  </div>
-                </TableHead>
-                <TableHead className="text-white">
-                  <div className="flex items-center gap-2">
-                    <Eye className="h-4 w-4" />
-                    Action
-                  </div>
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredData.map((request, index) => (
-                <TableRow key={index}>
-                  <TableCell>{request.employeeCode}</TableCell>
-                  <TableCell>{request.designation}</TableCell>
-                  <TableCell>{request.name}</TableCell>
-                  <TableCell>{request.purpose}</TableCell>
-                  <TableCell>{request.description}</TableCell>
-                  <TableCell>{request.remarksByUnitHR}</TableCell>
-                  <TableCell>{request.remarksByCGM}</TableCell>
-                  <TableCell>{request.remarksByCorporateHR}</TableCell>
-                  <TableCell>{request.remarksByDAndAR}</TableCell>
-                  <TableCell>{request.remarksByVigilanceOfficer}</TableCell>
-                  <TableCell>{request.remarksByDrCVO}</TableCell>
-                  <TableCell>
-                    <Eye
-                      className="h-4 w-4 cursor-pointer hover:text-blue-500"
-                      onClick={() => handleViewRequest(request)}
-                    />
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      </div>
-
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-3xl">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-semibold">Request Details</DialogTitle>
-          </DialogHeader>
-          {selectedRequest && (
-            <div className="space-y-4">
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm">
-                  <div>
-                    <h3 className="font-medium text-gray-500 mb-2">Employee Information</h3>
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <User className="h-4 w-4 text-gray-400" />
-                        <span className="text-gray-600">Employee Code:</span>
-                        <span className="font-medium">{selectedRequest.employeeCode}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <User className="h-4 w-4 text-gray-400" />
-                        <span className="text-gray-600">Name:</span>
-                        <span className="font-medium">{selectedRequest.name}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Briefcase className="h-4 w-4 text-gray-400" />
-                        <span className="text-gray-600">Designation:</span>
-                        <span className="font-medium">{selectedRequest.designation}</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div>
-                    <h3 className="font-medium text-gray-500 mb-2">Request Information</h3>
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <FileText className="h-4 w-4 text-gray-400" />
-                        <span className="text-gray-600">Purpose:</span>
-                        <span className="font-medium">{selectedRequest.purpose}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <MessageSquare className="h-4 w-4 text-gray-400" />
-                        <span className="text-gray-600">Description:</span>
-                        <span className="font-medium ">{selectedRequest.description}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <Separator />
-
-              <div className="space-y-3">
-                <h3 className="font-medium text-gray-500">Remarks & Approvals</h3>
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div className="space-y-2">
-                    <div className="bg-gray-50 p-3 rounded">
-                      <p className="text-gray-600 mb-1">Unit HR Remarks</p>
-                      <Badge variant={getBadgeVariant(selectedRequest.remarksByUnitHR)}>
-                        {selectedRequest.remarksByUnitHR}
-                      </Badge>
-                    </div>
-                    <div className="bg-gray-50 p-3 rounded">
-                      <p className="text-gray-600 mb-1">CGM Remarks</p>
-                      <Badge variant={getBadgeVariant(selectedRequest.remarksByCGM)}>
-                        {selectedRequest.remarksByCGM}
-                      </Badge>
-                    </div>
-                    <div className="bg-gray-50 p-3 rounded">
-                      <p className="text-gray-600 mb-1">Corporate HR Remarks</p>
-                      <Badge variant={getBadgeVariant(selectedRequest.remarksByCorporateHR)}>
-                        {selectedRequest.remarksByCorporateHR}
-                      </Badge>
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="bg-gray-50 p-3 rounded">
-                      <p className="text-gray-600 mb-1">D & AR Remarks</p>
-                      <Badge variant={getBadgeVariant(selectedRequest.remarksByDAndAR)}>
-                        {selectedRequest.remarksByDAndAR}
-                      </Badge>
-                    </div>
-                    <div className="bg-gray-50 p-3 rounded">
-                      <p className="text-gray-600 mb-1">Vigilance Officer Remarks</p>
-                      <Badge variant={getBadgeVariant(selectedRequest.remarksByVigilanceOfficer)}>
-                        {selectedRequest.remarksByVigilanceOfficer}
-                      </Badge>
-                    </div>
-                    <div className="bg-gray-50 p-3 rounded">
-                      <p className="text-gray-600 mb-1">Dr. CVO Remarks</p>
-                      <Badge variant={getBadgeVariant(selectedRequest.remarksByDrCVO)}>
-                        {selectedRequest.remarksByDrCVO}
-                      </Badge>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-          <DialogFooter className="flex justify-end gap-2 mt-6">
-            <Button
-              variant="outline"
-              onClick={() => setIsDialogOpen(false)}
-              className="flex items-center gap-2"
-              size="sm"
-            >
-              <X className="h-4 w-4" />
-              Close
-            </Button>
-            <Button variant="outline" onClick={handlePrint} className="flex items-center gap-2" size="sm">
-              <Printer className="h-4 w-4" />
-              Print
-            </Button>
-            <Button
-              onClick={() => {
-                // Handle accept logic here
-                setIsDialogOpen(false);
-              }}
-              className="flex items-center gap-2 bg-green-600 hover:bg-green-700"
-              size="sm"
-            >
-              <Check className="h-4 w-4" />
-              Accept
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <GmHrNOCDetailDialog isOpen={isOpen} isEditable={true} onOpenChange={setIsOpen} nocData={selectedRequest} />
     </div>
   );
 };
 
-export default GmREquesteReceived;
+export default GmRequesteReceived;

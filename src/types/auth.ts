@@ -8,4 +8,5 @@ export type UserRole =
   | 'DandAR'
   | 'VigilanceUser'
   | 'VigilanceAdmin'
-  | 'CGM';
+  | 'CGM'
+  | 'GM';

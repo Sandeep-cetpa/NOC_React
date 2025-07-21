@@ -1,39 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
 import axiosInstance from '@/services/axiosInstance';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import {
-  User,
-  Calendar,
-  FileText,
-  XCircle,
-  AlertCircle,
-  Download,
-  Edit3,
-  Save,
-  X,
-  Eye,
-  Mail,
-  RefreshCw,
-  Home,
-  ArrowLeft,
-} from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { User, Calendar, FileText, XCircle, Download, Eye, Mail } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { formatKeyName, formatLabel } from '@/lib/helperFunction';
 import Loader from '@/components/ui/loader';
-import EmployeeLeavePDFGenerator from '@/components/common/PdfGenerator';
 import EmptyState from '@/components/ui/empty-state';
 import { useAppSelector } from '@/app/hooks';
 import { RootState } from '@/app/store';
 import { RequestStatus } from '@/constant/status';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 interface Input {
   fieldName: string;
   fieldType: string;
@@ -85,25 +67,21 @@ interface ApiResponse {
   paragraph: string;
 }
 
-export default function NocNoting() {
+export default function SubmissionNoting() {
   const [data, setData] = useState<ApiResponse | null>(null);
-  const userInfo = useAppSelector((state: RootState) => state.user);
+  const { EmpID } = useAppSelector((state: RootState) => state.user);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isEditing, setIsEditing] = useState(false);
-  const [editedParagraph, setEditedParagraph] = useState('');
-  const [saving, setSaving] = useState(false);
+  const [remarks, setRemarks] = useState('');
   const { nocId } = useParams();
   const navigate = useNavigate();
-  const [fileNumber, setFileNumber] = useState('');
   const getNocDetailsByNocId = async () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await axiosInstance.get(`/CorporateHR/NOC/Noting?RefId=${nocId}`);
+      const response = await axiosInstance.get(`/GMHR/NOC/Noting?RefId=${nocId}`);
       if (response?.data?.success && response?.data?.data?.userData) {
         setData(response.data.data);
-        setEditedParagraph(response.data.data.paragraph);
       } else {
         setError('Failed to fetch NOC details');
       }
@@ -112,34 +90,6 @@ export default function NocNoting() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleSaveParagraph = async () => {
-    try {
-      setSaving(true);
-      console.log(editedParagraph, 'editedParagraph');
-      const response = await axiosInstance.put(`/CorporateHR/NOC/Noting`, {
-        refId: nocId,
-        corpHRUnitId: 1,
-        corpHRAutoId: userInfo.EmpID,
-        noting: editedParagraph,
-      });
-      if (response.data.success) {
-        toast.success('Noting updated successfully');
-        getNocDetailsByNocId();
-        setIsEditing(false);
-      }
-    } catch (err: any) {
-      console.error(err);
-      toast.error('Failed to save changes');
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const handleCancelEdit = () => {
-    setEditedParagraph(data?.paragraph || '');
-    setIsEditing(false);
   };
 
   const formatDate = (dateString: string) => {
@@ -187,23 +137,21 @@ export default function NocNoting() {
         return input.value;
     }
   };
-  const submitToGmHr = async () => {
-    if (!fileNumber) {
-      toast.error('Please enter the file number');
-      return;
-    }
+  const submitToCadreGm = async (status: string) => {
     try {
-      const response = await axiosInstance.put('/CorporateHR/NOC/Action-Completed', {
-        refId: nocId,
-        status: RequestStatus.HRTOGMHR.value,
-        corpHRUnitId: 1,
-        corpHRAutoId: userInfo.EmpID,
-        noting: data.paragraph,
-        fileNumber: fileNumber,
+      const formData = new FormData();
+      formData.append('remarks', remarks);
+      formData.append('RefId', nocId);
+      formData.append('Status', status.toString());
+      formData.append('GMHRAutoId', EmpID.toString());
+      const response = await axiosInstance.put('/GMHR/NOC', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
       });
       if (response.data.success) {
         toast.success('Request submitted successfully');
-        navigate('/corporate-unit-hr-noc-requests-from-vigilance');
+        navigate('/gm-request-received');
       }
     } catch (error) {
       console.log(error, 'error');
@@ -483,73 +431,39 @@ export default function NocNoting() {
               <FileText className="h-5 w-5" />
               Noting Details
             </CardTitle>
-            <div className="flex gap-2">
-              {isEditing ? (
-                <>
-                  <Button size="sm" onClick={handleSaveParagraph} disabled={saving}>
-                    <Save className="h-4 w-4 mr-1" />
-                    {saving ? 'Saving...' : 'Save'}
-                  </Button>
-                  <Button size="sm" variant="outline" onClick={handleCancelEdit} disabled={saving}>
-                    <X className="h-4 w-4 mr-1" />
-                    Cancel
-                  </Button>
-                </>
-              ) : (
-                <Button size="sm" variant="outline" onClick={() => setIsEditing(true)}>
-                  <Edit3 className="h-4 w-4 mr-1" />
-                  Edit
-                </Button>
-              )}
-            </div>
           </CardHeader>
           <CardContent className="pt-0">
-            {isEditing ? (
-              <div className="space-y-4">
-                <ReactQuill
-                  value={editedParagraph}
-                  onChange={setEditedParagraph}
-                  theme="snow"
-                  modules={{
-                    toolbar: [
-                      [{ font: [] }, { size: [] }],
-                      [{ header: [1, 2, 3, 4, 5, 6, false] }],
-                      ['bold', 'italic', 'underline', 'strike', 'blockquote', 'code-block'],
-                      [{ color: [] }, { background: [] }],
-                      [{ script: 'sub' }, { script: 'super' }],
-                      [{ list: 'ordered' }, { list: 'bullet' }, { indent: '-1' }, { indent: '+1' }],
-                      [{ direction: 'rtl' }],
-                      [{ align: [] }],
-                      ['link'],
-                      ['clean'],
-                    ],
-                  }}
-                  style={{ minHeight: '200px' }}
-                />
-              </div>
-            ) : (
-              <div className="prose max-w-none" dangerouslySetInnerHTML={{ __html: data.paragraph }} />
-            )}
+            <div className="prose max-w-none" dangerouslySetInnerHTML={{ __html: data.paragraph }} />
           </CardContent>
         </Card>
       </div>
       <div className="mt-4 flex justify-end items-center gap-4">
-        <div>
-          <Input
-            onChange={(e) => {
-              setFileNumber(e.target.value);
-            }}
-            value={fileNumber}
-            placeholder="Enter File Number"
-          />
-        </div>
-        <Button
-          onClick={() => {
-            submitToGmHr();
-          }}
-        >
-          Forword To GM HR
-        </Button>
+        {data?.userData?.purposeId !== 48 && data?.userData?.purposeId !== 45 && (
+          <div>
+            <div className="flex gap-4 mt-2 justify-end mt-2">
+              <Button onClick={() => submitToCadreGm(RequestStatus.GGMAccepted.value.toString())}>Approved</Button>
+              <Button variant="destructive" onClick={() => submitToCadreGm(RequestStatus.GGMRejected.value.toString())}>
+                Reject
+              </Button>
+            </div>
+          </div>
+        )}
+        {(data?.userData?.purposeId === 48 || data?.userData?.purposeId === 45) && (
+          <div className="flex flex-col w-full">
+            <Textarea
+              onChange={(e) => setRemarks(e.target.value)}
+              value={remarks}
+              rows={3}
+              placeholder="Enter Remark (optional) "
+            />
+            <div className="flex gap-4 mt-2 justify-end mt-2">
+              <Button onClick={() => submitToCadreGm(RequestStatus.GMHRTOGGM.value.toString())}>
+                Forward To Cadre GM
+              </Button>
+              <Button>Refer Back</Button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

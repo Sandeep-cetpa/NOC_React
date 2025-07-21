@@ -84,8 +84,7 @@ export function AdminSidebar(props: React.ComponentProps<typeof Sidebar>) {
         roleIcon = UserCheck;
         items.push(
           { title: 'Request Received', url: '/gm-request-received', icon: Inbox, role: roleArray },
-          { title: 'Processed Requests', url: '/gm-processed-requests', icon: CheckCircle, role: roleArray },
-          { title: 'Rejected Requests', url: '/gm-rejected-requests', icon: XCircle, role: roleArray }
+          { title: 'Processed Requests', url: '/gm-processed-requests', icon: CheckCircle, role: roleArray }
         );
       }
 
