@@ -84,6 +84,26 @@ const NocRequestsFromVigilance = () => {
       console.log(err);
     }
   };
+  const handleActionTakenClick = async (nocId: any, status: any) => {
+    try {
+      const response = await axiosInstance.put('/CorporateHR/NOC/Noting', {
+        refId: nocId,
+        status: status,
+        corpHRUnitId: 1,
+        corpHRAutoId: user.EmpID,
+      });
+      if (response.data?.success) {
+        toast.success('Request Approved Successfully');
+        setIsOpen(false);
+        setSelectedRequest(null);
+        getRequestByUnitId();
+      } else {
+        toast.error(response?.data?.message);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   const columns = [
     {
@@ -237,6 +257,7 @@ const NocRequestsFromVigilance = () => {
         handleApproveClick={handleApproveClick}
         handleRejectClick={handleApproveClick}
         handleRevertClick={handleApproveClick}
+        actionTaken={handleActionTakenClick}
         setcorporateHrData={setCorporateHdRemarks}
         corporateHrData={corporateHrRemarks}
         AccecptButtonName={'Forword To D & AR'}

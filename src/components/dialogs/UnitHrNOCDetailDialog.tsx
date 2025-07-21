@@ -10,6 +10,8 @@ import { Label } from '../ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import EnhancedDatePicker from '../FormBuilder/EnhancedDatePicker';
 import { RequestStatus } from '@/constant/status';
+import { PDFDownloadLink } from '@react-pdf/renderer';
+import EmployeeLeavePDF from '../common/PdfGenerator';
 
 const UnitHrNOCDetailDialog = ({
   nocData,
@@ -76,10 +78,19 @@ const UnitHrNOCDetailDialog = ({
         className="max-w-6xl overflow-y-auto"
       >
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <User className="w-5 h-5" />
-            NOC Application Details
-          </DialogTitle>
+          <div className="flex items-center justify-between">
+            <DialogTitle className="flex items-center gap-2">
+              <User className="w-5 h-5" />
+              NOC Application Details
+            </DialogTitle>
+            <PDFDownloadLink
+              document={<EmployeeLeavePDF data={nocData} />}
+              fileName={`${nocData.refId || 'Sample'}-NOC.pdf`}
+              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white mr-0 md:mr-6  rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              {({ loading }) => (loading ? 'Generating PDF...' : 'Download PDF')}
+            </PDFDownloadLink>
+          </div>
         </DialogHeader>
 
         <div className="space-y-6 max-w-6xl max-h-[70vh] overflow-y-auto">
@@ -142,7 +153,6 @@ const UnitHrNOCDetailDialog = ({
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {Object.entries(nocData?.officerRemarks || nocData?.officerRemarksR).map(([key, value]) => {
-            
                   // Check if the field is a date field
                   const isDateField = key.toLowerCase().includes('date');
 

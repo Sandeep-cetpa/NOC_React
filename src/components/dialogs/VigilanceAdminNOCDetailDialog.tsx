@@ -9,17 +9,17 @@ import { Textarea } from '../ui/textarea';
 import { Label } from '../ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { RequestStatus } from '@/constant/status';
+import { PDFDownloadLink } from '@react-pdf/renderer';
+import EmployeeLeavePDF from '../common/PdfGenerator';
 const VigilanceAdminNOCDetailDialog = ({
   nocData,
   isOpen,
   onOpenChange,
   setcgmData,
   handleApproveClick,
-  handleRevertClick,
   handleTrailClick,
   cgmData,
   AccecptButtonName,
-  revertButtonName,
   isEditable = false,
 }) => {
   if (!nocData) return null;
@@ -94,10 +94,19 @@ const VigilanceAdminNOCDetailDialog = ({
         className="max-w-6xl overflow-y-auto"
       >
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <User className="w-5 h-5" />
-            NOC Application Details
-          </DialogTitle>
+          <div className="flex items-center justify-between">
+            <DialogTitle className="flex items-center gap-2">
+              <User className="w-5 h-5" />
+              NOC Application Details
+            </DialogTitle>
+            <PDFDownloadLink
+              document={<EmployeeLeavePDF data={nocData} />}
+              fileName={`${nocData.refId || 'Sample'}-NOC.pdf`}
+              className="inline-flex items-center px-4 py-2 mr-0 md:mr-6 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              {({ loading }) => (loading ? 'Generating PDF...' : 'Download PDF')}
+            </PDFDownloadLink>
+          </div>
         </DialogHeader>
 
         <div className="space-y-6 max-w-6xl max-h-[70vh] overflow-y-auto">
@@ -446,26 +455,29 @@ const VigilanceAdminNOCDetailDialog = ({
         <div className="flex justify-end space-x-2">
           {isEditable && (
             <>
-              <Button className="bg-yellow-500 hover:bg-yellow-600" onClick={() => handleRevertClick(nocData?.refId)}>
-                {nocData.purposeId === 57 ? 'Forward to D and AR' : revertButtonName}
-              </Button>
-              <Button
-                onClick={() =>
-                  handleApproveClick(
-                    nocData?.refId,
-                    nocData.purposeId === 57 ? RequestStatus.RevertBackToUnderDandAR.value : RequestStatus.CVOTOHR.value
-                  )
-                }
-                className="bg-green-600 hover:bg-green-700"
-              >
-                {AccecptButtonName || 'Approve'}
-              </Button>
-              <Button className="bg-yellow-500 hover:bg-yellow-600" onClick={() => handleTrailClick(nocData?.refId)}>
+              {nocData.purposeId === 57 && (
+                <Button
+                  className="bg-yellow-500 hover:bg-yellow-600"
+                  onClick={() => handleApproveClick(nocData?.refId, RequestStatus.RevertBackToUnderDandAR.value)}
+                >
+                  Forward to D and AR
+                </Button>
+              )}
+
+              {nocData.purposeId !== 57 && (
+                <Button
+                  onClick={() => handleApproveClick(nocData?.refId, RequestStatus.CVOTOHR.value)}
+                  className="bg-green-600 hover:bg-green-700"
+                >
+                  {AccecptButtonName || 'Approve'}
+                </Button>
+              )}
+
+              <Button className="bg-gray-500 hover:bg-gray-600" onClick={() => handleTrailClick(nocData?.refId)}>
                 Get Trail
               </Button>
             </>
           )}
-
           <Button onClick={() => onOpenChange(false)}>Close</Button>
         </div>
       </DialogContent>

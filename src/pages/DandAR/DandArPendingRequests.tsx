@@ -112,7 +112,7 @@ const ReceivedRequests = () => {
         setIsOpen(false);
         setSelectedRequest(null);
         setdAndARRemarksRemarks({} as any);
-        getRequestByUnitId(selectedUnit);
+        fetchRequestsByTab(selectedUnit, activetab);
         setErrorRowsIndexs([]);
         setErrorRows({});
         setExcelPreviewData([]);

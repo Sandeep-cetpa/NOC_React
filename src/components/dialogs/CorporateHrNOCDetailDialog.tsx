@@ -11,6 +11,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { RequestStatus } from '@/constant/status';
 import { format } from 'date-fns';
 import { useNavigate } from 'react-router';
+import { PDFDownloadLink } from '@react-pdf/renderer';
+import EmployeeLeavePDF from '../common/PdfGenerator';
 
 const CorporateHrNOCDetailDialog = ({
   nocData,
@@ -26,6 +28,7 @@ const CorporateHrNOCDetailDialog = ({
   revertButtonName,
   isEditable = false,
   isFromVigilance = false,
+  actionTaken=()=>{}
 }) => {
   if (!nocData) return null;
   const formatDate = (dateString) => {
@@ -100,10 +103,19 @@ const CorporateHrNOCDetailDialog = ({
         className="max-w-6xl overflow-y-auto"
       >
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <User className="w-5 h-5" />
-            NOC Application Details
-          </DialogTitle>
+          <div className="flex items-center justify-between">
+            <DialogTitle className="flex items-center gap-2">
+              <User className="w-5 h-5" />
+              NOC Application Details
+            </DialogTitle>
+            <PDFDownloadLink
+              document={<EmployeeLeavePDF data={nocData} />}
+              fileName={`${nocData.refId || 'Sample'}-NOC.pdf`}
+              className="inline-flex items-center px-4 py-2 bg-blue-600 mr-0 md:mr-6 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              {({ loading }) => (loading ? 'Generating PDF...' : 'Download PDF')}
+            </PDFDownloadLink>
+          </div>
         </DialogHeader>
 
         <div className="space-y-6 max-w-6xl max-h-[70vh] overflow-y-auto">
@@ -365,7 +377,7 @@ const CorporateHrNOCDetailDialog = ({
           )}
 
           {/* CGM Input Section */}
-          {isEditable && (
+          {isEditable && !isFromVigilance && (
             <div className="m-3 pb-4">
               <div>
                 <Label>Enter Remarks</Label>
@@ -410,21 +422,22 @@ const CorporateHrNOCDetailDialog = ({
               </Button>
             </>
           )}
-          <Button
-            onClick={() => handleApproveClick(nocData?.refId, RequestStatus.UnderDandAR.value)}
-            className="bg-green-600 hover:bg-green-700"
-          >
-            {'Action Taken'}
-          </Button>
-          <Button
-            variant="destructive"
-            onClick={() => {
-              navigate(`/corporate-unit-hr-noc-requests-from-vigilance/noc-deatils/${nocData?.refId}`);
-              // handleRejectClick(nocData?.refId, RequestStatus.RejectedByCorporateHR.value);
-            }}
-          >
-            {'Forword To GM HR'}
-          </Button>
+          {isFromVigilance && (
+            <>
+              <Button onClick={() => actionTaken(nocData?.refId, RequestStatus.ParkedFile.value)}>
+                {'Action Taken'}
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={() => {
+                  navigate(`/corporate-unit-hr-noc-requests-from-vigilance/noc-deatils/${nocData?.refId}`);
+                }}
+              >
+                {'Forword To GM HR'}
+              </Button>
+            </>
+          )}
+
           <Button onClick={() => onOpenChange(false)}>Close</Button>
         </div>
       </DialogContent>

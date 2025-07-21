@@ -7,11 +7,30 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { User, Calendar, FileText, XCircle, AlertCircle, Download, Edit3, Save, X, Eye, Mail } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import {
+  User,
+  Calendar,
+  FileText,
+  XCircle,
+  AlertCircle,
+  Download,
+  Edit3,
+  Save,
+  X,
+  Eye,
+  Mail,
+  RefreshCw,
+  Home,
+  ArrowLeft,
+} from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { formatKeyName, formatLabel } from '@/lib/helperFunction';
 import Loader from '@/components/ui/loader';
+import EmployeeLeavePDFGenerator from '@/components/common/PdfGenerator';
+import EmptyState from '@/components/ui/empty-state';
+import { useAppSelector } from '@/app/hooks';
+import { RootState } from '@/app/store';
 interface Input {
   fieldName: string;
   fieldType: string;
@@ -65,6 +84,7 @@ interface ApiResponse {
 
 export default function NocNoting() {
   const [data, setData] = useState<ApiResponse | null>(null);
+  const userInfo = useAppSelector((state: RootState) => state.user);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -76,7 +96,7 @@ export default function NocNoting() {
       setLoading(true);
       setError(null);
       const response = await axiosInstance.get(`/CorporateHR/NOC/Noting?RefId=${nocId}`);
-      if (response.data.success) {
+      if (response?.data?.success && response?.data?.data?.userData) {
         setData(response.data.data);
         setEditedParagraph(response.data.data.paragraph);
       } else {
@@ -92,21 +112,18 @@ export default function NocNoting() {
   const handleSaveParagraph = async () => {
     try {
       setSaving(true);
-      // Add your save API call here
-      // const response = await axiosInstance.put(`/CorporateHR/NOC/Noting/${nocId}`, {
-      //   paragraph: editedParagraph
-      // });
-
-      // For now, just update local state
-      if (data) {
-        setData({
-          ...data,
-          paragraph: editedParagraph,
-        });
+      console.log(editedParagraph, 'editedParagraph');
+      const response = await axiosInstance.put(`/CorporateHR/NOC/Noting`, {
+        refId: nocId,
+        corpHRUnitId: 1,
+        corpHRAutoId: userInfo.EmpID,
+        noting: editedParagraph,
+      });
+      if (response.data.success) {
+        toast.success('Noting updated successfully');
+        getNocDetailsByNocId();
+        setIsEditing(false);
       }
-
-      setIsEditing(false);
-      toast.success('Paragraph updated successfully');
     } catch (err: any) {
       console.error(err);
       toast.error('Failed to save changes');
@@ -187,16 +204,7 @@ export default function NocNoting() {
     return <Loader />;
   }
   if (error) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 p-6">
-        <div className="max-w-7xl mx-auto">
-          <Alert variant="destructive">
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        </div>
-      </div>
-    );
+    return <EmptyState />;
   }
   const { userData } = data;
   return (
@@ -485,7 +493,7 @@ export default function NocNoting() {
                       [{ list: 'ordered' }, { list: 'bullet' }, { indent: '-1' }, { indent: '+1' }],
                       [{ direction: 'rtl' }],
                       [{ align: [] }],
-                      ['link', 'image', 'video', 'formula'],
+                      ['link'],
                       ['clean'],
                     ],
                   }}

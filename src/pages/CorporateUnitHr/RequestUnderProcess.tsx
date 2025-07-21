@@ -269,6 +269,7 @@ const RequestUnderProcess = () => {
         onOpenChange={setIsOpen}
         nocData={selectedRequest}
         isEditable={false}
+        isFromVigilance={false}
       />
     </div>
   );

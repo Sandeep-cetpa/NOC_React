@@ -312,7 +312,6 @@ const VigilanceAdminRequestReceived = () => {
         <VigilanceAdminNOCDetailDialog
           setcgmData={setcgmData}
           handleApproveClick={handleApproveandRejectClick}
-          handleRevertClick={handleRevert}
           handleTrailClick={handleTrailClick}
           cgmData={cgmData}
           isOpen={isOpen}
@@ -320,7 +319,6 @@ const VigilanceAdminRequestReceived = () => {
           nocData={selectedRequest}
           isEditable={true}
           AccecptButtonName={'Forward to Corporate HR'}
-          revertButtonName={'Revert Vigilance User'}
         />
       </div>
     </div>

@@ -5,6 +5,8 @@ import { Button } from '../ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 import { formatLabel } from '@/lib/helperFunction';
 import { Badge } from '../ui/badge';
+import { PDFDownloadLink } from '@react-pdf/renderer';
+import EmployeeLeavePDF from '../common/PdfGenerator';
 
 const UserNOCDetailsDialog = ({ nocData, isOpen, onOpenChange }) => {
   const formatDate = (dateString) => {
@@ -60,10 +62,19 @@ const UserNOCDetailsDialog = ({ nocData, isOpen, onOpenChange }) => {
         className="max-w-6xl "
       >
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <User className="w-5 h-5" />
-            NOC Application Details
-          </DialogTitle>
+          <div className="flex items-center justify-between">
+            <DialogTitle className="flex items-center gap-2">
+              <User className="w-5 h-5" />
+              NOC Application Details
+            </DialogTitle>
+            <PDFDownloadLink
+              document={<EmployeeLeavePDF data={nocData} />}
+              fileName={`${nocData.refId || 'Sample'}-NOC.pdf`}
+              className="inline-flex items-center px-4 py-2 bg-blue-600 mr-0 md:mr-6  text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              {({ loading }) => (loading ? 'Generating PDF...' : 'Download PDF')}
+            </PDFDownloadLink>
+          </div>
         </DialogHeader>
 
         <div className="space-y-6 max-h-[70vh] overflow-y-auto">

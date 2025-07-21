@@ -70,7 +70,6 @@ const AppRoutes = () => {
         <Route element={<PrivateRoute allowedRoles={[]} />}>
           <Route path="/" element={<Navigate to="/create-request" replace={true} />} />
           <Route path="/track-noc" element={<TrackNoc />} />
-
           <Route path="/create-request" element={<CreateRequest />} />
           <Route path="/noc-request-for-employee" element={<NocRequestForEmployee />} />
         </Route>

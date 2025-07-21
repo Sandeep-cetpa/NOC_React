@@ -72,7 +72,7 @@ export function AdminSidebar(props: React.ComponentProps<typeof Sidebar>) {
           { title: 'Pending Requests', url: '/d-and-ar-pending-requests', icon: Clock, role: roleArray },
           { title: 'Create NOC For Employee', url: '/d-and-ar-raise-requests', icon: CheckCircle, role: roleArray },
           {
-            title: 'Request From Vigilance',
+            title: 'NOC From Vigilance',
             url: '/d-and-ar-request-from-vigilance',
             icon: CheckCircle,
             role: roleArray,
@@ -114,7 +114,7 @@ export function AdminSidebar(props: React.ComponentProps<typeof Sidebar>) {
             role: roleArray,
           },
           {
-            title: 'Request From Vigilance',
+            title: 'NOC From Vigilance',
             url: '/corporate-unit-hr-noc-requests-from-vigilance',
             icon: Shield,
             role: roleArray,
