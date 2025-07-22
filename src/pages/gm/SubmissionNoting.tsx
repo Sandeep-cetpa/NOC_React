@@ -460,7 +460,7 @@ export default function SubmissionNoting() {
               <Button onClick={() => submitToCadreGm(RequestStatus.GMHRTOGGM.value.toString())}>
                 Forward To Cadre GM
               </Button>
-              <Button>Refer Back</Button>
+              {/* <Button>Refer Back</Button> */}
             </div>
           </div>
         )}

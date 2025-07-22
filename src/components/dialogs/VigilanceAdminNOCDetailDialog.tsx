@@ -486,9 +486,9 @@ const VigilanceAdminNOCDetailDialog = ({
                 </Button>
               )}
 
-              <Button className="bg-gray-500 hover:bg-gray-600" onClick={() => handleTrailClick(nocData?.refId)}>
+              {/* <Button className="bg-gray-500 hover:bg-gray-600" onClick={() => handleTrailClick(nocData?.refId)}>
                 Get Trail
-              </Button>
+              </Button> */}
             </>
           )}
           <Button onClick={() => onOpenChange(false)}>Close</Button>

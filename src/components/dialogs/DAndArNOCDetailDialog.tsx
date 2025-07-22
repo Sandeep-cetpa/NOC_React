@@ -531,12 +531,12 @@ const DAndArNOCDetailDialog = ({
         <div className="flex justify-end space-x-2">
           {isEditable && !nocData.data && (
             <>
-              <Button
+              {/* <Button
                 variant="destructive"
                 // onClick={() => handleGetTrailClick(nocData?.refId, RequestStatus.RejectedByCorporateHR.value)}
               >
                 Get Trail
-              </Button>
+              </Button> */}
               <Button
                 className="bg-yellow-500 hover:bg-yellow-600"
                 onClick={() => revertBackToCorporateHr(nocData?.refId)}

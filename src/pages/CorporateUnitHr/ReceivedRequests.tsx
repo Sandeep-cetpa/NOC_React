@@ -66,6 +66,10 @@ const ReceivedRequests = () => {
     getRequestByUnitId(selectedUnit, activetab);
   }, [activetab]);
   const handleApproveClick = async (nocId: any, status: any) => {
+    if (!corporateHrRemarks.remark) {
+      toast.error('Remark is required');
+      return;
+    }
     try {
       const response = await axiosInstance.put('/CorporateHR/NOC', {
         refId: nocId,
