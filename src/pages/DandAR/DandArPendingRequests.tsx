@@ -46,7 +46,6 @@ const ReceivedRequests = () => {
     try {
       setIsLoading(true);
       let endpoint = `/DandR/NOC?UnitId=${unitId}&isUnit=false`;
-
       if (tab === 'processed') {
         endpoint = `/DandR/NOC/Report?UnitId=${unitId}`;
       }

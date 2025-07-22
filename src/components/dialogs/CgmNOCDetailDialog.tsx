@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { RequestStatus } from '@/constant/status';
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import EmployeeLeavePDF from '../common/PdfGenerator';
+import { environment } from '@/config';
 
 const CgmNOCDetailDialog = ({
   nocData,
@@ -78,7 +79,12 @@ const CgmNOCDetailDialog = ({
 
     if (field.fieldType === 'File') {
       return (
-        <div className="flex items-center gap-2">
+        <div
+          onClick={() => {
+            window.open(`${environment?.FileBaseUrl}/${field.value}`, '_blank');
+          }}
+          className="flex items-center gap-2"
+        >
           <Download className="w-4 h-4 text-blue-600" />
           <span className="text-blue-600 cursor-pointer hover:underline">{field.value}</span>
         </div>
@@ -200,7 +206,14 @@ const CgmNOCDetailDialog = ({
                       {isFileField ? (
                         <div className="flex items-center gap-2 bg-white p-3 rounded border">
                           {value && <Download className="w-4 h-4 text-blue-600" />}
-                          <span className="text-blue-600 cursor-pointer hover:underline">{value || 'NA'}</span>
+                          <span
+                            onClick={() => {
+                              window.open(`${environment?.FileBaseUrl}/${value}`, '_blank');
+                            }}
+                            className="text-blue-600 cursor-pointer hover:underline"
+                          >
+                            {value || 'NA'}
+                          </span>
                         </div>
                       ) : (
                         <p className="bg-white p-3 rounded border">

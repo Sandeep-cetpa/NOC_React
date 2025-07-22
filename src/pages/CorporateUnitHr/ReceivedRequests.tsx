@@ -198,7 +198,7 @@ const ReceivedRequests = () => {
           return (
             <TabsContent value={ele.value}>
               <div>
-                <h1 className="text-3xl my-4">{ele.label}</h1>
+                {/* <h1 className="text-3xl my-4">{ele.label}</h1> */}
                 <div className="overflow-x-auto">
                   <TableList
                     data={filteredData.sort((a, b) => {

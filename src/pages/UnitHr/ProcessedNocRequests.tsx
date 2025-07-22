@@ -181,7 +181,6 @@ const ProcessedNocRequests = () => {
           onOpenChange={setOpen}
           isEditable={false}
         />
-        {/* <RequestDetailsDialog open={open} setOpen={setOpen} request={selectedRequest} /> */}
       </div>
     </div>
   );

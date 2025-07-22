@@ -400,16 +400,18 @@ const RenderForm = ({
                           <p className="text-xs text-red-500 mt-1">This is a required field</p>
                         )}
                       </div>
-                      <Button
-                        variant="outline"
-                        className="mt-5"
-                        type="button"
-                        onClick={() => {
-                          window.location.href = `${environment.imagesBaseUrl}/Promotion_Template.xlsx`;
-                        }}
-                      >
-                        Download Excel Template
-                      </Button>
+                      {selectedForm?.purposeId !== 53 && (
+                        <Button
+                          variant="outline"
+                          className="mt-5"
+                          type="button"
+                          onClick={() => {
+                            window.location.href = `${environment.imagesBaseUrl}/Promotion_Template.xlsx`;
+                          }}
+                        >
+                          Download Excel Template
+                        </Button>
+                      )}
                     </div>
                   </>
                 )}

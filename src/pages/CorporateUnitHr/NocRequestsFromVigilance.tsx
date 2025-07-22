@@ -21,6 +21,7 @@ const NocRequestsFromVigilance = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedGrade, setSelectedGrade] = useState('all');
   const [selectedDepartment, setSelectedDepartment] = useState('all');
+  const [downloadedExcelUserIds, setDownloadedExcelUserIds] = useState([]);
   const [selectedPurpose, setSelectedPurpose] = useState('all');
   const { departments, grades, units } = useSelector((state: RootState) => state.masterData.data);
   const [corporateHrRemarks, setCorporateHdRemarks] = useState({
@@ -31,7 +32,8 @@ const NocRequestsFromVigilance = () => {
       setIsLoading(true);
       const response = await axiosInstance.get(`/CorporateHR/NOC/NOC-From-Vigilance`);
       if (response.data.success) {
-        setRequests(response.data.data);
+        const { nonBulkRecord, award, probationConfirmaiton } = response.data.data;
+        setRequests([...probationConfirmaiton, ...award, ...nonBulkRecord]);
       }
     } catch (err) {
       console.log(err);
@@ -84,16 +86,12 @@ const NocRequestsFromVigilance = () => {
       console.log(err);
     }
   };
-  const handleActionTakenClick = async (nocId: any, status: any) => {
+  const handleActionTakenClick = async (data: any, status: any) => {
     try {
-      const response = await axiosInstance.put('/CorporateHR/NOC/Noting', {
-        refId: nocId,
-        status: status,
-        corpHRUnitId: 1,
-        corpHRAutoId: user.EmpID,
-      });
+      const payload = data?.refId ? [data?.refId] : data?.data?.slice(1).map((row) => row[0]);
+      const response = await axiosInstance.put(`/CorporateHR/NOC/Action-Completed?status=${status}`, payload);
       if (response.data?.success) {
-        toast.success('Request Approved Successfully');
+        toast.success('Request updated successfully');
         setIsOpen(false);
         setSelectedRequest(null);
         getRequestByUnitId();
@@ -110,6 +108,11 @@ const NocRequestsFromVigilance = () => {
       accessorKey: 'refId',
       header: 'Reference ID',
       cell: ({ row }) => <div>{`${row.original.refId ? 'NOC-' + row.original.refId : 'NA'}`}</div>,
+    },
+    {
+      accessorKey: 'displayBatchId',
+      header: 'Batch ID',
+      cell: ({ row }) => <div>{`${row.original.displayBatchId ? 'Batch-' + row.original.displayBatchId : 'NA'}`}</div>,
     },
     {
       accessorKey: 'employeeCode',
@@ -129,7 +132,7 @@ const NocRequestsFromVigilance = () => {
       accessorKey: 'initiationDate',
       header: 'Date',
       cell: ({ row }) => (
-        <div className="flex items-center w-[90px]">
+        <div className="flex items-center w-[120px]">
           {row.original.initiationDate ? format(new Date(row.original.initiationDate), 'dd MMM yyyy') : '-'}
         </div>
       ),
@@ -146,6 +149,7 @@ const NocRequestsFromVigilance = () => {
         <div className="w-[170px]">{findUnitNameByUnitId(units, row.original.unitId)?.unitName ?? 'NA'}</div>
       ),
     },
+
     {
       accessorKey: 'post',
       header: 'Designation',
@@ -177,6 +181,32 @@ const NocRequestsFromVigilance = () => {
       ),
     },
   ];
+  const getAllDownloadedRecords = async (batchId: any) => {
+    try {
+      const response = await axiosInstance.get(`/Util/downloaded-rows?batchNumber=${batchId}`);
+      if (response.data.success) {
+        setDownloadedExcelUserIds(response.data.data);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  useEffect(() => {
+    if (selectedRequest?.batchId) {
+      getAllDownloadedRecords(selectedRequest.batchId);
+    }
+  }, [selectedRequest?.batchId]);
+  const sendDownloadedExcelUser = async (data: any) => {
+    try {
+      setIsLoading(true);
+      const ids = data?.data?.slice(1)?.map((row) => row[0]);
+      await axiosInstance.put(`/Util/downloaded-rows/${data?.batchId}`, ids);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
   const filteredData = useMemo(() => {
     return request.filter((item) => {
       // const postMatch = selectedGrade === 'all' || item.post === selectedGrade;
@@ -190,7 +220,7 @@ const NocRequestsFromVigilance = () => {
     <div className=" p-6">
       {isLoading && <Loader />}
       <div>
-        <h1 className="text-3xl my-4">Requests From Vigilance</h1>
+        {/* <h1 className="text-3xl my-4">Requests From Vigilance</h1> */}
         <div className="overflow-x-auto">
           <TableList
             data={filteredData.sort((a, b) => {
@@ -265,6 +295,8 @@ const NocRequestsFromVigilance = () => {
         revertButtonName={'Get Trail'}
         isEditable={true}
         isFromVigilance={true}
+        downloadedExcelUserIds={downloadedExcelUserIds}
+        sendDownloadedExcelUser={sendDownloadedExcelUser}
       />
     </div>
   );

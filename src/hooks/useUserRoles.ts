@@ -10,7 +10,7 @@ const useUserRoles = () => {
   const isDandAR = roleIds.includes(7);
   const isVigilanceAdmin = roleIds.includes(4);
   const isVigilanceUser = roleIds.includes(4);
-  const isCorporateUnitHr = roleIds.includes(10); // Replace with actual CorporateUnitHr roleId
+  const isCadreGm = roleIds.includes(10); // Replace with actual CorporateUnitHr roleId
   const isGm = roleIds.includes(9);
   const hrUser = roleIds.includes(3);
   const isUser = roleIds.includes(5);
@@ -24,7 +24,7 @@ const useUserRoles = () => {
     isCgm,
     isDandAR,
     isVigilanceAdmin,
-    isCorporateUnitHr,
+    isCadreGm,
     isVigilanceUser,
     isGm, //2 table are pending for this role
     hrUser, //2 table are pending for this role

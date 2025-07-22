@@ -6,6 +6,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '.
 import { formatKeyName, formatLabel } from '@/lib/helperFunction';
 import { Badge } from '../ui/badge';
 import { Textarea } from '../ui/textarea';
+import ExcelJS from 'exceljs';
+import { saveAs } from 'file-saver';
 import { Label } from '../ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { RequestStatus } from '@/constant/status';
@@ -34,7 +36,11 @@ const DAndArNOCDetailDialog = ({
   setErrorRowsIndexs,
   setErrorRows,
   setExcelPreviewData,
+  isFromVigilance = false,
+  sendDownloadedExcelUser = (data: any) => {},
+  downloadedExcelUserIds = [],
 }) => {
+  if (!nocData) return null;
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
     try {
@@ -53,7 +59,7 @@ const DAndArNOCDetailDialog = ({
       }
 
       if (isNaN(date.getTime())) {
-        return dateString; // Return original if parsing fails
+        return dateString;
       }
 
       return date.toLocaleDateString('en-IN', {
@@ -65,7 +71,6 @@ const DAndArNOCDetailDialog = ({
       return dateString;
     }
   };
-  console.log(nocData, 'NOC DATA');
   const getFieldIcon = (fieldType) => {
     switch (fieldType?.toLowerCase()) {
       case 'file':
@@ -84,7 +89,12 @@ const DAndArNOCDetailDialog = ({
 
     if (field.fieldType === 'File') {
       return (
-        <div className="flex items-center gap-2">
+        <div
+          onClick={() => {
+            window.open(`${environment?.FileBaseUrl}/${field.value}`, '_blank');
+          }}
+          className="flex items-center gap-2"
+        >
           <Download className="w-4 h-4 text-blue-600" />
           <span className="text-blue-600 cursor-pointer hover:underline">{field.value}</span>
         </div>
@@ -96,8 +106,37 @@ const DAndArNOCDetailDialog = ({
     }
     return field.value;
   };
-
-  if (!nocData) return null;
+  const downloadExcelOfUserData = async (data, fileName = 'DandARReport.xlsx') => {
+    const updatedData = [...data];
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Sheet1');
+    updatedData.forEach((row, rowIndex) => {
+      const newRow = worksheet.addRow(row);
+      if (rowIndex > 0 && downloadedExcelUserIds.includes(Number(row[0]))) {
+        newRow.eachCell((cell) => {
+          cell.fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: { argb: 'FFFFFF00' }, // Yellow
+          };
+        });
+      }
+    });
+    worksheet.columns.forEach((column) => {
+      let maxLength = 10;
+      column.eachCell({ includeEmpty: true }, (cell) => {
+        const value = cell.value ? cell.value.toString() : '';
+        maxLength = Math.max(maxLength, value.length);
+      });
+      column.width = maxLength + 2;
+    });
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    });
+    saveAs(blob, fileName);
+    sendDownloadedExcelUser(nocData);
+  };
   const handleClose = () => {
     setdAndARRemarksRemarks({});
     setErrorRowsIndexs([]);
@@ -245,7 +284,14 @@ const DAndArNOCDetailDialog = ({
                         {isFileField ? (
                           <div className="flex items-center gap-2 bg-white p-3 rounded border">
                             {value && <Download className="w-4 h-4 text-blue-600" />}
-                            <span className="text-blue-600 cursor-pointer hover:underline">{value || 'NA'}</span>
+                            <span
+                              onClick={() => {
+                                window.open(`${environment?.FileBaseUrl}/${value}`, '_blank');
+                              }}
+                              className="text-blue-600 cursor-pointer hover:underline"
+                            >
+                              {value || 'NA'}
+                            </span>
                           </div>
                         ) : (
                           <p className="bg-white p-3 rounded border">
@@ -260,14 +306,14 @@ const DAndArNOCDetailDialog = ({
             )}
 
             {/* Form Inputs */}
-            {nocData.inputs && nocData.inputs.length > 0 && (
+            {nocData?.inputs && nocData?.inputs?.length > 0 && (
               <div className="bg-yellow-50 p-4 rounded-lg">
                 <h3 className="font-semibold text-lg mb-3 flex items-center gap-2">
                   <FileText className="w-5 h-5" />
                   Application Form Data
                 </h3>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                  {nocData.inputs.map((field, index) => (
+                  {nocData?.inputs.map((field, index) => (
                     <div key={index} className="bg-white p-3 rounded-lg border">
                       <div className="flex items-center gap-2 mb-2">
                         {getFieldIcon(field.fieldType)}
@@ -289,7 +335,6 @@ const DAndArNOCDetailDialog = ({
                 </div>
               </div>
             )}
-
             {/* Table Inputs */}
             {nocData.tableInputs && nocData.tableInputs.length > 0 && (
               <div className="space-y-6 rounded-lg">
@@ -417,7 +462,7 @@ const DAndArNOCDetailDialog = ({
               </div>
             )}
           </div>
-          {nocData?.data && (
+          {nocData?.data && !isFromVigilance && (
             <div className="flex flex-wrap">
               <div className="flex flex-col">
                 <Label className="mb-2">Upload Excel</Label>
@@ -439,7 +484,6 @@ const DAndArNOCDetailDialog = ({
                           BulkExcel: null,
                         }));
                       }
-
                       setErrorRowsIndexs([]);
                       setErrorRows({});
                       setExcelPreviewData([]);
@@ -448,7 +492,7 @@ const DAndArNOCDetailDialog = ({
                   />
                 </div>
               </div>
-              {nocData?.fkPurposeId === 54 && (
+              {nocData?.fkPurposeId === 54 && !isFromVigilance && (
                 <div className="flex flex-col ml-0 md:ml-5">
                   <Label className="mb-2">Upload IPR</Label>
                   <div className="py-1 pl-1 border rounded-md">
@@ -520,15 +564,24 @@ const DAndArNOCDetailDialog = ({
                   Download Citation
                 </Button>
               )}
-              <Button variant="destructive" onClick={() => handleExcelDownload(nocData?.fkPurposeId, nocData.batchId)}>
+              <Button
+                variant="destructive"
+                onClick={() =>
+                  isFromVigilance
+                    ? downloadExcelOfUserData(nocData.data)
+                    : handleExcelDownload(nocData?.fkPurposeId, nocData.batchId)
+                }
+              >
                 Download Excel
               </Button>
-              <Button
-                onClick={() => handleApproveClick(nocData?.refId, RequestStatus.SentToVigilanceUser.value)}
-                className="bg-green-600 hover:bg-green-700"
-              >
-                Submit
-              </Button>
+              {!isFromVigilance && (
+                <Button
+                  onClick={() => handleApproveClick(nocData?.refId, RequestStatus.SentToVigilanceUser.value)}
+                  className="bg-green-600 hover:bg-green-700"
+                >
+                  Submit
+                </Button>
+              )}
             </>
           )}
           <Button

@@ -8,11 +8,13 @@ const DFCCIL_UAT = {
   postLogout: 'https://uatlogin.dfccil.com/signout',
   redirectPath: 'create-request',
   applicationId: 18,
+  FileBaseUrl: 'https://uatnocapi.dfccil.com/Upload/Vigilance',
 };
 
 const DFCCIL_PROD = {
   apiUrl: 'https://uatnocapi.dfccil.com/api',
   orgHierarchy: 'https://orgsvc.dfccil.com/api',
+  FileBaseUrl: 'https://uatnocapi.dfccil.com/Upload/Vigilance',
   imagesBaseUrl: 'https://uat.dfccil.com/DocUpload',
   logoutUrl: 'https://it.dfccil.com/Home/Home',
   authUrl: 'https://app2.dfccil.com',

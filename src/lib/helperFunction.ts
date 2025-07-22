@@ -443,7 +443,6 @@ export const validateVigilanceFields = (data, skipForExternal) => {
       return false;
     }
   }
-
   return true;
 };
 
@@ -458,6 +457,7 @@ export const formatKeyName = (key: string) => {
       .replace(/^./, (str) => str.toUpperCase())
       // Replace known acronyms properly
       .replace(/\bHr\b/g, 'HR')
+      .replace(/\bGm\b/g, 'GM')
       .replace(/\bIpr\b/g, 'IPR')
       .replace(/\bCgm\b/g, 'CGM')
       .replace(/\bDandar\b/gi, 'D&AR')

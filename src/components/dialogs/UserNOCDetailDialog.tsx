@@ -3,10 +3,11 @@ import { CalendarDays, User, FileText, Mail, Calendar, Download, Eye } from 'luc
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
 import { Button } from '../ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
-import { formatLabel } from '@/lib/helperFunction';
+import { formatKeyName, formatLabel } from '@/lib/helperFunction';
 import { Badge } from '../ui/badge';
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import EmployeeLeavePDF from '../common/PdfGenerator';
+import { environment } from '@/config';
 
 const UserNOCDetailsDialog = ({ nocData, isOpen, onOpenChange }) => {
   const formatDate = (dateString) => {
@@ -41,7 +42,12 @@ const UserNOCDetailsDialog = ({ nocData, isOpen, onOpenChange }) => {
 
     if (field.fieldType === 'File') {
       return (
-        <div className="flex items-center gap-2">
+        <div
+          onClick={() => {
+            window.open(`${environment?.FileBaseUrl}/${field.value}`, '_blank');
+          }}
+          className="flex items-center gap-2"
+        >
           <Download className="w-4 h-4 text-blue-600" />
           <span className="text-blue-600 cursor-pointer hover:underline">{field.value}</span>
         </div>
@@ -96,39 +102,49 @@ const UserNOCDetailsDialog = ({ nocData, isOpen, onOpenChange }) => {
             </div>
           </div>
           {/* Other Fields */}
-          {nocData.officerRemarks && (
-            <div className="bg-green-50 p-3 rounded-lg">
+          {(nocData?.officerRemarksR || nocData?.officerRemarks) && (
+            <div className="bg-green-50 p-4 rounded-lg">
               <h3 className="font-semibold text-lg mb-3 flex items-center gap-2">
                 <Mail className="w-5 h-5" />
-                Additional Information
+                Officer Remarks & Information
               </h3>
-              <div className="space-y-3">
-                {nocData?.officerRemarks?.corporateHrRemarks && (
-                  <div>
-                    <label className="text-sm font-medium text-gray-600">HR Remarks</label>
-                    <p className="bg-white p-3 rounded border">{nocData.officerRemarks.corporateHrRemarks}</p>
-                  </div>
-                )}
-                {nocData?.officerRemarks?.iprFile && (
-                  <div>
-                    <label className="text-sm font-medium text-gray-600">IPR File</label>
-                    <div className="flex items-center gap-2 bg-white py-1 px-2 mt-1 rounded border">
-                      <Download className="w-4 h-4 text-blue-600" />
-                      <span className="text-blue-600 cursor-pointer hover:underline">
-                        {nocData?.officerRemarks?.iprFile}
-                      </span>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {Object.entries(nocData?.officerRemarks || nocData?.officerRemarksR).map(([key, value]) => {
+                  // Check if the field is a date field
+                  const isDateField = key.toLowerCase().includes('date');
+
+                  // Check if the field is a file field
+                  const isFileField = key.toLowerCase().includes('file');
+
+                  const formattedKey = formatKeyName(key);
+
+                  return (
+                    <div key={key}>
+                      <label className="text-sm font-medium text-gray-600">{formattedKey}</label>
+                      {isFileField ? (
+                        <div className="flex items-center gap-2 bg-white p-3 rounded border">
+                          {value && <Download className="w-4 h-4 text-blue-600" />}
+                          <span
+                            onClick={() => {
+                              window.open(`${environment?.FileBaseUrl}/${value}`, '_blank');
+                            }}
+                            className="text-blue-600 cursor-pointer hover:underline"
+                          >
+                            {value ? value : 'NA'}
+                          </span>
+                        </div>
+                      ) : (
+                        <p className="bg-white p-3 rounded border">
+                          {isDateField ? (formatDate(value) ? formatDate(value) : value) : 'NA'}
+                        </p>
+                      )}
                     </div>
-                  </div>
-                )}
-                {nocData?.officerRemarks?.iprDate && (
-                  <div>
-                    <label className="text-sm font-medium text-gray-600">IPR Date</label>
-                    <p className="bg-white py-1 px-2 rounded border">{formatDate(nocData?.officerRemarks?.iprDate)}</p>
-                  </div>
-                )}
+                  );
+                })}
               </div>
             </div>
           )}
+
           {/* Form Inputs */}
           {nocData.inputs && nocData.inputs.length > 0 && (
             <div className="bg-yellow-50 p-3 rounded-lg">

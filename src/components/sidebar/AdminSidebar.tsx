@@ -87,6 +87,13 @@ export function AdminSidebar(props: React.ComponentProps<typeof Sidebar>) {
           { title: 'Processed Requests', url: '/gm-processed-requests', icon: CheckCircle, role: roleArray }
         );
       }
+      if (roleId === 10) {
+        roleIcon = UserCheck;
+        items.push(
+          { title: 'Request Received', url: '/ggm-request-received', icon: Inbox, role: roleArray },
+          { title: 'Processed Requests', url: '/ggm-processed-requests', icon: CheckCircle, role: roleArray }
+        );
+      }
 
       if (roleId === 3 && assinedUnit?.find((ele) => ele?.unitId !== 1)) {
         roleIcon = UserCheck;

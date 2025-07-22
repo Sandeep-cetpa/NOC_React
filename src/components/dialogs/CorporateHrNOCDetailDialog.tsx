@@ -7,12 +7,16 @@ import { formatKeyName, formatLabel } from '@/lib/helperFunction';
 import { Badge } from '../ui/badge';
 import { Textarea } from '../ui/textarea';
 import { Label } from '../ui/label';
+import ExcelJS from 'exceljs';
+import { saveAs } from 'file-saver';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { RequestStatus } from '@/constant/status';
 import { format } from 'date-fns';
 import { useNavigate } from 'react-router';
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import EmployeeLeavePDF from '../common/PdfGenerator';
+import ExcelDataPreview from '../common/ExcelPreview';
+import { environment } from '@/config';
 
 const CorporateHrNOCDetailDialog = ({
   nocData,
@@ -28,7 +32,9 @@ const CorporateHrNOCDetailDialog = ({
   revertButtonName,
   isEditable = false,
   isFromVigilance = false,
-  actionTaken=(ref,status)=>{}
+  downloadedExcelUserIds = [],
+  actionTaken = (data, status) => {},
+  sendDownloadedExcelUser = (value) => {},
 }) => {
   if (!nocData) return null;
   const formatDate = (dateString) => {
@@ -82,7 +88,12 @@ const CorporateHrNOCDetailDialog = ({
 
     if (field.fieldType === 'File') {
       return (
-        <div className="flex items-center gap-2">
+        <div
+          onClick={() => {
+            window.open(`${environment?.FileBaseUrl}/${field.value}`, '_blank');
+          }}
+          className="flex items-center gap-2"
+        >
           <Download className="w-4 h-4 text-blue-600" />
           <span className="text-blue-600 cursor-pointer hover:underline">{field.value}</span>
         </div>
@@ -93,6 +104,38 @@ const CorporateHrNOCDetailDialog = ({
       return formatDate(field.value);
     }
     return field.value;
+  };
+
+  const downloadExcelOfUserData = async (data, fileName = 'DandARReport.xlsx') => {
+    const updatedData = [...data];
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Sheet1');
+    updatedData.forEach((row, rowIndex) => {
+      const newRow = worksheet.addRow(row);
+      if (rowIndex > 0 && downloadedExcelUserIds.includes(Number(row[0]))) {
+        newRow.eachCell((cell) => {
+          cell.fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: { argb: 'FFFFFF00' }, // Yellow
+          };
+        });
+      }
+    });
+    worksheet.columns.forEach((column) => {
+      let maxLength = 10;
+      column.eachCell({ includeEmpty: true }, (cell) => {
+        const value = cell.value ? cell.value.toString() : '';
+        maxLength = Math.max(maxLength, value.length);
+      });
+      column.width = maxLength + 2;
+    });
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    });
+    saveAs(blob, fileName);
+    sendDownloadedExcelUser(nocData);
   };
 
   return (
@@ -121,74 +164,102 @@ const CorporateHrNOCDetailDialog = ({
         <div className="space-y-6 max-w-6xl max-h-[70vh] overflow-y-auto">
           {/* Application Details */}
           <div className="bg-blue-50 p-4 rounded-lg">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <User className="h-4 w-4" />
-                    Request Information
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="font-medium">Initiation Date:</span>
-                    <span>{formatDate(nocData.initiationDate)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="font-medium">Reference ID:</span>
-                    <span>NOC-{nocData.refId || 'N/A'}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="font-medium">Purpose:</span>
-                    <span>{nocData.purposeName}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="font-medium">Current Status:</span>
-                    <Badge variant="outline">{nocData.currentStatus}</Badge>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <User className="h-4 w-4" />
-                    Employee Information
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="font-medium">Employee Code:</span>
-                    <span>{nocData.employeeCode}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="font-medium">Name:</span>
-                    <span>{nocData.username}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="font-medium">Post:</span>
-                    <span>{nocData.post}</span>
-                  </div>
-                  {nocData?.purposeId === 47 && (
-                    <>
-                      {nocData.dob && (
-                        <div className="flex justify-between">
-                          <span className="font-medium">DOB:</span>
-                          <span>{formatDate(nocData.dob)}</span>
-                        </div>
-                      )}
-                      {nocData.dor && (
-                        <div className="flex justify-between">
-                          <span className="font-medium">DOR:</span>
-                          <span>{formatDate(nocData.dor)}</span>
-                        </div>
-                      )}
-                    </>
-                  )}
-                </CardContent>
-              </Card>
-            </div>
-          </div>
+            {!nocData?.data ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <User className="h-4 w-4" />
+                      Request Information
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-2">
+                    {nocData.initiationDate && (
+                      <div className="flex justify-between">
+                        <span className="font-medium">Initiation Date:</span>
+                        <span>{formatDate(nocData.initiationDate)}</span>
+                      </div>
+                    )}
 
+                    {nocData.displayBatchId ? (
+                      <div className="flex justify-between">
+                        <span className="font-medium">Batch ID:</span>
+                        <span>NOC-{nocData.displayBatchId || 'N/A'}</span>
+                      </div>
+                    ) : (
+                      <div className="flex justify-between">
+                        <span className="font-medium">Reference ID:</span>
+                        <span>NOC-{nocData.refId || 'N/A'}</span>
+                      </div>
+                    )}
+
+                    <div className="flex justify-between">
+                      <span className="font-medium">Purpose:</span>
+                      <span>{nocData.purposeName}</span>
+                    </div>
+                    {nocData.currentStatus && (
+                      <div className="flex justify-between">
+                        <span className="font-medium">Current Status:</span>
+                        <Badge variant="outline">{nocData.currentStatus}</Badge>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <User className="h-4 w-4" />
+                      Employee Information
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="font-medium">Employee Code:</span>
+                      <span>{nocData.employeeCode}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="font-medium">Name:</span>
+                      <span>{nocData.username}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="font-medium">Post:</span>
+                      <span>{nocData.post}</span>
+                    </div>
+                    {nocData?.purposeId === 47 && (
+                      <>
+                        {nocData.dob && (
+                          <div className="flex justify-between">
+                            <span className="font-medium">DOB:</span>
+                            <span>{formatDate(nocData.dob)}</span>
+                          </div>
+                        )}
+                        {nocData.dor && (
+                          <div className="flex justify-between">
+                            <span className="font-medium">DOR:</span>
+                            <span>{formatDate(nocData.dor)}</span>
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="">
+                  <span className="font-medium">Batch ID : </span>
+                  <span> Batch-{nocData.displayBatchId || 'N/A'}</span>
+                </div>
+                <div className="">
+                  <span className="font-medium">Purpose : </span>
+                  <span>{nocData.purposeName}</span>
+                </div>
+              </div>
+            )}
+          </div>
+          {(nocData?.fkPurposeId === 54 || nocData?.fkPurposeId === 53 || nocData?.fkPurposeId === 57) && (
+            <ExcelDataPreview excelData={nocData?.data} data={nocData?.data} />
+          )}
           {/* Officer Remarks */}
           {(nocData?.officerRemarksR || nocData?.officerRemarks) && (
             <div className="bg-green-50 p-4 rounded-lg">
@@ -218,7 +289,14 @@ const CorporateHrNOCDetailDialog = ({
                       {isFileField ? (
                         <div className="flex items-center gap-2 bg-white p-3 rounded border">
                           {value && <Download className="w-4 h-4 text-blue-600" />}
-                          <span className="text-blue-600 cursor-pointer hover:underline">{value || 'NA'}</span>
+                          <span
+                            onClick={() => {
+                              window.open(environment?.FileBaseUrl + value, '_blank');
+                            }}
+                            className="text-blue-600 cursor-pointer hover:underline"
+                          >
+                            {value || 'NA'}
+                          </span>
                         </div>
                       ) : (
                         <p className="bg-white p-3 rounded border">
@@ -424,17 +502,25 @@ const CorporateHrNOCDetailDialog = ({
           )}
           {isFromVigilance && (
             <>
-              <Button onClick={() => actionTaken(nocData?.refId, RequestStatus.ParkedFile.value)}>
-                {'Action Taken'}
-              </Button>
-              <Button
-                variant="destructive"
-                onClick={() => {
-                  navigate(`/corporate-unit-hr-noc-requests-from-vigilance/noc-deatils/${nocData?.refId}`);
-                }}
-              >
-                {'Forword To GM HR'}
-              </Button>
+              <Button onClick={() => actionTaken(nocData, RequestStatus.ParkedFile.value)}>Action Taken</Button>
+              {nocData?.data && (
+                <Button
+                  className="bg-gray-500 hover:bg-gray-700"
+                  onClick={() => downloadExcelOfUserData(nocData?.data)}
+                >
+                  Download Excel
+                </Button>
+              )}
+              {!nocData?.data && (
+                <Button
+                  variant="destructive"
+                  onClick={() => {
+                    navigate(`/corporate-unit-hr-noc-requests-from-vigilance/noc-deatils/${nocData?.refId}`);
+                  }}
+                >
+                  {'Forword To GM HR'}
+                </Button>
+              )}
             </>
           )}
 

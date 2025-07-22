@@ -7,7 +7,6 @@ import { findUnitNameByUnitId, statusConfig } from '@/lib/helperFunction';
 import { Badge } from '@/components/ui/badge';
 import TableList from '@/components/ui/data-table';
 import Loader from '@/components/ui/loader';
-import CorporateHrNOCDetailDialog from '@/components/dialogs/CorporateHrNOCDetailDialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import toast from 'react-hot-toast';
 import { useSelector } from 'react-redux';
@@ -171,7 +170,7 @@ const GmRequesteReceived = () => {
       {isLoading && <Loader />}
       <div>
         <div>
-          <h1 className="text-3xl my-4">Pending Requests</h1>
+          {/* <h1 className="text-3xl my-4">Pending Requests</h1> */}
           <div className="overflow-x-auto">
             <TableList
               data={filteredData.sort((a, b) => {

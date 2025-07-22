@@ -9,4 +9,5 @@ export type UserRole =
   | 'VigilanceUser'
   | 'VigilanceAdmin'
   | 'CGM'
+  | 'Cadre GM'
   | 'GM';

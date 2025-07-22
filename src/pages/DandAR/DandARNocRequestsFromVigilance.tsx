@@ -25,8 +25,8 @@ const reportStatus = [
   },
 ];
 const DandARNocRequestsFromVigilance = () => {
-  const [activetab, setActiveTab] = useState('pending');
   const [request, setRequests] = useState([]);
+  const [downloadedExcelUserIds, setDownloadedExcelUserIds] = useState([]);
   const user = useSelector((state: RootState) => state.user);
   const [isLoading, setIsLoading] = useState(false);
   const [dAndARRemarks, setdAndARRemarksRemarks] = useState({});
@@ -121,7 +121,7 @@ const DandARNocRequestsFromVigilance = () => {
       console.log(err);
     }
   };
-  const revertBackToCorporateHr = async (nocId: any, status: any) => {
+  const revertBackToCorporateHr = async (nocId: any) => {
     try {
       setIsLoading(true);
       const response = await axiosInstance.post('/DandR/NOC/Revert', {
@@ -146,6 +146,22 @@ const DandARNocRequestsFromVigilance = () => {
       console.log(err);
     }
   };
+  const getAllDownloadedRecords = async (batchId: any) => {
+    try {
+      const response = await axiosInstance.get(`/Util/downloaded-rows?batchNumber=${batchId}`);
+      if (response.data.success) {
+        setDownloadedExcelUserIds(response.data.data);
+      }
+      console.log(response.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  useEffect(() => {
+    if (selectedRequest?.batchId) {
+      getAllDownloadedRecords(selectedRequest.batchId);
+    }
+  }, [selectedRequest?.batchId]);
   const handleExcelDownload = async (purposeId, batchId) => {
     try {
       setIsLoading(true);
@@ -159,6 +175,18 @@ const DandARNocRequestsFromVigilance = () => {
       document.body.appendChild(link);
       link.click();
       link.remove();
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  const sendDownloadedExcelUser = async (data: any) => {
+    try {
+      setIsLoading(true);
+      const ids = data?.data?.slice(1)?.map((row) => row[0]);
+      const response = await axiosInstance.put(`/Util/downloaded-rows/${data?.batchId}`, ids);
+      console.log(response.data, 'response');
     } catch (err) {
       console.log(err);
     } finally {
@@ -370,10 +398,13 @@ const DandARNocRequestsFromVigilance = () => {
         revertButtonName={'Revert To Corporate HR'}
         handleExcelDownload={handleExcelDownload}
         handleExcelPreview={handleExcelPreview}
-        isEditable={false}
+        isEditable={true}
+        isFromVigilance={true}
         setErrorRowsIndexs={setErrorRowsIndexs}
         setErrorRows={setErrorRows}
         setExcelPreviewData={setExcelPreviewData}
+        sendDownloadedExcelUser={sendDownloadedExcelUser}
+        downloadedExcelUserIds={downloadedExcelUserIds}
       />
     </div>
   );

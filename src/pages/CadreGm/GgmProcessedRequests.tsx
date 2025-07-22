@@ -12,9 +12,9 @@ import toast from 'react-hot-toast';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/app/store';
 import { allPurpose } from '@/constant/static';
-import GmHrNOCDetailDialog from '@/components/dialogs/GmHrNOCDetailDialog';
+import GgmNOCDetailDialog from '@/components/dialogs/GgmNOCDetailDialog';
 
-const GmProcessedRequests = () => {
+const GgmProcessedRequests = () => {
   const [request, setRequests] = useState([]);
   const user = useSelector((state: RootState) => state.user);
   const [isLoading, setIsLoading] = useState(false);
@@ -28,7 +28,7 @@ const GmProcessedRequests = () => {
   const getRequestByUnitId = async () => {
     try {
       setIsLoading(true);
-      const response = await axiosInstance.get(`/GMHR/NOC/Report`);
+      const response = await axiosInstance.get(`/CadreGm/NOC/Report`);
       if (response.data.success) {
         setRequests(response.data.data);
       }
@@ -239,9 +239,9 @@ const GmProcessedRequests = () => {
           </div>
         </div>
       </div>
-      <GmHrNOCDetailDialog isOpen={isOpen} onOpenChange={setIsOpen} nocData={selectedRequest} isEditable={false} />
+      <GgmNOCDetailDialog isOpen={isOpen} onOpenChange={setIsOpen} nocData={selectedRequest} isEditable={false} />
     </div>
   );
 };
 
-export default GmProcessedRequests;
+export default GgmProcessedRequests;

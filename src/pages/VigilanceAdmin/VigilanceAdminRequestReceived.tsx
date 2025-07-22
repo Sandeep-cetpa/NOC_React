@@ -235,7 +235,7 @@ const VigilanceAdminRequestReceived = () => {
       {isLoading && <Loader />}
       <div className="w-full mx-auto">
         <div className="flex items-center">
-          <h1 className="text-3xl font-semibold mb-3">Pending Requests</h1>
+          <h1 className="text-3xl mb-3">Pending Requests</h1>
           <div className="flex items-center gap-2 mb-2 ml-3">
             <Switch
               checked={IsAutomaticApproval}

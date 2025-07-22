@@ -173,7 +173,7 @@ const ProcessedRequestByCgm = () => {
     <div className=" p-6">
       {isLoading && <Loader />}
       <div className="w-full mx-auto">
-        <h1 className="font text-3xl mb-3">Pending Requests </h1>
+        {/* <h1 className="font text-3xl mb-3">Pending Requests </h1> */}
         <div className="space-y-4">
           <TableList
             data={filteredData?.sort((a, b) => {

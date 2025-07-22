@@ -38,6 +38,9 @@ import { SESSION_CHECK_INTERVAL } from '@/config';
 import NocNoting from '@/pages/CorporateUnitHr/NocNoting';
 import GmRequesteReceived from '@/pages/gm/GmRequesteReceived';
 import SubmissionNoting from '@/pages/gm/SubmissionNoting';
+import GgmPendingRequests from '@/pages/CadreGm/GgmPendingRequests';
+import GgmProcessedRequests from '@/pages/CadreGm/GgmProcessedRequests';
+import GgmSubmissionNoting from '@/pages/CadreGm/GgmSubmissionNoting';
 
 const AppRoutes = () => {
   const { isAuthenticated } = useAuth();
@@ -128,6 +131,13 @@ const AppRoutes = () => {
           <Route path="/gm-request-received" element={<GmRequesteReceived />} />
           <Route path="/gm-request-received/:nocId" element={<SubmissionNoting />} />
           <Route path="/gm-processed-requests" element={<GmProcessedRequests />} />
+        </Route>
+      </Route>
+      <Route element={<AppLayout isAdmin={true} />}>
+        <Route element={<PrivateRoute allowedRoles={['Cadre GM']} />}>
+          <Route path="/ggm-request-received" element={<GgmPendingRequests />} />
+          <Route path="/ggm-request-received/:nocId" element={<GgmSubmissionNoting />} />
+          <Route path="/ggm-processed-requests" element={<GgmProcessedRequests />} />
         </Route>
       </Route>
       <Route path="*" element={<NotFound />} />

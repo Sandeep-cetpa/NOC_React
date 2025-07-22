@@ -183,7 +183,7 @@ const RequestUnderProcess = () => {
           return (
             <TabsContent value={ele.value}>
               <div>
-                <h1 className="text-3xl my-4">{ele.label} Request</h1>
+                {/* <h1 className="text-3xl my-4">{ele.label} Request</h1> */}
                 <div className="overflow-x-auto mt-2">
                   <TableList
                     data={filteredData?.sort((a, b) => {
